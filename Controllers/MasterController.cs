@@ -81,7 +81,11 @@ namespace HCMSys.Controllers
             return View();
         }
 
-        public ActionResult Accounts()
+        public ActionResult AccountIndex()
+        {
+            return View();
+        }
+        public ActionResult Account()
         {
             return View();
         }

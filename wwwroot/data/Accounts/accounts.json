@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "code": "ACC-0001",
+    "name": "Main Account",
+    "createdBy": "Admin",
+    "createdDate": "01-Jan-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "15-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 2,
+    "code": "ACC-0002",
+    "name": "Sales Account",
+    "createdBy": "Admin",
+    "createdDate": "10-Feb-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "20-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 3,
+    "code": "ACC-0003",
+    "name": "HR Account",
+    "createdBy": "Admin",
+    "createdDate": "05-Mar-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "22-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 4,
+    "code": "ACC-0004",
+    "name": "Finance Account",
+    "createdBy": "Admin",
+    "createdDate": "18-Mar-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "25-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 5,
+    "code": "ACC-0005",
+    "name": "Test Account",
+    "createdBy": "Admin",
+    "createdDate": "01-Apr-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "28-Jun-2025",
+    "active": false
+  }
+]
