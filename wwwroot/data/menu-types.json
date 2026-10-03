@@ -1,0 +1,64 @@
+{
+  "menuTypes": [
+    {
+      "iId": 1,
+      "sName": "Account",
+      "iSortOrder": 1,
+      "bStatus": 1
+    },
+    {
+      "iId": 2,
+      "sName": "Customer",
+      "iSortOrder": 2,
+      "bStatus": 1
+    },
+    {
+      "iId": 3,
+      "sName": "Supplier",
+      "iSortOrder": 3,
+      "bStatus": 1
+    },
+    {
+      "iId": 4,
+      "sName": "Products & Services",
+      "iSortOrder": 4,
+      "bStatus": 1
+    },
+    {
+      "iId": 5,
+      "sName": "Employee",
+      "iSortOrder": 5,
+      "bStatus": 1
+    },
+    {
+      "iId": 6,
+      "sName": "Fixed Asset",
+      "iSortOrder": 6,
+      "bStatus": 1
+    },
+    {
+      "iId": 7,
+      "sName": "General Master",
+      "iSortOrder": 7,
+      "bStatus": 1
+    },
+    {
+      "iId": 8,
+      "sName": "Transaction",
+      "iSortOrder": 8,
+      "bStatus": 1
+    },
+    {
+      "iId": 9,
+      "sName": "Reports",
+      "iSortOrder": 9,
+      "bStatus": 1
+    },
+    {
+      "iId": 10,
+      "sName": "DashBoard",
+      "iSortOrder": 10,
+      "bStatus": 1
+    }
+  ]
+}

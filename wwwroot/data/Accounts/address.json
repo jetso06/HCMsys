@@ -1,0 +1,79 @@
+{
+    "id": "address",
+    "title": "Address",
+    "type": "form",
+    "fields": [
+        {
+            "id": "address1",
+            "label": "Address1",
+            "type": "text",
+            "maxlength": 200,
+            "possibleValues": "User Input",
+            "validation": "Optional",
+            "remarks": "Address Tab Applicable to Customer/Vendors"
+        },
+        {
+            "id": "address2",
+            "label": "Address2",
+            "type": "text",
+            "maxlength": 20,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "country",
+            "label": "Country",
+            "type": "master-selection",
+            "possibleValues": "Selection from Country Master",
+            "validation": "Optional"
+        },
+        {
+            "id": "telephoneNo",
+            "label": "Telephone No",
+            "type": "text",
+            "maxlength": 20,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "faxNo",
+            "label": "Fax No",
+            "type": "text",
+            "maxlength": 20,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "website",
+            "label": "Website",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "crNo",
+            "label": "CRNo",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "establishedOn",
+            "label": "EstablishedOn",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "sponsorName",
+            "label": "SponsorName",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        }
+    ]
+}

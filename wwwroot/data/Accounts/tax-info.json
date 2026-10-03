@@ -1,0 +1,22 @@
+{
+    "id": "tax-info",
+    "title": "Tax Info",
+    "type": "form",
+    "fields": [
+        {
+            "id": "vatNo",
+            "label": "Vat No",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "placeOfSupply",
+            "label": "Place of Supply",
+            "type": "master-selection",
+            "possibleValues": "Place of Supply",
+            "validation": "Optional"
+        }
+    ]
+}

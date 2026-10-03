@@ -1,0 +1,99 @@
+{
+  "HR": {
+    "modules": [
+      {
+        "name": "Employee Master",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      },
+      {
+        "name": "Candidate",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      }
+    ]
+  },
+
+  "Payroll": {
+    "modules": [
+      {
+        "name": "Leave Application",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      },
+      {
+        "name": "Retrun From Leave",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      },
+      {
+        "name": "Leave Settelment",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      },
+      {
+        "name": "Final Settelment",
+        "full": false,
+        "read": false,
+        "write": false,
+        "modify": false,
+        "delete": false,
+        "share": false,
+        "transfer": false,
+        "print": false,
+        "clone": false
+      }
+    ]
+  },
+
+  "Contract Management": {
+    "modules": []
+  },
+
+  "Finance": {
+    "modules": []
+  },
+
+  "Procurement & Order Management": {
+    "modules": []
+  },
+
+  "Sales & Order Management": {
+    "modules": []
+  }
+}

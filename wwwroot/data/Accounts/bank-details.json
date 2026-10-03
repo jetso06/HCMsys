@@ -1,0 +1,88 @@
+{
+    "id": "bank-details",
+    "title": "Bank Details",
+    "type": "form",
+    "fields": [
+        {
+            "id": "bankName",
+            "label": "Bank Name",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional",
+            "remarks": "Bank Details Tab Applicable to Vendors"
+        },
+        {
+            "id": "branchName",
+            "label": "Branch Name",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "bankAddress",
+            "label": "Bank Address",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "swiftSortCode",
+            "label": "Swift/Sort Code",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "beneficiaryName",
+            "label": "Beneficiary Name",
+            "type": "text",
+            "maxlength": 100,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "beneficiaryAccountNo",
+            "label": "Beneficiary A/c No",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "ibanNo",
+            "label": "IBAN NO",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "ifscCode",
+            "label": "IFSC Code",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "swiftCode",
+            "label": "Swift Code",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "sortCode",
+            "label": "Sort Code",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        }
+    ]
+}

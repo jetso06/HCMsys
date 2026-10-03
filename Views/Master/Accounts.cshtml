@@ -1,0 +1,1841 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .accounts-page {
+    width: 100%;
+    max-width: none;
+    padding: 18px 0 25px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.accounts-page > .card {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 40px !important;
+}
+
+.accounts-page > .card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.accounts-page * {
+    box-sizing: border-box;
+}
+
+    /* =========================
+       PAGE HEADER
+       ========================= */
+
+  /* =========================================================
+   PAGE HEADER
+   SAME AS ROLE MASTER
+   ========================================================= */
+
+.page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.page-title-text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #5a5c69;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-title-text i {
+    color: #4e73df;
+}
+
+.btn-group-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.btn-group-actions .btn {
+    font-size: .75rem;
+}
+
+
+/* =========================================================
+   ACCOUNTS MASTER TITLE CARD
+   SAME AS ROLE MASTER
+   ========================================================= */
+
+.accounts-page > .card:first-child {
+    width: 100%;
+    background: #ffffff !important;
+    border: 1px solid #e3e6f0 !important;
+    border-radius: 0.35rem;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+}
+
+.accounts-page > .card:first-child .card-header {
+    background: #eef0f3 !important;
+    border: none !important;
+    border-bottom: 1px solid #e3e6f0 !important;
+    padding: 14px 18px !important;
+}
+
+.accounts-page > .card:first-child .page-title-text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #5a5c69;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.accounts-page > .card:first-child .page-title-text i {
+    color: #4e73df;
+}
+
+    /* =========================
+       MAIN CARD
+       ========================= */
+
+    /* =========================================================
+   ACCOUNTS CONTENT CARD
+   ========================================================= */
+
+.accounts-page > .card:nth-child(2) {
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #e1e6ed;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+    overflow: hidden;
+}
+
+    /* =========================
+       TAB BAR + ARROWS
+       ========================= */
+
+    .accounts-tabs-wrapper {
+        display: flex;
+        align-items: stretch;
+        width: 100%;
+        overflow: hidden;
+        border-bottom: 1px solid #e1e4eb;
+        background: #f8f9fc;
+    }
+
+    .accounts-tab-arrow {
+        flex: 0 0 46px;
+        width: 46px;
+        min-width: 46px;
+        border: none;
+        background: #4e73df;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background .15s ease;
+        z-index: 2;
+    }
+
+    .accounts-tab-arrow:hover {
+        background: #224abe;
+    }
+
+    .accounts-tab-arrow:active {
+        background: #1a3a9a;
+    }
+
+    .accounts-tabs {
+        display: flex;
+        align-items: stretch;
+        flex: 1 1 auto;
+        width: 0;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+    }
+
+    .accounts-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .accounts-tab {
+        appearance: none;
+        border: none;
+        border-right: 1px solid #e1e4eb;
+        background: #eef3fb;
+        color: #5a6b85;
+        padding: 9px 18px;
+        min-height: 40px;
+        min-width: 140px;
+        flex: 1 0 auto;
+        font-size: .72rem;
+        font-weight: 700;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all .15s ease;
+    }
+
+    .accounts-tab:hover {
+        background: #dfe9f8;
+        color: #224abe;
+    }
+
+    .accounts-tab.active {
+        background: #4e73df;
+        color: #fff;
+        border-color: #4e73df;
+    }
+
+    /* =========================
+       CONTENT
+       ========================= */
+
+    .accounts-content {
+        padding: 16px;
+    }
+
+    .tab-heading {
+    margin: -16px -16px 16px -16px;
+    padding: 14px 18px;
+
+    background: #eef0f3;
+    border-bottom: 1px solid #e1e6ed;
+
+    font-size: .8rem;
+    font-weight: 800;
+    color: #4e73df;
+
+    text-transform: uppercase;
+    letter-spacing: .05em;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .tab-heading i {
+    color: #4e73df;
+}
+
+    /* =========================
+       FORM
+       ========================= */
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 16px;
+    }
+
+    .form-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-label {
+        display: block;
+        font-size: .75rem;
+        font-weight: 700;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        margin-bottom: 4px;
+    }
+
+    .form-label .mandatory {
+        color: #e74a3b;
+        margin-left: 3px;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        font-size: .82rem;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        padding: 7px 9px;
+        color: #6e707e;
+        background: #fff;
+        outline: none;
+    }
+
+    textarea.form-control {
+        min-height: 78px;
+        resize: vertical;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .2);
+    }
+
+    .form-control.is-invalid,
+    .form-select.is-invalid {
+        border-color: #e74a3b;
+    }
+
+    .field-info {
+        margin-top: 3px;
+        font-size: .68rem;
+        color: #858796;
+    }
+
+    /* =========================
+       GRID
+       ========================= */
+
+    .grid-toolbar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-bottom: 8px;
+    }
+
+    .grid-toolbar .btn {
+        font-size: .72rem;
+        font-weight: 700;
+    }
+
+    .accounts-grid-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+    }
+
+    .accounts-grid {
+        width: 100%;
+        min-width: 1100px;
+        border-collapse: collapse;
+    }
+
+    .accounts-grid th {
+        background: #4e73df;
+        color: #fff;
+        font-size: .70rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        padding: 8px;
+        border: 1px solid #3d5cbe;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .accounts-grid td {
+        padding: 6px;
+        border: 1px solid #e3e6f0;
+        vertical-align: middle;
+        background: #fff;
+    }
+
+    .accounts-grid tbody tr:hover td {
+        background: #f8f9fc;
+    }
+
+    .accounts-grid td .form-control,
+    .accounts-grid td .form-select {
+        min-width: 100px;
+        padding: 5px 7px;
+        font-size: .76rem;
+    }
+
+    .accounts-grid-empty {
+        text-align: center;
+        color: #858796;
+        font-size: .78rem;
+        padding: 20px !important;
+    }
+
+    .grid-row-delete {
+        border: none;
+        background: transparent;
+        color: #e74a3b;
+        cursor: pointer;
+        font-size: .8rem;
+    }
+
+    .grid-row-delete:hover {
+        color: #b02a37;
+    }
+
+    /* =========================
+       STATUS
+       ========================= */
+
+    .status-message {
+        display: none;
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: .35rem;
+        font-size: .75rem;
+    }
+
+    .status-message.show {
+        display: block;
+    }
+
+    .status-message.success {
+        background: #eaf7ee;
+        color: #1e7e34;
+    }
+
+    .status-message.error {
+        background: #fdeeee;
+        color: #b02a37;
+    }
+
+    /* =========================
+       RESPONSIVE
+       ========================= */
+
+    @@media (max-width: 768px) {
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-field.full-width {
+            grid-column: auto;
+        }
+
+        .accounts-content {
+            padding: 12px;
+        }
+
+        .accounts-tab-arrow {
+            flex: 0 0 40px;
+            width: 40px;
+            min-width: 40px;
+        }
+
+        .accounts-tab {
+            min-width: 125px;
+            padding-left: 13px;
+            padding-right: 13px;
+        }
+    }
+</style>
+
+
+<div class="accounts-page">
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+
+    <!-- =========================
+     HEADER
+     ========================= -->
+
+<div class="card shadow mb-3">
+
+    <div class="card-header py-3">
+
+        <div class="page-title-bar">
+
+            <div class="page-title-text">
+                <i class="fas fa-university fa-sm"></i>
+                Accounts Master
+            </div>
+
+            <div class="btn-group-actions">
+
+                <button type="button"
+                        class="btn btn-primary btn-sm shadow-sm"
+                        id="btnHome">
+                    <i class="fas fa-home fa-sm text-white-50 mr-1"></i>
+                    Home
+                </button>
+
+                <button type="button"
+                        class="btn btn-success btn-sm shadow-sm"
+                        id="btnNew">
+                    <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+                    New
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary btn-sm shadow-sm"
+                        id="btnSave">
+                    <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-info btn-sm shadow-sm"
+                        id="btnClone">
+                    <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+                    Clone
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger btn-sm shadow-sm"
+                        id="btnDelete">
+                    <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+                    Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!-- =========================
+         ACCOUNTS CARD
+         ========================= -->
+
+    <div class="card accounts-content-card shadow">
+
+        <!-- TAB BAR -->
+
+        <div class="accounts-tabs-wrapper">
+
+            <button type="button"
+                    class="accounts-tab-arrow"
+                    id="accountsTabPrev"
+                    title="Scroll left">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="accounts-tabs"
+                 id="accountsTabs">
+            </div>
+
+            <button type="button"
+                    class="accounts-tab-arrow"
+                    id="accountsTabNext"
+                    title="Scroll right">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+        </div>
+
+
+        <!-- TAB CONTENT -->
+
+        <div class="accounts-content"
+             id="accountsContent">
+
+            <div class="text-center text-muted py-4">
+                Loading...
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div id="statusMessage"
+         class="status-message">
+    </div>
+
+</div>
+
+
+<script>
+
+    (function () {
+
+        /*
+         * Only these 8 JSON files are used.
+         * No master-tabs.json.
+         * No separate country/currency/etc. JSON files.
+         */
+
+        const accountsBasePath = '/data/accounts/';
+
+        const accountsTabs = [
+            {
+                id: 'general',
+                title: 'General',
+                file: 'general.json',
+                type: 'form'
+            },
+            {
+                id: 'settings',
+                title: 'Settings',
+                file: 'settings.json',
+                type: 'form'
+            },
+            {
+                id: 'master-links',
+                title: 'Master Links',
+                file: 'master-links.json',
+                type: 'form'
+            },
+            {
+                id: 'address',
+                title: 'Address',
+                file: 'address.json',
+                type: 'form'
+            },
+            {
+                id: 'contact',
+                title: 'Contact',
+                file: 'contact.json',
+                type: 'grid'
+            },
+            {
+                id: 'tax-info',
+                title: 'Tax Info',
+                file: 'tax-info.json',
+                type: 'form'
+            },
+            {
+                id: 'bank-details',
+                title: 'Bank Details',
+                file: 'bank-details.json',
+                type: 'form'
+            },
+            {
+                id: 'attachments',
+                title: 'Attachments',
+                file: 'attachments.json',
+                type: 'grid'
+            }
+        ];
+
+        let activeTabId = null;
+
+        const tabDataCache = {};
+
+        let formState = {};
+
+        let gridState = {};
+
+
+        /* =========================
+           INITIALIZATION
+           ========================= */
+
+        $(document).ready(function () {
+
+            renderTabs();
+
+            /*
+             * First tab opens automatically.
+             */
+            selectTab('general');
+
+
+            /* =========================
+               HEADER BUTTONS
+               ========================= */
+
+            $('#btnHome').on('click', function () {
+
+                window.location.href =
+                    '@Url.Action("ProjectIndex", "Master")';
+
+            });
+
+
+            $('#btnNew').on('click', function () {
+
+                resetAccount();
+
+                showStatus(
+                    'New account form is ready.',
+                    'success'
+                );
+
+            });
+
+
+            $('#btnSave').on('click', function () {
+
+                collectCurrentTabData();
+
+                if (validateCurrentTab()) {
+
+                    console.log(
+                        'Accounts Data:',
+                        {
+                            forms: formState,
+                            grids: gridState
+                        }
+                    );
+
+                    showStatus(
+                        'Validation completed. Data is ready to be saved.',
+                        'success'
+                    );
+
+                }
+
+            });
+
+
+            $('#btnClone').on('click', function () {
+
+                collectCurrentTabData();
+
+                showStatus(
+                    'Current account data has been prepared for cloning.',
+                    'success'
+                );
+
+            });
+
+
+            $('#btnDelete').on('click', function () {
+
+                if (
+                    confirm(
+                        'Are you sure you want to delete this account?'
+                    )
+                ) {
+
+                    resetAccount();
+
+                    showStatus(
+                        'Account form cleared.',
+                        'success'
+                    );
+
+                }
+
+            });
+
+
+            /* =========================
+               TAB BAR ARROWS
+
+               IMPORTANT:
+               These ONLY scroll the
+               horizontal tab bar.
+
+               They DO NOT change tabs.
+               ========================= */
+
+            $('#accountsTabPrev').on('click', function () {
+
+                document
+                    .getElementById('accountsTabs')
+                    .scrollBy({
+                        left: -300,
+                        behavior: 'smooth'
+                    });
+
+            });
+
+
+            $('#accountsTabNext').on('click', function () {
+
+                document
+                    .getElementById('accountsTabs')
+                    .scrollBy({
+                        left: 300,
+                        behavior: 'smooth'
+                    });
+
+            });
+
+        });
+
+
+        /* =========================
+           RENDER TABS
+           ========================= */
+
+        function renderTabs() {
+
+            const container = $('#accountsTabs');
+
+            container.empty();
+
+            accountsTabs.forEach(function (tab) {
+
+                const button = $('<button>', {
+                    type: 'button',
+                    class: 'accounts-tab',
+                    text: tab.title
+                });
+
+                button.attr(
+                    'data-tab-id',
+                    tab.id
+                );
+
+                button.on('click', function () {
+
+                    selectTab(tab.id);
+
+                });
+
+                container.append(button);
+
+            });
+
+        }
+
+
+        /* =========================
+           SELECT TAB
+           ========================= */
+
+        async function selectTab(tabId) {
+
+            const tab = accountsTabs.find(function (item) {
+
+                return item.id === tabId;
+
+            });
+
+            if (!tab) {
+                return;
+            }
+
+
+            /*
+             * Save current visible fields
+             * before changing tab.
+             */
+
+            collectCurrentTabData();
+
+
+            activeTabId = tabId;
+
+            setActiveTab();
+
+
+            try {
+
+                let data =
+                    tabDataCache[tab.file];
+
+
+                if (!data) {
+
+                    const response =
+                        await fetch(
+                            accountsBasePath + tab.file,
+                            {
+                                cache: 'no-store'
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Unable to load ' + tab.file
+                        );
+
+                    }
+
+
+                    data =
+                        await response.json();
+
+
+                    tabDataCache[tab.file] =
+                        data;
+
+                }
+
+
+                if (
+                    String(data.type || tab.type)
+                        .toLowerCase() === 'grid'
+                ) {
+
+                    renderGrid(data);
+
+                }
+                else {
+
+                    renderForm(data);
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                $('#accountsContent').html(
+                    '<div class="alert alert-danger mb-0">' +
+                    'Unable to load ' +
+                    escapeHtml(tab.title) +
+                    '.' +
+                    '</div>'
+                );
+
+            }
+
+        }
+
+
+        /* =========================
+           ACTIVE TAB
+           ========================= */
+
+        function setActiveTab() {
+
+            $('#accountsTabs .accounts-tab')
+                .each(function () {
+
+                    $(this).toggleClass(
+                        'active',
+                        $(this).attr('data-tab-id') ===
+                        activeTabId
+                    );
+
+                });
+
+        }
+
+
+        /* =========================
+           FORM RENDERING
+           ========================= */
+
+        function renderForm(data) {
+
+            const fields =
+                Array.isArray(data.fields)
+                    ? data.fields
+                    : [];
+
+
+            let html =
+    '<div class="tab-heading">' +
+    '<i class="fas fa-university"></i>' +
+    escapeHtml(data.title || '') +
+    '</div>';
+
+
+            html +=
+                '<div class="form-grid">';
+
+
+            fields.forEach(function (field) {
+
+                const fullWidth =
+                    String(field.type).toLowerCase() ===
+                    'textarea'
+                        ? ' full-width'
+                        : '';
+
+
+                html +=
+                    '<div class="form-field' +
+                    fullWidth +
+                    '">';
+
+
+                html +=
+                    '<label class="form-label" for="' +
+                    escapeAttr(field.id) +
+                    '">';
+
+
+                html +=
+                    escapeHtml(
+                        field.label || field.id
+                    );
+
+
+                if (
+                    String(field.validation || '')
+                        .toLowerCase() ===
+                    'mandatory'
+                ) {
+
+                    html +=
+                        '<span class="mandatory">*</span>';
+
+                }
+
+
+                html += '</label>';
+
+
+                html +=
+                    buildFormField(field);
+
+
+                
+
+
+                html += '</div>';
+
+            });
+
+
+            html += '</div>';
+
+
+            $('#accountsContent')
+                .html(html);
+
+        }
+
+
+        /* =========================
+           BUILD FORM FIELD
+           ========================= */
+
+        function buildFormField(field) {
+
+            const id =
+                escapeAttr(field.id);
+
+
+            const value =
+                formState[field.id] || '';
+
+
+            const type =
+                String(field.type || 'text')
+                    .toLowerCase();
+
+
+            /* TEXTAREA */
+
+            if (type === 'textarea') {
+
+                return `
+                    <textarea
+                        class="form-control account-field"
+                        id="${id}"
+                        data-field-id="${id}"
+                        maxlength="${field.maxlength || ''}"
+                    >${escapeHtml(value)}</textarea>
+                `;
+
+            }
+
+
+            /* NUMBER */
+
+            if (type === 'number') {
+
+                return `
+                    <input
+                        type="number"
+                        class="form-control account-field"
+                        id="${id}"
+                        data-field-id="${id}"
+                        value="${escapeAttr(value)}"
+                    >
+                `;
+
+            }
+
+
+            /* MASTER SELECTION */
+
+            if (
+                type === 'master-selection' ||
+                type === 'dropdown' ||
+                type === 'select'
+            ) {
+
+                return `
+                    <select
+                        class="form-select account-field"
+                        id="${id}"
+                        data-field-id="${id}"
+                    >
+                        <option value="">
+                            Select...
+                        </option>
+                    </select>
+                `;
+
+            }
+
+
+            /* DEFAULT TEXT */
+
+            return `
+                <input
+                    type="text"
+                    class="form-control account-field"
+                    id="${id}"
+                    data-field-id="${id}"
+                    maxlength="${field.maxlength || ''}"
+                    value="${escapeAttr(value)}"
+                >
+            `;
+
+        }
+
+
+        /* =========================
+           GRID RENDERING
+           ========================= */
+
+        function renderGrid(data) {
+
+            const columns =
+                Array.isArray(data.columns)
+                    ? data.columns
+                    : [];
+
+
+            const savedRows =
+                Array.isArray(gridState[data.id])
+                    ? gridState[data.id]
+                    : [];
+
+
+            let html =
+                '<div class="tab-heading">' +
+                escapeHtml(data.title || '') +
+                '</div>';
+
+
+            html +=
+                '<div class="grid-toolbar">';
+
+
+            html +=
+                '<button type="button" ' +
+                'class="btn btn-sm btn-primary" ' +
+                'id="btnAddGridRow">';
+
+
+            html +=
+                '<i class="fas fa-plus mr-1"></i>' +
+                'Add Row';
+
+
+            html +=
+                '</button>';
+
+
+            html +=
+                '</div>';
+
+
+            html +=
+                '<div class="accounts-grid-wrapper">';
+
+
+            html +=
+                '<table class="accounts-grid">';
+
+
+            html +=
+                '<thead><tr>';
+
+
+            columns.forEach(function (column) {
+
+                html +=
+                    '<th>' +
+                    escapeHtml(
+                        column.label || column.id
+                    ) +
+                    '</th>';
+
+            });
+
+
+            html +=
+                '<th style="width:55px;">Action</th>';
+
+
+            html +=
+                '</tr></thead>';
+
+
+            html +=
+                '<tbody id="accountsGridBody">';
+
+
+            if (savedRows.length === 0) {
+
+                html +=
+                    '<tr class="grid-empty-row">' +
+                    '<td class="accounts-grid-empty" colspan="' +
+                    (columns.length + 1) +
+                    '">' +
+                    'No records. Click Add Row to enter data.' +
+                    '</td>' +
+                    '</tr>';
+
+            }
+            else {
+
+                savedRows.forEach(function (row, index) {
+
+                    html +=
+                        buildGridRow(
+                            columns,
+                            row,
+                            index
+                        );
+
+                });
+
+            }
+
+
+            html +=
+                '</tbody></table></div>';
+
+
+            $('#accountsContent')
+                .html(html);
+
+
+            $('#btnAddGridRow').on(
+                'click',
+                function () {
+
+                    $('.grid-empty-row')
+                        .remove();
+
+
+                    const currentRows =
+                        collectGridRows();
+
+
+                    currentRows.push({});
+
+
+                    gridState[data.id] =
+                        currentRows;
+
+
+                    $('#accountsGridBody')
+                        .append(
+                            buildGridRow(
+                                columns,
+                                {},
+                                currentRows.length - 1
+                            )
+                        );
+
+
+                    bindGridEvents();
+
+                }
+            );
+
+
+            bindGridEvents();
+
+        }
+
+
+        /* =========================
+           BUILD GRID ROW
+           ========================= */
+
+        function buildGridRow(
+            columns,
+            row,
+            rowIndex
+        ) {
+
+            let html =
+                '<tr data-row-index="' +
+                rowIndex +
+                '">';
+
+
+            columns.forEach(function (column) {
+
+                const value =
+                    row[column.id] ?? '';
+
+
+                const type =
+                    String(column.type || 'text')
+                        .toLowerCase();
+
+
+                /* CHECKBOX */
+
+                if (type === 'checkbox') {
+
+                    html +=
+                        '<td class="text-center">' +
+                        '<input type="checkbox" ' +
+                        'class="grid-field" ' +
+                        'data-field-id="' +
+                        escapeAttr(column.id) +
+                        '"' +
+                        (value ? ' checked' : '') +
+                        '>' +
+                        '</td>';
+
+                    return;
+
+                }
+
+
+                /* FILE */
+
+                if (type === 'file') {
+
+                    html +=
+                        '<td>' +
+                        '<input type="file" ' +
+                        'class="form-control grid-field" ' +
+                        'data-field-id="' +
+                        escapeAttr(column.id) +
+                        '">' +
+                        '</td>';
+
+                    return;
+
+                }
+
+
+                /* DATE */
+
+                if (
+                    type === 'date' ||
+                    type === 'date-with-checkbox'
+                ) {
+
+                    html +=
+                        '<td>' +
+                        '<input type="date" ' +
+                        'class="form-control grid-field" ' +
+                        'data-field-id="' +
+                        escapeAttr(column.id) +
+                        '" ' +
+                        'value="' +
+                        escapeAttr(value) +
+                        '">' +
+                        '</td>';
+
+                    return;
+
+                }
+
+
+                /* DROPDOWN / MASTER SELECTION */
+
+                if (
+                    type === 'dropdown' ||
+                    type === 'master-selection' ||
+                    type === 'select'
+                ) {
+
+                    html +=
+                        '<td>' +
+                        '<select ' +
+                        'class="form-select grid-field" ' +
+                        'data-field-id="' +
+                        escapeAttr(column.id) +
+                        '">' +
+                        '<option value="">Select...</option>' +
+                        '</select>' +
+                        '</td>';
+
+                    return;
+
+                }
+
+
+                /* DEFAULT TEXT */
+
+                html +=
+                    '<td>' +
+                    '<input type="text" ' +
+                    'class="form-control grid-field" ' +
+                    'data-field-id="' +
+                    escapeAttr(column.id) +
+                    '" ' +
+                    'maxlength="' +
+                    (column.maxlength || '') +
+                    '" ' +
+                    'value="' +
+                    escapeAttr(value) +
+                    '">' +
+                    '</td>';
+
+            });
+
+
+            html +=
+                '<td class="text-center">' +
+                '<button type="button" ' +
+                'class="grid-row-delete" ' +
+                'title="Delete row">' +
+                '<i class="fas fa-trash"></i>' +
+                '</button>' +
+                '</td>';
+
+
+            html += '</tr>';
+
+
+            return html;
+
+        }
+
+
+        /* =========================
+           GRID EVENTS
+           ========================= */
+
+        function bindGridEvents() {
+
+            $('.grid-row-delete')
+                .off('click')
+                .on('click', function () {
+
+                    const row =
+                        $(this).closest('tr');
+
+
+                    row.remove();
+
+
+                    if (
+                        $('#accountsGridBody tr')
+                            .length === 0
+                    ) {
+
+                        const columnCount =
+                            $('#accountsGridBody')
+                                .closest('table')
+                                .find('thead th')
+                                .length;
+
+
+                        $('#accountsGridBody')
+                            .html(
+                                '<tr class="grid-empty-row">' +
+                                '<td class="accounts-grid-empty" colspan="' +
+                                columnCount +
+                                '">' +
+                                'No records. Click Add Row to enter data.' +
+                                '</td>' +
+                                '</tr>'
+                            );
+
+                    }
+
+                });
+
+
+            /*
+             * For Master Selection /
+             * Dropdown fields we only show
+             * "Select..." because the JSON
+             * does not contain a separate
+             * master-data source.
+             */
+
+            $('.grid-field').each(function () {
+
+                const type =
+                    $(this).prop('tagName')
+                        .toLowerCase();
+
+
+                if (type !== 'select') {
+                    return;
+                }
+
+
+                if ($(this).children().length === 1) {
+
+                    $(this).append(
+                        '<option value="system-default">' +
+                        'System Default' +
+                        '</option>'
+                    );
+
+                }
+
+            });
+
+        }
+
+
+        /* =========================
+           COLLECT GRID DATA
+           ========================= */
+
+        function collectGridRows() {
+
+            const rows = [];
+
+
+            $('#accountsGridBody tr')
+                .not('.grid-empty-row')
+                .each(function () {
+
+                    const row = {};
+
+
+                    $(this)
+                        .find('.grid-field')
+                        .each(function () {
+
+                            const fieldId =
+                                $(this)
+                                    .attr('data-field-id');
+
+
+                            if ($(this).is(':checkbox')) {
+
+                                row[fieldId] =
+                                    $(this).is(':checked');
+
+                            }
+                            else if (
+                                $(this).attr('type') ===
+                                'file'
+                            ) {
+
+                                row[fieldId] =
+                                    $(this).val();
+
+                            }
+                            else {
+
+                                row[fieldId] =
+                                    $(this).val();
+
+                            }
+
+                        });
+
+
+                    rows.push(row);
+
+                });
+
+
+            return rows;
+
+        }
+
+
+        /* =========================
+           COLLECT CURRENT TAB DATA
+           ========================= */
+
+        function collectCurrentTabData() {
+
+            if (!activeTabId) {
+                return;
+            }
+
+
+            $('.account-field').each(
+                function () {
+
+                    const fieldId =
+                        $(this)
+                            .attr('data-field-id');
+
+
+                    formState[fieldId] =
+                        $(this).val();
+
+                }
+            );
+
+
+            const tab =
+                accountsTabs.find(
+                    function (item) {
+
+                        return item.id ===
+                            activeTabId;
+
+                    }
+                );
+
+
+            if (
+                tab &&
+                tab.type === 'grid'
+            ) {
+
+                gridState[activeTabId] =
+                    collectGridRows();
+
+            }
+
+        }
+
+
+        /* =========================
+           VALIDATION
+           ========================= */
+
+        function validateCurrentTab() {
+
+            let valid = true;
+
+            let firstInvalid = null;
+
+
+            $('.account-field')
+                .removeClass('is-invalid');
+
+
+            $('.account-field')
+                .each(function () {
+
+                    const fieldId =
+                        $(this)
+                            .attr('data-field-id');
+
+
+                    const field =
+                        findCurrentField(fieldId);
+
+
+                    if (
+                        field &&
+                        String(
+                            field.validation || ''
+                        ).toLowerCase() ===
+                        'mandatory' &&
+                        !String(
+                            $(this).val() || ''
+                        ).trim()
+                    ) {
+
+                        $(this)
+                            .addClass('is-invalid');
+
+
+                        valid = false;
+
+
+                        if (!firstInvalid) {
+
+                            firstInvalid =
+                                this;
+
+                        }
+
+                    }
+
+                });
+
+
+            if (!valid) {
+
+                showStatus(
+                    'Please fill all mandatory fields.',
+                    'error'
+                );
+
+
+                if (firstInvalid) {
+
+                    firstInvalid.focus();
+
+                }
+
+            }
+
+
+            return valid;
+
+        }
+
+
+        /* =========================
+           FIND CURRENT FIELD
+           ========================= */
+
+        function findCurrentField(fieldId) {
+
+            const tab =
+                accountsTabs.find(
+                    function (item) {
+
+                        return item.id ===
+                            activeTabId;
+
+                    }
+                );
+
+
+            if (!tab) {
+                return null;
+            }
+
+
+            const data =
+                tabDataCache[tab.file];
+
+
+            if (
+                !data ||
+                !Array.isArray(data.fields)
+            ) {
+
+                return null;
+
+            }
+
+
+            return data.fields.find(
+                function (field) {
+
+                    return field.id ===
+                        fieldId;
+
+                }
+            ) || null;
+
+        }
+
+
+        /* =========================
+           RESET
+           ========================= */
+
+        function resetAccount() {
+
+            formState = {};
+
+            gridState = {};
+
+
+            $('.account-field')
+                .val('')
+                .removeClass('is-invalid');
+
+
+            $('.grid-field')
+                .each(function () {
+
+                    if (
+                        $(this).is(':checkbox')
+                    ) {
+
+                        $(this)
+                            .prop(
+                                'checked',
+                                false
+                            );
+
+                    }
+                    else {
+
+                        $(this).val('');
+
+                    }
+
+                });
+
+        }
+
+
+        /* =========================
+           STATUS
+           ========================= */
+
+        function showStatus(
+            message,
+            type
+        ) {
+
+            const box =
+                $('#statusMessage');
+
+
+            box
+                .removeClass(
+                    'success error show'
+                );
+
+
+            box
+                .addClass(
+                    type + ' show'
+                )
+                .text(message);
+
+
+            setTimeout(
+                function () {
+
+                    box.removeClass('show');
+
+                },
+                3000
+            );
+
+        }
+
+
+        /* =========================
+           HTML ESCAPING
+           ========================= */
+
+        function escapeHtml(value) {
+
+            return String(value ?? '')
+                .replace(
+                    /&/g,
+                    '&amp;'
+                )
+                .replace(
+                    /</g,
+                    '&lt;'
+                )
+                .replace(
+                    />/g,
+                    '&gt;'
+                )
+                .replace(
+                    /"/g,
+                    '&quot;'
+                )
+                .replace(
+                    /'/g,
+                    '&#039;'
+                );
+
+        }
+
+
+        function escapeAttr(value) {
+
+            return escapeHtml(value);
+
+        }
+
+    })();
+
+</script>

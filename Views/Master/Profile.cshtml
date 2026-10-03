@@ -1,0 +1,2495 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+    /* =========================================================
+           PROFILE PAGE
+           ========================================================= */
+
+    html {
+        font-size: 14px;
+    }
+
+    .profile-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+        .profile-page > .card {
+            width: 100%;
+            max-width: none;
+            margin-bottom: 40px !important;
+        }
+
+            .profile-page > .card:last-child {
+                margin-bottom: 0 !important;
+            }
+
+
+    /* =========================================================
+       PAGE HEADER
+       ========================================================= */
+
+    .page-title-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+        .page-title-bar .page-title-text {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #5a5c69;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title-bar .btn-group-actions,
+.page-title-bar .btn-group-actions .btn {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+}
+
+            .page-title-bar .page-title-text i {
+                color: #4e73df;
+            }
+
+        .page-title-bar .btn-group-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+
+    
+
+    /* =========================================================
+           COMMON CARD
+           ========================================================= */
+
+    .profile-page .card {
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    /* =========================================================
+       PROFILE MASTER TITLE BAR
+       ========================================================= */
+
+    .profile-page > .card:first-child {
+        width: 100%;
+        background: #ffffff !important;
+        border: 1px solid #e3e6f0 !important;
+        border-radius: 0.35rem;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+    }
+
+        .profile-page > .card:first-child .card-header {
+            background: #eef0f3 !important;
+            border: none !important;
+            border-bottom: 1px solid #e3e6f0 !important;
+            padding: 14px 18px !important;
+        }
+
+
+    /* =========================================================
+       PROFILE DETAILS
+       ========================================================= */
+
+    .profile-page > .card:nth-child(2) {
+        border: 1px solid #e1e6ed;
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+        overflow: hidden;
+    }
+
+        .profile-page > .card:nth-child(2) .card-header {
+            background: #eef0f3;
+            border-bottom: 1px solid #e1e6ed;
+        }
+
+
+    /* =========================================================
+       ACCESS CONFIGURATION
+       ========================================================= */
+
+    .profile-page > .card:nth-child(3) {
+        border: 1px solid #e1e6ed;
+        background: #ffffff;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+    }
+
+        .profile-page > .card:nth-child(3) .card-header {
+            background: #eef0f3;
+            border-bottom: 1px solid #e1e6ed;
+        }
+
+            .profile-page > .card:nth-child(3) .card-header h6 {
+                color: #4e73df !important;
+            }
+
+                .profile-page > .card:nth-child(3) .card-header h6 i {
+                    color: #4e73df;
+                }
+
+        .profile-page > .card:nth-child(3) .card-body {
+            background: #ffffff;
+        }
+
+
+    /* =========================================================
+           FORM
+           ========================================================= */
+
+    .form-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        color: #596579;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        height: 36px;
+        width: 100%;
+        font-size: 0.83rem;
+        color: #4d596b;
+        background: #ffffff;
+        border: 1px solid #cdd7e5;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+        .form-control:focus {
+            border-color: #7fa2e8;
+            box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+        }
+
+
+    /* Profile Details form */
+
+    .profile-page > .card:nth-child(2) .form-label {
+        color: #4b5563;
+    }
+
+    .profile-page > .card:nth-child(2) .form-control {
+        background: #ffffff;
+        border-color: #d2d0cb;
+    }
+
+        .profile-page > .card:nth-child(2) .form-control:focus {
+            border-color: #7d9fe5;
+            box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+        }
+
+
+    /* =========================================================
+           MODULE ACCESS TITLE
+           ========================================================= */
+
+    .module-access-wrapper {
+        width: 100%;
+    }
+
+    .module-access-title {
+        display: flex;
+        align-items: center;
+        padding: 2px 0 10px;
+        color: #344054;
+        font-size: 0.84rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+    }
+
+        .module-access-title i {
+            color: #4e73df;
+        }
+
+
+    /* =========================================================
+       MODULE NAVIGATION
+       ========================================================= */
+
+    .module-access-tabs {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 6px;
+        background: #dbeafe;
+        border: 1px solid #b8cef0;
+        border-radius: 7px 7px 0 0;
+        box-sizing: border-box;
+    }
+
+
+    /* =========================================================
+       LEFT / RIGHT ARROWS
+       ========================================================= */
+
+    .module-tab-arrow {
+        flex: 0 0 38px;
+        width: 38px;
+        height: 40px;
+        border: 1px solid #a9c2e8;
+        border-radius: 6px;
+        background: #c5daf7;
+        color: #315fbd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+        .module-tab-arrow:hover {
+            background: #a9c8f0;
+            border-color: #7fa8df;
+            color: #224abe;
+        }
+
+
+    /* =========================================================
+       MODULE TAB CONTAINER
+       ========================================================= */
+
+    .module-tabs-container {
+        display: flex;
+        align-items: stretch;
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+        gap: 6px;
+        padding: 0 8px;
+    }
+
+        .module-tabs-container::-webkit-scrollbar {
+            display: none;
+        }
+
+
+    /* =========================================================
+       MODULE TABS
+       ========================================================= */
+
+    .module-tab {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        min-width: 175px;
+        padding: 8px 22px;
+        border-radius: 5px;
+        background: #cfe2fb;
+        color: #31527f;
+        font-size: 0.77rem;
+        font-weight: 700;
+        white-space: nowrap;
+        border: 1px solid #bfd4ee;
+        transition: all 0.15s ease;
+    }
+
+        .module-tab:nth-child(3) {
+            min-width: 205px;
+        }
+
+        .module-tab:nth-child(5) {
+            min-width: 245px;
+        }
+
+        .module-tab:nth-child(6) {
+            min-width: 205px;
+        }
+
+
+        /* Hover */
+        .module-tab:hover {
+            background: #bcd5f5;
+            color: #224abe;
+            border-color: #a8c5e8;
+        }
+
+
+        /* Active */
+        .module-tab.active {
+            background: #4e73df;
+            color: #ffffff;
+            border-color: #4e73df;
+            box-shadow: 0 2px 6px rgba(78, 115, 223, 0.25);
+        }
+
+
+        /* Disabled */
+        .module-tab.module-disabled {
+            background: #e4edf9;
+            color: #9aaec8;
+            border-color: #d5e1f0;
+        }
+
+            .module-tab.module-disabled:hover {
+                background: #e4edf9;
+                color: #9aaec8;
+                border-color: #d5e1f0;
+            }
+
+
+    /* =========================================================
+           MENU + ACCESS AREA
+           ========================================================= */
+
+    .access-selection-area {
+        display: grid;
+        grid-template-columns: minmax(260px, 30%) minmax(0, 70%);
+        gap: 10px;
+        width: 100%;
+        max-width: none;
+        min-height: 330px;
+        border: none;
+        background: #e8f1ff;
+        box-sizing: border-box;
+    }
+
+
+    /* =========================================================
+           LEFT MENU
+           ========================================================= */
+
+    .menu-grid {
+        min-width: 0;
+        background: #dfeeff;
+        border-right: 1px solid #d5dce5;
+    }
+
+
+/* ---------------------------------------------------------
+   MENU HEADER
+   --------------------------------------------------------- */
+
+    .menu-grid-header {
+        height: 47px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        background: #e8f1ff;
+        color: #17345f;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.075em;
+        border-bottom: 1px solid #d5dce5;
+    }
+
+        .menu-grid-header i {
+            color: #4e73df;
+        }
+
+
+/* =========================================================
+   MENU ROWS
+   ========================================================= */
+
+    .menu-grid-row {
+        min-height: 49px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 15px;
+        background: #dfeeff;
+        color: #4b5563;
+        font-size: 0.80rem;
+        font-weight: 600;
+        border-bottom: 1px solid #e2e6eb;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease, padding-left 0.15s ease;
+        box-sizing: border-box;
+    }
+
+.menu-grid-row > i {
+    width: 15px;
+    color: #7b8797;
+    font-size: 0.62rem;
+    transition:
+        color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+/* ---------------------------------------------------------
+   HOVER
+   --------------------------------------------------------- */
+
+.menu-grid-row:hover {
+    padding-left: 19px;
+    background: #edf3ff;
+    color: #315fbd;
+}
+
+.menu-grid-row:hover > i {
+    color: #4e73df;
+    transform: translateX(2px);
+}
+
+
+/* ---------------------------------------------------------
+   SELECTED MENU
+   --------------------------------------------------------- */
+
+        .menu-grid-row.active {
+            padding-left: 15px;
+            background: #0a2550;
+            color: #ffffff;
+            font-weight: 800;
+            box-shadow: inset 4px 0 0 #4e73df, 0 2px 6px rgba(0, 0, 0, 0.10);
+        }
+
+.menu-grid-row.active {
+    padding-left: 15px;
+    background: #0a2550;
+    color: #ffffff;
+    font-weight: 800;
+    box-shadow: inset 4px 0 0 #4e73df, 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+
+
+    /* =========================================================
+       RIGHT ACCESS PANEL
+       ========================================================= */
+
+    .access-grid {
+        min-width: 0;
+        background: #f8fafc;
+        border: 1px solid #dbe3ec;
+        border-radius: 6px;
+        overflow: hidden;
+        display: none;
+    }
+
+        .access-grid.visible {
+            display: block;
+        }
+
+
+    /* =========================================================
+       SELECTED MENU HEADER
+       ========================================================= */
+
+    .access-context {
+        height: 47px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 5px 15px;
+        background: #eef3f9;
+        border-bottom: 1px solid #dbe3ec;
+        box-sizing: border-box;
+    }
+
+    .access-context-title {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .access-context-main {
+        color: #344054;
+        font-size: 0.82rem;
+        font-weight: 800;
+    }
+
+    .access-context-type {
+        color: #7b8798;
+        font-size: 0.66rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+    .access-context-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        background: #dfe9fb;
+        color: #4e73df;
+        font-size: 0.82rem;
+    }
+
+
+    /* =========================================================
+       ACCESS HEADER
+       ========================================================= */
+
+    .access-grid-header {
+        height: 42px;
+        display: grid;
+        grid-template-columns: 1fr 125px;
+        align-items: center;
+        background: #0a2550;
+        color: #ffffff;
+        font-size: 0.71rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+    }
+
+        .access-grid-header > div {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+        }
+
+            .access-grid-header > div:last-child {
+                justify-content: center;
+                border-left: 1px solid rgba(255, 255, 255, 0.18);
+            }
+
+
+    /* =========================================================
+       ACCESS ROWS
+       ========================================================= */
+
+    .access-grid-row {
+        min-height: 49px;
+        display: grid;
+        grid-template-columns: 1fr 125px;
+        align-items: center;
+        background: #ffffff;
+        color: #4b5563;
+        border-bottom: 1px solid #e3e8ef;
+        transition: background 0.15s ease;
+    }
+
+    .access-grid-row {
+        min-height: 49px;
+        display: grid;
+        grid-template-columns: 1fr 125px;
+        align-items: center;
+        background: #ffffff;
+        color: #4b5563;
+        border-bottom: 1px solid #e3e8ef;
+        transition: background 0.15s ease;
+    }
+
+        .access-grid-row:hover {
+            background: #edf3ff;
+        }
+
+        .access-grid-row:hover {
+            background: #edf3ff;
+        }
+
+        .access-grid-row > div {
+            padding: 8px 15px;
+        }
+
+            .access-grid-row > div:last-child {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-left: 1px solid #e3e8ef;
+            }
+
+
+    /* =========================================================
+       ACCESS ACTION
+       ========================================================= */
+
+    .access-name {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        color: #4b5563;
+        font-size: 0.80rem;
+        font-weight: 600;
+    }
+
+        .access-name i {
+            width: 18px;
+            color: #4e73df;
+            text-align: center;
+            font-size: 0.74rem;
+        }
+
+    .access-grid-row:hover .access-name {
+        color: #315fbd;
+    }
+
+        .access-grid-row:hover .access-name i {
+            color: #315fbd;
+        }
+
+
+    /* =========================================================
+           ACCESS DROPDOWN
+           ========================================================= */
+
+    .access-dropdown {
+        width: 102px;
+        height: 30px;
+        padding: 2px 8px;
+        border-radius: 5px;
+        font-size: 0.73rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+
+        /* YES */
+
+        .access-dropdown.status-yes {
+            color: #087f5b;
+            background: #e0f7ed;
+            border: 1px solid #91d5ba;
+        }
+
+
+        /* NO */
+
+        .access-dropdown.status-no {
+            color: #b63830;
+            background: #fff0ee;
+            border: 1px solid #e5b1ac;
+        }
+
+
+        /* NA */
+
+        .access-dropdown.status-na {
+            color: #687386;
+            background: #edf0f4;
+            border: 1px solid #cbd2dc;
+        }
+
+        .access-dropdown:hover {
+            border-color: #8199c4;
+        }
+
+        .access-dropdown:focus {
+            outline: none;
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.16rem rgba(78, 115, 223, 0.16);
+        }
+
+
+    /* =========================================================
+           EMPTY STATES
+           ========================================================= */
+
+    .no-menu-message {
+        padding: 45px 15px;
+        text-align: center;
+        color: #94a0b2;
+        font-size: 0.78rem;
+    }
+
+    .access-empty-state {
+        min-height: 280px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        background: #f7faff;
+    }
+
+    .access-empty-icon {
+        width: 54px;
+        height: 54px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        border-radius: 50%;
+        background: #e1ebff;
+        color: #4e73df;
+        font-size: 1rem;
+    }
+
+    .access-empty-title {
+        color: #4b586b;
+        font-size: 0.84rem;
+        font-weight: 700;
+    }
+
+    .access-empty-text {
+        margin-top: 4px;
+        color: #929daf;
+        font-size: 0.73rem;
+    }
+
+    .no-access-message {
+        padding: 40px 15px;
+        text-align: center;
+        color: #929daf;
+        font-size: 0.78rem;
+    }
+
+
+    /* =========================================================
+           BADGE
+           ========================================================= */
+
+    #record-count-badge {
+        background: #e5e9ee;
+        color: #4b5563;
+        border: 1px solid #ccd3db;
+        font-size: 0.68rem;
+    }
+
+
+    /* =========================================================
+           MODAL
+           ========================================================= */
+
+    .modal-header-primary {
+        background: linear-gradient( 135deg, #3157a8 0%, #4e73df 100% );
+        border-bottom: none;
+        padding: 14px 20px;
+    }
+
+        .modal-header-primary .modal-title {
+            color: #ffffff;
+            font-size: 0.87rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .modal-header-primary .close-modal-btn {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 1rem;
+        }
+
+            .modal-header-primary .close-modal-btn:hover {
+                color: #ffffff;
+            }
+
+    .modal-footer-primary {
+        background: #3157a8;
+        padding: 8px 20px;
+        border-top: none;
+    }
+
+
+    /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+    @@media (max-width: 768px) {
+
+        .access-selection-area {
+            grid-template-columns: 1fr;
+        }
+
+        .menu-grid {
+            border-right: none;
+            border-bottom: 4px solid #4e73df;
+        }
+
+        .access-grid-header,
+        .access-grid-row {
+            grid-template-columns: 1fr 110px;
+        }
+
+        .module-tab {
+            padding-left: 13px;
+            padding-right: 13px;
+        }
+
+        .profile-page {
+            padding-left: 0;
+            padding-right: 0;
+        }
+    }
+
+
+    /* =========================================================
+           SMALL SCREENS
+           ========================================================= */
+
+    @@media (max-width: 480px) {
+
+        .page-title-bar {
+            align-items: flex-start;
+        }
+
+        .page-title-text {
+            font-size: 0.78rem;
+        }
+
+        .btn-group-actions {
+            width: 100%;
+        }
+
+            .btn-group-actions .btn {
+                flex: 1;
+            }
+
+        .access-grid-header,
+        .access-grid-row {
+            grid-template-columns: 1fr 100px;
+        }
+
+        .access-dropdown {
+            width: 90px;
+        }
+    }
+
+    
+</style>
+
+
+<div class="profile-page">
+
+    <!-- =====================================================
+         PAGE HEADER
+         ===================================================== -->
+
+    <div class="card shadow mb-3">
+
+        <div class="card-header py-3">
+
+            <div class="page-title-bar">
+
+                <div class="page-title-text">
+
+                    <i class="fas fa-id-card fa-sm"></i>
+
+                    Profile Master
+
+                </div>
+
+
+                <div class="btn-group-actions">
+
+                    <!-- ADD -->
+
+                    <a href="#"
+                       class="btn btn-success btn-sm shadow-sm"
+                       onclick="clearFieldsWithModal(); return false;"
+                       data-toggle="modal"
+                       data-target="#Profile-modal">
+
+                        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+
+                        Add
+
+                    </a>
+
+
+                    <!-- SAVE -->
+
+                    <a href="#"
+                       class="btn btn-primary btn-sm shadow-sm"
+                       onclick="saveProfile(); return false;">
+
+                        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+
+                        Save
+
+                    </a>
+
+
+                    <!-- CLONE -->
+
+                    <a href="#"
+                       class="btn btn-info btn-sm shadow-sm"
+                       onclick="cloneProfile(); return false;">
+
+                        <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+
+                        Clone
+
+                    </a>
+
+
+                    <!-- DELETE -->
+
+                    <a href="#"
+                       class="btn btn-danger btn-sm shadow-sm"
+                       onclick="deleteProfile(); return false;">
+
+                        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+
+                        Delete
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         PROFILE DETAILS
+         ===================================================== -->
+
+    <div class="card shadow mb-3">
+
+        <div class="card-header py-3">
+
+            <h6 class="m-0 font-weight-bold text-primary">
+
+                <i class="fas fa-id-card mr-2"></i>
+
+                Profile Details
+
+            </h6>
+
+        </div>
+
+
+        <div class="card-body py-3">
+
+            <div class="row">
+
+                <!-- Profile Name -->
+
+                <div class="col-md-4">
+
+                    <div class="form-group mb-0">
+
+                        <label class="form-label"
+                               for="profile-name-header">
+
+                            Profile Name
+
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="profile-name-header"
+                               maxlength="100"
+                               placeholder="Enter profile name" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Native Language -->
+
+                <div class="col-md-4">
+
+                    <div class="form-group mb-0">
+
+                        <label class="form-label"
+                               for="arabic-header">
+
+                            Name (Native Lng)
+
+                        </label>
+
+                        <input type="text"
+                               dir="rtl"
+                               class="form-control"
+                               id="arabic-header"
+                               placeholder="Enter name in native language"
+                               style="text-align:right;" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Description -->
+
+                <div class="col-md-4">
+
+                    <div class="form-group mb-0">
+
+                        <label class="form-label"
+                               for="description-header">
+
+                            Description
+
+                        </label>
+
+                        <input type="text"
+                               class="form-control"
+                               id="description-header"
+                               maxlength="200"
+                               placeholder="Enter description" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Active -->
+
+            <div class="mt-3">
+
+                <div class="custom-control custom-checkbox">
+
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="active-header"
+                           checked />
+
+                    <label class="custom-control-label form-label"
+                           for="active-header">
+
+                        Active
+
+                    </label>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ACCESS CONFIGURATION
+         ===================================================== -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex align-items-center justify-content-between">
+
+            <h6 class="m-0 font-weight-bold text-primary">
+
+                <i class="fas fa-sliders-h mr-2"></i>
+
+                Access Configuration
+
+            </h6>
+
+
+            <span class="badge"
+                  id="record-count-badge">
+
+                Module Access
+
+            </span>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- MODULE ACCESS RIGHTS -->
+
+            <div class="module-access-wrapper">
+
+                <!-- Section title -->
+
+                <div class="module-access-title">
+
+                    <i class="fas fa-key mr-2"></i>
+
+                    Module Access Rights
+
+                </div>
+
+
+                <!-- =================================================
+                     MODULE TABS
+                     ================================================= -->
+
+                <div class="module-access-tabs">
+
+                    <!-- Left arrow -->
+
+                    <button type="button"
+                            class="module-tab-arrow"
+                            onclick="scrollModuleTabs(-250)">
+
+                        <i class="fas fa-chevron-left"></i>
+
+                    </button>
+
+
+                    <!-- Dynamic tabs -->
+
+                    <div class="module-tabs-container"
+                         id="moduleTabs">
+                    </div>
+
+
+                    <!-- Right arrow -->
+
+                    <button type="button"
+                            class="module-tab-arrow"
+                            onclick="scrollModuleTabs(250)">
+
+                        <i class="fas fa-chevron-right"></i>
+
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     MENU + ACCESS
+                     ================================================= -->
+
+                <div class="access-selection-area">
+
+                    <!-- =================================================
+                         MENU
+                         ================================================= -->
+
+                    <div class="menu-grid">
+
+                        <div class="menu-grid-header">
+
+                            <i class="fas fa-list mr-2"></i>
+
+                            Menu
+
+                        </div>
+
+
+                        <div id="menuGridRows">
+
+                            <div class="no-menu-message">
+
+                                Select a module
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                         ACCESS
+                         ================================================= -->
+
+                    <div class="access-grid"
+                         id="accessGrid">
+
+                        <!-- Selected menu header -->
+
+                        
+
+
+                        <!-- Access header -->
+
+                        <div class="access-grid-header">
+
+                            <div>
+
+                                Access Rights
+
+                            </div>
+
+
+                            <div>
+
+                                Status
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Dynamic rows -->
+
+                        <div id="accessGridRows">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         ADD / UPDATE MODAL
+         ===================================================== -->
+
+    <div class="modal fade"
+         id="Profile-modal"
+         aria-labelledby="Profile-modal-label"
+         aria-hidden="true"
+         role="dialog">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content border-0 shadow-lg">
+
+                <!-- Modal Header -->
+
+                <div class="modal-header modal-header-primary d-flex align-items-center justify-content-between">
+
+                    <h6 class="modal-title"
+                        id="Profile-modal-label">
+
+                        <i class="fas fa-id-card mr-2"></i>
+
+                        Add New Profile
+
+                    </h6>
+
+
+                    <a href="#"
+                       class="close-modal-btn"
+                       data-dismiss="modal"
+                       aria-label="Close"
+                       onclick="clearFieldsWithModal(); return false;">
+
+                        <i class="fas fa-times"></i>
+
+                    </a>
+
+                </div>
+
+
+                <!-- Modal Body -->
+
+                <div class="modal-body px-4 py-3">
+
+                    <form autocomplete="off">
+
+                        <!-- Code -->
+
+                        <div class="form-group mb-3">
+
+                            <label class="form-label"
+                                   for="code-field">
+
+                                Code
+
+                            </label>
+
+
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Auto-generated code"
+                                   id="code-field"
+                                   readonly />
+
+
+                            <small class="form-text text-muted">
+
+                                Code is auto-generated by the system.
+
+                            </small>
+
+                        </div>
+
+
+                        <!-- Profile Name -->
+
+                        <div class="form-group mb-3">
+
+                            <label class="form-label"
+                                   for="profile-name-field">
+
+                                Profile Name
+
+                            </label>
+
+
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Enter profile name"
+                                   id="profile-name-field"
+                                   maxlength="100"
+                                   required />
+
+                        </div>
+
+
+                        <!-- Native Language -->
+
+                        <div class="form-group mb-3">
+
+                            <label class="form-label"
+                                   for="arabic-field">
+
+                                Name (Native Lng)
+
+                            </label>
+
+
+                            <input type="text"
+                                   dir="rtl"
+                                   class="form-control"
+                                   placeholder="Enter name in native language"
+                                   id="arabic-field"
+                                   style="text-align:right;" />
+
+                        </div>
+
+
+                        <!-- Description -->
+
+                        <div class="form-group mb-3">
+
+                            <label class="form-label"
+                                   for="description-field">
+
+                                Description
+
+                            </label>
+
+
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Enter description"
+                                   id="description-field"
+                                   maxlength="200" />
+
+                        </div>
+
+
+                        <!-- Active -->
+
+                        <div class="form-group mb-3">
+
+                            <div class="custom-control custom-checkbox">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="active-field"
+                                       checked />
+
+
+                                <label class="custom-control-label form-label"
+                                       for="active-field">
+
+                                    Active
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Hidden fields -->
+
+                        <input type="hidden"
+                               id="id-field"
+                               value="0" />
+
+                        <input type="hidden"
+                               id="createdby-field" />
+
+                        <input type="hidden"
+                               id="createddate-field" />
+
+                        <input type="hidden"
+                               id="modifiedby-field" />
+
+                        <input type="hidden"
+                               id="modifieddate-field" />
+
+                        <input type="hidden"
+                               id="userid"
+                               value="1" />
+
+
+                        <hr class="my-3" />
+
+
+                        <div class="d-flex justify-content-end"
+                             style="gap:8px;">
+
+                            <button type="button"
+                                    class="btn btn-success btn-sm px-4"
+                                    id="add-btn">
+
+                                <i class="fas fa-plus mr-1"></i>
+
+                                Add
+
+                            </button>
+
+
+                            <button type="button"
+                                    class="btn btn-danger btn-sm px-4"
+                                    data-dismiss="modal"
+                                    onclick="clearFieldsWithModal()">
+
+                                <i class="fas fa-times mr-1"></i>
+
+                                Close
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+
+                <div class="modal-footer modal-footer-primary py-2">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         LOADING
+         ===================================================== -->
+
+    <div id="loading"
+         style="display:none;">
+
+        <div id="loadingcontent">
+
+            <p id="loadingspinner"></p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       PROFILE / LOGIN
+       ========================================================= */
+
+    var LoginId = "1";
+
+
+    /* =========================================================
+       MODULE DATA
+       ========================================================= */
+
+    let modulesData = [];
+
+    let menusData = [];
+
+    let menuTypesData = [];
+
+    let menuActionsData = [];
+
+
+    let selectedModuleId = null;
+
+    let selectedMenuId = null;
+
+
+    /* =========================================================
+       LOAD ALL JSON FILES
+       ========================================================= */
+
+    $(document).ready(function () {
+
+        Promise.all([
+
+            fetch('/data/modules.json')
+                .then(function (response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Unable to load modules.json'
+                        );
+
+                    }
+
+                    return response.json();
+
+                }),
+
+
+            fetch('/data/menus.json')
+                .then(function (response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Unable to load menus.json'
+                        );
+
+                    }
+
+                    return response.json();
+
+                }),
+
+
+            fetch('/data/menu-types.json')
+                .then(function (response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Unable to load menu-types.json'
+                        );
+
+                    }
+
+                    return response.json();
+
+                }),
+
+
+            fetch('/data/menu-actions.json')
+                .then(function (response) {
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            'Unable to load menu-actions.json'
+                        );
+
+                    }
+
+                    return response.json();
+
+                })
+
+        ])
+
+        .then(function (data) {
+
+            modulesData =
+                data[0].modules || [];
+
+
+            menusData =
+                data[1].menus || [];
+
+
+            menuTypesData =
+                data[2].menuTypes || [];
+
+
+            menuActionsData =
+                data[3].menuActions || [];
+
+
+            /* Sort modules */
+
+            modulesData.sort(function (a, b) {
+
+                return Number(a.iSortOrder)
+                    - Number(b.iSortOrder);
+
+            });
+
+
+            /* Render module tabs */
+
+            renderModuleTabs();
+
+
+            /* Select first active module */
+
+            const firstActiveModule =
+                modulesData.find(function (module) {
+
+                    return Number(module.bStatus) === 1;
+
+                });
+
+
+            if (firstActiveModule) {
+
+                selectModule(
+                    firstActiveModule.iId
+                );
+
+            }
+
+        })
+
+        .catch(function (error) {
+
+            console.error(
+                'Module Access JSON Error:',
+                error
+            );
+
+
+            $('#menuGridRows').html(`
+
+                <div class="no-menu-message">
+
+                    Unable to load module data.
+
+                </div>
+
+            `);
+
+        });
+
+    });
+
+
+    /* =========================================================
+       RENDER MODULE TABS
+       ========================================================= */
+
+    function renderModuleTabs() {
+
+        const tabsContainer =
+            $('#moduleTabs');
+
+
+        tabsContainer.empty();
+
+
+        modulesData.forEach(function (module) {
+
+            const disabledClass =
+                Number(module.bStatus) === 0
+                    ? ' module-disabled'
+                    : '';
+
+
+            tabsContainer.append(`
+
+                <a href="#"
+                   class="module-tab${disabledClass}"
+                   data-module-id="${module.iId}">
+
+                    ${module.sName}
+
+                </a>
+
+            `);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       MODULE TAB CLICK
+       ========================================================= */
+
+    $(document).on(
+        'click',
+        '.module-tab',
+        function (e) {
+
+            e.preventDefault();
+
+
+            const moduleId =
+                Number(
+                    $(this).data('module-id')
+                );
+
+
+            const module =
+                modulesData.find(function (item) {
+
+                    return Number(item.iId)
+                        === moduleId;
+
+                });
+
+
+            if (!module) {
+
+                return;
+
+            }
+
+
+            /* Do not open disabled module */
+
+            if (Number(module.bStatus) === 0) {
+
+                return;
+
+            }
+
+
+            $('.module-tab')
+                .removeClass('active');
+
+
+            $(this)
+                .addClass('active');
+
+
+            selectModule(moduleId);
+
+        }
+    );
+
+
+    /* =========================================================
+       SELECT MODULE
+       ========================================================= */
+
+        function selectModule(moduleId) {
+
+        selectedModuleId =
+            Number(moduleId);
+
+        selectedMenuId = null;
+
+
+        /* Reset access panel */
+
+        $('#accessGrid')
+            .removeClass('visible');
+
+        $('#accessGridRows')
+            .empty();
+
+        $('#accessMenuName')
+            .text('Select a menu');
+
+        $('#accessMenuType')
+            .text('Menu Type');
+
+
+        /* Highlight selected module */
+
+        $('.module-tab')
+            .removeClass('active');
+
+        $(
+            `.module-tab[data-module-id="${moduleId}"]`
+        )
+        .addClass('active');
+
+
+        /* Load menus */
+
+        renderMenuList(moduleId);
+
+
+        /*
+            Automatically select the first menu.
+
+            Example:
+            HR
+            ├── Employee Master  <-- automatically selected
+            └── Candidate
+
+            The access rights for Employee Master
+            will immediately appear on the right.
+        */
+
+        const firstMenu =
+            $('#menuGridRows .menu-grid-row').first();
+
+
+        if (firstMenu.length) {
+
+            firstMenu.trigger('click');
+
+        }
+
+    }
+
+
+    /* =========================================================
+       RENDER MENU LIST
+       ========================================================= */
+
+    function renderMenuList(moduleId) {
+
+        const menuGrid =
+            $('#menuGridRows');
+
+
+        menuGrid.empty();
+
+
+        const menus =
+            menusData
+
+                .filter(function (menu) {
+
+                    return Number(menu.iModuleId)
+                        === Number(moduleId)
+
+                        && Number(menu.bStatus)
+                        === 1;
+
+                })
+
+                .sort(function (a, b) {
+
+                    return Number(a.iSortOrder)
+                        - Number(b.iSortOrder);
+
+                });
+
+
+        if (menus.length === 0) {
+
+            menuGrid.html(`
+
+                <div class="no-menu-message">
+
+                    No menus available.
+
+                </div>
+
+            `);
+
+            return;
+
+        }
+
+
+        menus.forEach(function (menu) {
+
+            menuGrid.append(`
+
+                <div class="menu-grid-row"
+                     data-menu-id="${menu.iId}">
+
+                    <i class="fas fa-chevron-right"></i>
+
+                    <span>
+
+                        ${menu.sName}
+
+                    </span>
+
+                </div>
+
+            `);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       MENU CLICK
+       ========================================================= */
+
+    $(document).on(
+        'click',
+        '.menu-grid-row',
+        function () {
+
+            const menuId =
+                Number(
+                    $(this).data('menu-id')
+                );
+
+
+            selectedMenuId =
+                menuId;
+
+
+            $('.menu-grid-row')
+                .removeClass('active');
+
+
+            $(this)
+                .addClass('active');
+
+
+            renderAccessGrid(menuId);
+
+        }
+    );
+
+
+    /* =========================================================
+       ACTION ICONS
+       ========================================================= */
+
+    function getActionIcon(actionName) {
+
+        const icons = {
+
+            'View': 'fa-eye',
+
+            'Add': 'fa-plus',
+
+            'Edit': 'fa-edit',
+
+            'Delete': 'fa-trash-alt',
+
+            'Clone': 'fa-copy',
+
+            'Print': 'fa-print',
+
+            'Option': 'fa-cog',
+
+            'earnings Tba': 'fa-money-bill-wave'
+
+        };
+
+
+        return icons[actionName]
+            || 'fa-circle';
+
+    }
+
+
+    /* =========================================================
+       RENDER ACCESS GRID
+       ========================================================= */
+
+    function renderAccessGrid(menuId) {
+
+        const menu =
+            menusData.find(function (item) {
+
+                return Number(item.iId)
+                    === Number(menuId);
+
+            });
+
+
+        if (!menu) {
+
+            return;
+
+        }
+
+
+        const accessGrid =
+            $('#accessGrid');
+
+
+        const accessRows =
+            $('#accessGridRows');
+
+
+        accessRows.empty();
+
+
+        /* Find menu type */
+
+        const menuType =
+            menuTypesData.find(function (item) {
+
+                return Number(item.iId)
+                    === Number(menu.iMenuTypeId);
+
+            });
+
+
+        /* Update selected menu */
+
+        $('#accessMenuName')
+            .text(menu.sName);
+
+
+        $('#accessMenuType')
+            .text(
+                menuType
+                    ? menuType.sName
+                    : 'Menu Type'
+            );
+
+
+        if (!menuType) {
+
+            accessRows.html(`
+
+                <div class="no-access-message">
+
+                    Menu type not found.
+
+                </div>
+
+            `);
+
+
+            accessGrid
+                .addClass('visible');
+
+
+            return;
+
+        }
+
+
+        /* Find actions */
+
+        const actions =
+            menuActionsData
+
+                .filter(function (action) {
+
+                    return Number(
+                        action.iMenuTypeId
+                    )
+                    === Number(
+                        menu.iMenuTypeId
+                    )
+
+                    && Number(action.bStatus)
+                    === 1;
+
+                })
+
+                .sort(function (a, b) {
+
+                    return Number(a.iSortOrder)
+                        - Number(b.iSortOrder);
+
+                });
+
+
+        if (actions.length === 0) {
+
+            accessRows.html(`
+
+                <div class="no-access-message">
+
+                    No access actions available.
+
+                </div>
+
+            `);
+
+
+            accessGrid
+                .addClass('visible');
+
+
+            return;
+
+        }
+
+
+        /* Render actions */
+
+        actions.forEach(function (action) {
+
+            const icon =
+                getActionIcon(
+                    action.sName
+                );
+
+
+            const statusClass =
+                action.DAction === 'Yes'
+
+                    ? 'status-yes'
+
+                    : action.DAction === 'No'
+
+                        ? 'status-no'
+
+                        : 'status-na';
+
+
+            accessRows.append(`
+
+                <div class="access-grid-row">
+
+                    <div class="access-name">
+
+                        <i class="fas ${icon}"></i>
+
+                        <span>
+
+                            ${action.sName}
+
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <select
+                            class="access-dropdown ${statusClass}"
+                            data-action-id="${action.iId}">
+
+                            <option
+                                value="Yes"
+                                ${action.DAction === 'Yes'
+                                    ? 'selected'
+                                    : ''}>
+
+                                ✓ Yes
+
+                            </option>
+
+
+                            <option
+                                value="No"
+                                ${action.DAction === 'No'
+                                    ? 'selected'
+                                    : ''}>
+
+                                ✕ No
+
+                            </option>
+
+
+                            <option
+                                value="NA"
+                                ${action.DAction === 'NA'
+                                    ? 'selected'
+                                    : ''}>
+
+                                — NA
+
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            `);
+
+        });
+
+
+        /* Show access grid */
+
+        accessGrid
+            .addClass('visible');
+
+    }
+
+
+    /* =========================================================
+       DROPDOWN STATUS COLOR
+       ========================================================= */
+
+    $(document).on(
+        'change',
+        '.access-dropdown',
+        function () {
+
+            const value =
+                $(this).val();
+
+
+            $(this)
+                .removeClass(
+                    'status-yes status-no status-na'
+                );
+
+
+            if (value === 'Yes') {
+
+                $(this)
+                    .addClass('status-yes');
+
+            }
+            else if (value === 'No') {
+
+                $(this)
+                    .addClass('status-no');
+
+            }
+            else {
+
+                $(this)
+                    .addClass('status-na');
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       MODULE TAB SCROLL
+       ========================================================= */
+
+    function scrollModuleTabs(amount) {
+
+        const container =
+            document.getElementById(
+                'moduleTabs'
+            );
+
+
+        if (container) {
+
+            container.scrollBy({
+
+                left: amount,
+
+                behavior: 'smooth'
+
+            });
+
+        }
+
+    }
+
+
+    /* =========================================================
+       PROFILE MODAL
+       ========================================================= */
+
+    function clearFieldsWithModal() {
+
+        $('#id-field')
+            .val('0');
+
+        $('#code-field')
+            .val('');
+
+        $('#profile-name-field')
+            .val('');
+
+        $('#arabic-field')
+            .val('');
+
+        $('#description-field')
+            .val('');
+
+        $('#active-field')
+            .prop('checked', true);
+
+        $('#profile-name-header')
+            .val('');
+
+        $('#arabic-header')
+            .val('');
+
+        $('#description-header')
+            .val('');
+
+        $('#active-header')
+            .prop('checked', true);
+
+        $('#Profile-modal-label')
+            .html(
+                '<i class="fas fa-id-card mr-2"></i> Add New Profile'
+            );
+
+    }
+
+
+    /* =========================================================
+       ADD
+       ========================================================= */
+
+    $('#add-btn').on(
+        'click',
+        function () {
+
+            const profileName =
+                $('#profile-name-field')
+                    .val()
+                    .trim();
+
+
+            if (!profileName) {
+
+                alert(
+                    'Please enter Profile Name.'
+                );
+
+                $('#profile-name-field')
+                    .focus();
+
+                return;
+
+            }
+
+
+            /*
+                Backend save can be connected here.
+            */
+
+            $('#profile-name-header')
+                .val(profileName);
+
+            $('#arabic-header')
+                .val(
+                    $('#arabic-field')
+                        .val()
+                );
+
+            $('#description-header')
+                .val(
+                    $('#description-field')
+                        .val()
+                );
+
+            $('#active-header')
+                .prop(
+                    'checked',
+                    $('#active-field')
+                        .is(':checked')
+                );
+
+
+            $('#Profile-modal')
+                .modal('hide');
+
+        }
+    );
+
+
+    /* =========================================================
+       SAVE
+       ========================================================= */
+
+    function saveProfile() {
+
+        /*
+            Backend save logic can be connected here.
+        */
+
+        console.log(
+            'Save Profile',
+            {
+                profileName:
+                    $('#profile-name-header').val(),
+
+                nativeName:
+                    $('#arabic-header').val(),
+
+                description:
+                    $('#description-header').val(),
+
+                active:
+                    $('#active-header').is(':checked'),
+
+                selectedModuleId:
+                    selectedModuleId,
+
+                selectedMenuId:
+                    selectedMenuId
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       CLONE
+       ========================================================= */
+
+    function cloneProfile() {
+
+        $('#profile-name-field')
+            .val(
+                $('#profile-name-header').val()
+            );
+
+        $('#arabic-field')
+            .val(
+                $('#arabic-header').val()
+            );
+
+        $('#description-field')
+            .val(
+                $('#description-header').val()
+            );
+
+        $('#active-field')
+            .prop(
+                'checked',
+                $('#active-header').is(':checked')
+            );
+
+
+        $('#id-field')
+            .val('0');
+
+
+        $('#code-field')
+            .val('');
+
+
+        $('#Profile-modal-label')
+            .html(
+                '<i class="fas fa-copy mr-2"></i> Clone Profile'
+            );
+
+
+        $('#Profile-modal')
+            .modal('show');
+
+    }
+
+
+    /* =========================================================
+       DELETE
+       ========================================================= */
+
+    function deleteProfile() {
+
+        const profileName =
+            $('#profile-name-header')
+                .val()
+                .trim();
+
+
+        if (!profileName) {
+
+            alert(
+                'Please select a profile before deleting.'
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !confirm(
+                'Are you sure you want to delete this profile?'
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+            Backend delete logic can be connected here.
+        */
+
+        console.log(
+            'Delete Profile:',
+            profileName
+        );
+
+    }
+
+</script>

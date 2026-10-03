@@ -1,0 +1,51 @@
+{
+    "id": "attachments",
+    "title": "Attachments",
+    "type": "grid",
+    "columns": [
+        {
+            "id": "attachmentType",
+            "label": "Attachment Type",
+            "type": "dropdown"
+        },
+        {
+            "id": "remarks",
+            "label": "Remarks",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "attachment",
+            "label": "Attachment",
+            "type": "file"
+        },
+        {
+            "id": "trackExpiry",
+            "label": "TrackExpiry",
+            "type": "checkbox",
+            "possibleValues": "User Input"
+        },
+        {
+            "id": "refNo",
+            "label": "Ref No",
+            "type": "text",
+            "maxlength": 80,
+            "possibleValues": "User Input",
+            "validation": "Optional"
+        },
+        {
+            "id": "issueDate",
+            "label": "Issue Date",
+            "type": "date-with-checkbox",
+            "possibleValues": "User Input"
+        },
+        {
+            "id": "expiryDate",
+            "label": "Expiry Date",
+            "type": "date-with-checkbox",
+            "possibleValues": "User Input"
+        }
+    ]
+}

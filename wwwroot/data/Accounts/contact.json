@@ -1,0 +1,60 @@
+{
+    "id": "contact",
+    "title": "Contact",
+    "type": "grid",
+    "columns": [
+        {
+            "id": "name",
+            "label": "Name",
+            "type": "text",
+            "maxlength": 100
+        },
+        {
+            "id": "designation",
+            "label": "Designation",
+            "type": "text",
+            "maxlength": 80
+        },
+        {
+            "id": "mobileNo",
+            "label": "Mobile No",
+            "type": "text",
+            "maxlength": 20
+        },
+        {
+            "id": "telephoneNo",
+            "label": "Telephone No",
+            "type": "text",
+            "maxlength": 20
+        },
+        {
+            "id": "email",
+            "label": "Email",
+            "type": "text",
+            "maxlength": 80
+        },
+        {
+            "id": "department",
+            "label": "Department",
+            "type": "text",
+            "maxlength": 200
+        },
+        {
+            "id": "comments",
+            "label": "Comments",
+            "type": "text",
+            "maxlength": 150
+        },
+        {
+            "id": "address",
+            "label": "Address",
+            "type": "text",
+            "maxlength": 200
+        },
+        {
+            "id": "country",
+            "label": "Country",
+            "type": "master-selection"
+        }
+    ]
+}

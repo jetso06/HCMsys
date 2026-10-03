@@ -1,0 +1,52 @@
+{
+  "menus": [
+    {
+      "iId": 1,
+      "sName": "Employee Master",
+      "iSortOrder": 1,
+      "bStatus": 1,
+      "iModuleId": 1,
+      "iMenuTypeId": 5
+    },
+    {
+      "iId": 2,
+      "sName": "Candidate",
+      "iSortOrder": 2,
+      "bStatus": 1,
+      "iModuleId": 1,
+      "iMenuTypeId": 7
+    },
+    {
+      "iId": 3,
+      "sName": "Leave Application",
+      "iSortOrder": 3,
+      "bStatus": 1,
+      "iModuleId": 2,
+      "iMenuTypeId": 8
+    },
+    {
+      "iId": 4,
+      "sName": "Retrun From Leave",
+      "iSortOrder": 4,
+      "bStatus": 1,
+      "iModuleId": 2,
+      "iMenuTypeId": 8
+    },
+    {
+      "iId": 5,
+      "sName": "Leave Settelment",
+      "iSortOrder": 5,
+      "bStatus": 0,
+      "iModuleId": 2,
+      "iMenuTypeId": 8
+    },
+    {
+      "iId": 6,
+      "sName": "Final Settelment",
+      "iSortOrder": 6,
+      "bStatus": 1,
+      "iModuleId": 2,
+      "iMenuTypeId": 8
+    }
+  ]
+}

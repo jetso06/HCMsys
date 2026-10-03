@@ -1,0 +1,62 @@
+{
+  "id": "general",
+  "title": "General",
+  "type": "form",
+  "fields": [
+    {
+      "id": "name",
+      "label": "Name",
+      "type": "text",
+      "maxlength": 100,
+      "possibleValues": "Name of the Master",
+      "validation": "Mandatory"
+    },
+    {
+      "id": "nativeName",
+      "label": "Name in Native Language",
+      "type": "text",
+      "maxlength": 100,
+      "possibleValues": "Alias of the Master",
+      "validation": "Optional"
+    },
+    {
+      "id": "code",
+      "label": "Code",
+      "type": "text",
+      "maxlength": 30,
+      "possibleValues": "Code of the Master",
+      "validation": "Mandatory"
+    },
+    {
+      "id": "accountType",
+      "label": "Account Type",
+      "type": "master-selection",
+      "possibleValues": "System Default",
+      "validation": "Mandatory"
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "type": "textarea",
+      "maxlength": 150,
+      "possibleValues": "To Capture the Long name of Master",
+      "validation": "Optional"
+    },
+    {
+      "id": "creditLimit",
+      "label": "Credit Limit",
+      "type": "number",
+      "possibleValues": "Applicable to Customer/Vendors",
+      "validation": "Optional",
+      "remarks": "Applicable to Customer/Vendors"
+    },
+    {
+      "id": "creditDays",
+      "label": "Credit Days",
+      "type": "number",
+      "possibleValues": "Applicable to Customer/Vendors",
+      "validation": "Optional",
+      "remarks": "Applicable to Customer/Vendors"
+    }
+  ]
+}

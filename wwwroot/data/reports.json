@@ -1,0 +1,22 @@
+{
+  "reports": [
+    {
+      "iId": 1,
+      "sName": "Employee Report",
+      "iModuleId": 1,
+      "bStatus": 1
+    },
+    {
+      "iId": 2,
+      "sName": "Attendance Report",
+      "iModuleId": 1,
+      "bStatus": 1
+    },
+    {
+      "iId": 3,
+      "sName": "Leave Report",
+      "iModuleId": 1,
+      "bStatus": 1
+    }
+  ]
+}

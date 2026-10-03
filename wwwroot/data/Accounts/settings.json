@@ -1,0 +1,14 @@
+{
+    "id": "settings",
+    "title": "Settings",
+    "type": "form",
+    "fields": [
+        {
+            "id": "defaultCurrency",
+            "label": "Default Currency",
+            "type": "master-selection",
+            "possibleValues": "Selection from Currency master",
+            "validation": "Optional"
+        }
+    ]
+}

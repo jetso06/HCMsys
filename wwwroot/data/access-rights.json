@@ -1,0 +1,26 @@
+{
+  "accessRights": [
+    {
+      "iRoleId": 1,
+      "iModuleId": 1,
+      "iMenuId": 1,
+      "actions": {
+        "Read": "Public",
+        "Add": "Public",
+        "Edit": "Public",
+        "Delete": "Public"
+      }
+    },
+    {
+      "iRoleId": 2,
+      "iModuleId": 1,
+      "iMenuId": 1,
+      "actions": {
+        "Read": "Own",
+        "Add": "No Access",
+        "Edit": "Own",
+        "Delete": "No Access"
+      }
+    }
+  ]
+}

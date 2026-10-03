@@ -1,0 +1,1200 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    /* =========================================================
+       PAGE
+    ========================================================= */
+
+    .user-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    .user-page * {
+        box-sizing: border-box;
+    }
+
+    .user-page > .card {
+        width: 100%;
+        max-width: none;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    /* Space between sections */
+    .user-page > .card:not(:last-child) {
+        margin-bottom: 40px !important;
+    }
+
+    /* =========================================================
+       PAGE TITLE
+    ========================================================= */
+
+    .page-title-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .page-title-text {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        margin: 0;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .page-title-text i {
+        color: #4e73df;
+    }
+
+    .btn-group-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .btn-group-actions .btn {
+        font-size: .75rem;
+    }
+
+    /* =========================================================
+       CARDS / SECTION HEADERS
+    ========================================================= */
+
+    .user-page .card {
+        border: 1px solid #e1e6ed;
+        background: #ffffff;
+        border-radius: 6px;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+        overflow: hidden;
+    }
+
+    .user-page .card-header {
+        background: #eef0f3;
+        border-bottom: 1px solid #e1e6ed;
+        padding: 14px 18px;
+    }
+
+    .user-page .card-header h6 {
+        margin: 0;
+        font-size: .8rem;
+        font-weight: 800;
+        color: #4e73df !important;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-page .card-header h6 i {
+        color: #4e73df;
+    }
+
+    .user-page .card-body {
+        background: #fff;
+        padding: 16px;
+    }
+
+    /* =========================================================
+       USER MASTER HEADER
+    ========================================================= */
+
+    .user-master-card {
+        width: 100%;
+        background: #ffffff !important;
+        border: 1px solid #e3e6f0 !important;
+        border-radius: 0.35rem;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+        margin-bottom: 40px !important;
+    }
+
+        .user-master-card .card-header {
+            background: #eef0f3 !important;
+            border: none !important;
+            border-bottom: 1px solid #e3e6f0 !important;
+            padding: 14px 18px !important;
+        }
+
+    /* =========================================================
+       FORM
+    ========================================================= */
+
+    .form-label {
+        font-size: .76rem;
+        font-weight: 700;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 4px;
+    }
+
+    .user-page .form-control,
+    .user-page .custom-select {
+        font-size: .82rem;
+        border-color: #d1d3e2;
+        color: #6e707e;
+        border-radius: .35rem;
+        min-height: 34px;
+    }
+
+    .user-page .form-control:focus,
+    .user-page .custom-select:focus {
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .2rem rgba(78,115,223,.2);
+    }
+
+    .user-page textarea.form-control {
+        min-height: 70px;
+        resize: vertical;
+    }
+
+    /* =========================================================
+       ACTIVE CHECKBOX
+    ========================================================= */
+
+    .active-check {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        padding-top: 18px;
+    }
+
+    .active-check input {
+        margin-right: 7px;
+        accent-color: #4e73df;
+    }
+
+    .active-check label {
+        margin: 0;
+        font-size: .76rem;
+        font-weight: 700;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    /* =========================================================
+       TAB BAR
+    ========================================================= */
+
+    .user-tabs {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+        border-bottom: 1px solid #dfe3eb;
+        background: #fff;
+        scrollbar-width: thin;
+    }
+
+    .user-tab {
+        flex: 1 0 auto;
+        min-width: 180px;
+        padding: 11px 16px;
+        border: 0;
+        border-right: 1px solid #edf0f5;
+        background: #f8f9fc;
+        color: #858796;
+        font-size: .76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        cursor: pointer;
+        text-align: center;
+        transition: all .15s ease;
+    }
+
+    .user-tab:hover {
+        background: #eef2ff;
+        color: #4e73df;
+    }
+
+    .user-tab.active {
+        background: #4e73df;
+        color: #fff;
+        box-shadow: inset 0 -3px 0 #224abe;
+    }
+
+    .user-tab i {
+        margin-right: 5px;
+    }
+
+    .user-panel {
+        display: none;
+    }
+
+    .user-panel.active {
+        display: block;
+    }
+
+    /* =========================================================
+       ADDITIONAL INFO
+    ========================================================= */
+
+    .upload-box {
+        border: 1px dashed #cbd3e3;
+        border-radius: .35rem;
+        padding: 14px;
+        background: #f8f9fc;
+    }
+
+    .upload-box label {
+        margin-bottom: 5px;
+    }
+
+    /* =========================================================
+       RESTRICTIONS
+    ========================================================= */
+
+    .restriction-area {
+        display: grid;
+        grid-template-columns: 30% 70%;
+        width: 100%;
+        border: 1px solid #dfe3eb;
+        border-radius: .4rem;
+        overflow: hidden;
+    }
+
+    .restriction-master {
+        background: #eef5ff;
+        border-right: 1px solid #dfe3eb;
+        min-height: 330px;
+    }
+
+    .restriction-employee {
+        background: #fff;
+        min-height: 330px;
+    }
+
+    .restriction-header {
+        padding: 10px 12px;
+        background: #eef0f3;
+        border-bottom: 1px solid #dfe3eb;
+        color: #4e73df;
+        font-size: .76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .master-list {
+        padding: 8px 0;
+    }
+
+    .master-item {
+        padding: 9px 12px;
+        color: #5a5c69;
+        font-size: .78rem;
+        border-bottom: 1px solid #e8edf5;
+    }
+
+    .master-item:last-child {
+        border-bottom: 0;
+    }
+
+    .master-item.active {
+        background: #4e73df;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .restriction-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 220px;
+        align-items: center;
+        gap: 15px;
+        padding: 9px 12px;
+        border-bottom: 1px solid #e8edf5;
+    }
+
+    .restriction-row:last-child {
+        border-bottom: 0;
+    }
+
+    .restriction-name {
+        font-size: .78rem;
+        color: #5a5c69;
+        font-weight: 600;
+    }
+
+    .restriction-row .custom-select {
+        width: 100%;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @@media (max-width: 991px) {
+
+        .restriction-area {
+            grid-template-columns: 35% 65%;
+        }
+
+        .restriction-row {
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+    }
+
+    @@media (max-width: 767px) {
+
+        .user-page {
+            padding-top: 12px;
+        }
+
+        .btn-group-actions {
+            width: 100%;
+        }
+
+        .btn-group-actions .btn {
+            flex: 1 1 auto;
+        }
+
+        .user-tab {
+            min-width: 140px;
+        }
+
+        .restriction-area {
+            grid-template-columns: 1fr;
+        }
+
+        .restriction-master {
+            border-right: 0;
+            border-bottom: 1px solid #dfe3eb;
+            min-height: auto;
+        }
+
+        .restriction-employee {
+            min-height: auto;
+        }
+
+    }
+
+    @@media (max-width: 480px) {
+
+        .user-page .card-body {
+            padding: 10px;
+        }
+
+        .user-tab {
+            min-width: 120px;
+            padding: 9px 10px;
+            font-size: .66rem;
+        }
+
+    }
+</style>
+
+
+<div class="user-page">
+
+    <!-- =====================================================
+         USER MASTER
+    ====================================================== -->
+
+    <div class="card user-master-card shadow">
+
+        <div class="card-header">
+
+            <div class="page-title-bar">
+
+                <div class="page-title-text">
+                    <i class="fas fa-user fa-sm"></i>
+                    User Master
+                </div>
+
+                <div class="btn-group-actions">
+
+                    <a href="#"
+                       class="btn btn-success btn-sm shadow-sm"
+                       onclick="addUser(); return false;">
+                        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+                        Add
+                    </a>
+
+                    <a href="#"
+                       class="btn btn-primary btn-sm shadow-sm"
+                       onclick="saveUser(); return false;">
+                        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+                        Save
+                    </a>
+
+                    <a href="#"
+                       class="btn btn-info btn-sm shadow-sm"
+                       onclick="cloneUser(); return false;">
+                        <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+                        Clone
+                    </a>
+
+                    <a href="#"
+                       class="btn btn-danger btn-sm shadow-sm"
+                       onclick="deleteUser(); return false;">
+                        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+                        Delete
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         USER CONFIGURATION
+    ====================================================== -->
+
+    <div class="card shadow">
+
+        <!-- TABS -->
+
+        <div class="user-tabs">
+
+            <button type="button"
+                    class="user-tab active"
+                    data-tab="userinfo">
+                <i class="fas fa-user"></i>
+                User Info
+            </button>
+
+            <button type="button"
+                    class="user-tab"
+                    data-tab="additionalinfo">
+                <i class="fas fa-id-card"></i>
+                Additional Info
+            </button>
+
+            <button type="button"
+                    class="user-tab"
+                    data-tab="restrictions">
+                <i class="fas fa-shield-alt"></i>
+                Restrictions
+            </button>
+
+        </div>
+
+
+        <div class="card-body">
+
+
+            <!-- =================================================
+                 TAB 1 - USER INFO
+            ================================================== -->
+
+            <div class="user-panel active" id="panel-userinfo">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+                        <h6>
+                            <i class="fas fa-user mr-2"></i>
+                            User Info
+                        </h6>
+                    </div>
+
+                    <div class="card-body">
+
+                        
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TAB 2 - ADDITIONAL INFO
+            ================================================== -->
+
+            <div class="user-panel" id="panel-additionalinfo">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+                        <h6>
+                            <i class="fas fa-info-circle mr-2"></i>
+                            Additional Info
+                        </h6>
+                    </div>
+
+                    <div class="card-body">
+
+                     
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TAB 3 - RESTRICTIONS
+            ================================================== -->
+
+            <div class="user-panel" id="panel-restrictions">
+
+                <div class="card shadow-sm">
+
+                    <div class="card-header">
+                        <h6>
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            Restrictions
+                        </h6>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="restriction-area">
+
+
+                            <!-- LEFT - MASTERS -->
+
+                            <div class="restriction-master">
+
+                                <div class="restriction-header">
+                                    <i class="fas fa-layer-group mr-2"></i>
+                                    Masters
+                                </div>
+
+                                <div class="master-list">
+
+                                    <div class="master-item active">
+                                        Master 1
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 2
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 3
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 4
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 5
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 6
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 7
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 8
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 9
+                                    </div>
+
+                                    <div class="master-item">
+                                        Master 10
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- RIGHT - EMPLOYEE -->
+
+                            <div class="restriction-employee">
+
+                                <div class="restriction-header">
+                                    <i class="fas fa-user mr-2"></i>
+                                    Employee
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 1
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 2
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 3
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 4
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 5
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 6
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 7
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 8
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 9
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+
+                                <div class="restriction-row">
+
+                                    <div class="restriction-name">
+                                        Master 10
+                                    </div>
+
+                                    <select class="custom-select">
+                                        <option value="">Select</option>
+                                    </select>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       USER TABS
+    ========================================================= */
+
+    $(document).on('click', '.user-tab', function () {
+
+        var tab = $(this).data('tab');
+
+        $('.user-tab').removeClass('active');
+        $(this).addClass('active');
+
+        $('.user-panel').removeClass('active');
+        $('#panel-' + tab).addClass('active');
+
+    });
+
+
+    /* =========================================================
+       HEADER BUTTONS
+    ========================================================= */
+
+    function addUser() {
+
+        console.log('Add User');
+
+    }
+
+
+    function saveUser() {
+
+        console.log('Save User');
+
+    }
+
+
+    function cloneUser() {
+
+        console.log('Clone User');
+
+    }
+
+
+    function deleteUser() {
+
+        console.log('Delete User');
+
+    }
+
+
+    /* =========================================================
+       MASTER SELECTION
+    ========================================================= */
+
+    $(document).on('click', '.master-item', function () {
+
+        $('.master-item').removeClass('active');
+        $(this).addClass('active');
+
+    });
+    /* =========================================================
+   USER INFO JSON CONFIGURATION
+========================================================= */
+
+function loadUserInfoConfig() {
+
+    fetch('/data/Users/user-info.json')
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error('Unable to load user-info.json');
+            }
+
+            return response.json();
+        })
+        .then(config => {
+
+            var container = $('#panel-userinfo .card-body');
+
+            container.empty();
+
+            var row = $('<div class="row"></div>');
+
+            config.fields.forEach(function (field) {
+
+                var colClass = 'col-md-4 mb-3';
+
+                // Address and Comments use full width
+                if (field.name === 'address' || field.name === 'comments') {
+                    colClass = 'col-md-12 mb-3';
+                }
+
+                var wrapper = $('<div class="' + colClass + '"></div>');
+
+                /* ==========================
+                   CHECKBOX
+                ========================== */
+
+                if (field.type === 'checkbox') {
+
+                    wrapper.append(
+                        $('<div class="active-check"></div>')
+                            .append(
+                                $('<input>', {
+                                    type: 'checkbox',
+                                    id: field.name,
+                                    checked: true
+                                })
+                            )
+                            .append(
+                                $('<label>', {
+                                    for: field.name,
+                                    text: field.label
+                                })
+                            )
+                    );
+
+                }
+
+                /* ==========================
+                   DROPDOWN
+                ========================== */
+
+                else if (field.type === 'dropdown') {
+
+                    var label = $('<label class="form-label"></label>')
+                        .text(field.label);
+
+                    var select = $('<select>', {
+                        id: field.name,
+                        class: 'custom-select'
+                    });
+
+                    select.append(
+                        $('<option>', {
+                            value: '',
+                            text: 'Select ' + field.label
+                        })
+                    );
+
+                    if (Array.isArray(field.options)) {
+
+                        field.options.forEach(function (option) {
+
+                            if (typeof option === 'object') {
+
+                                select.append(
+                                    $('<option>', {
+                                        value: option.value,
+                                        text: option.label
+                                    })
+                                );
+
+                            } else {
+
+                                select.append(
+                                    $('<option>', {
+                                        value: option,
+                                        text: option
+                                    })
+                                );
+
+                            }
+
+                        });
+
+                    }
+
+                    wrapper.append(label);
+                    wrapper.append(select);
+
+                }
+
+                /* ==========================
+                   TEXTAREA
+                ========================== */
+
+                else if (
+                    field.name === 'address' ||
+                    field.name === 'comments'
+                ) {
+
+                    var label = $('<label class="form-label"></label>')
+                        .text(field.label);
+
+                    var textarea = $('<textarea>', {
+                        id: field.name,
+                        class: 'form-control',
+                        placeholder: 'Enter ' + field.label.toLowerCase()
+                    });
+
+                    wrapper.append(label);
+                    wrapper.append(textarea);
+
+                }
+
+                /* ==========================
+                   NORMAL INPUT
+                ========================== */
+
+                else {
+
+                    var label = $('<label class="form-label"></label>')
+                        .text(field.label);
+
+                    var inputType = 'text';
+
+                    if (field.name === 'emailId') {
+                        inputType = 'email';
+                    }
+
+                    if (
+                        field.name === 'password' ||
+                        field.name === 'confirmPassword'
+                    ) {
+                        inputType = 'password';
+                    }
+
+                    var input = $('<input>', {
+                        type: inputType,
+                        id: field.name,
+                        class: 'form-control',
+                        placeholder: 'Enter ' + field.label.toLowerCase()
+                    });
+
+                    // Numeric field
+                    if (field.type === 'numeric' && field.digits) {
+
+                        input.attr('maxlength', field.digits);
+                        input.attr('inputmode', 'numeric');
+
+                        input.on('input', function () {
+
+                            this.value = this.value
+                                .replace(/\D/g, '')
+                                .slice(0, field.digits);
+
+                        });
+
+                    }
+
+                    wrapper.append(label);
+                    wrapper.append(input);
+
+                }
+
+                row.append(wrapper);
+
+            });
+
+            container.append(row);
+
+            console.log(
+                'User Info rendered from user-info.json'
+            );
+
+        })
+        .catch(error => {
+
+            console.error(
+                'Error loading User Info configuration:',
+                error
+            );
+
+        });
+}
+
+
+/* Load User Info configuration */
+$(document).ready(function () {
+
+    loadUserInfoConfig();
+
+});
+/* =========================================================
+   ADDITIONAL INFO JSON CONFIGURATION
+========================================================= */
+
+function loadAdditionalInfoConfig() {
+
+    fetch('/data/Users/additional-info.json')
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error('Unable to load additional-info.json');
+            }
+
+            return response.json();
+        })
+        .then(config => {
+
+            var container = $('#panel-additionalinfo .card-body');
+
+            container.empty();
+
+            var row = $('<div class="row"></div>');
+
+            config.fields.forEach(function (field) {
+
+                var wrapper = $('<div class="col-md-4 mb-3"></div>');
+
+
+                /* ==========================
+                   DROPDOWN
+                ========================== */
+
+                if (field.type === 'dropdown') {
+
+                    var label = $('<label class="form-label"></label>')
+                        .text(field.label);
+
+                    var select = $('<select>', {
+                        id: field.name,
+                        class: 'custom-select'
+                    });
+
+                    select.append(
+                        $('<option>', {
+                            value: '',
+                            text: 'Select ' + field.label
+                        })
+                    );
+
+                    if (Array.isArray(field.options)) {
+
+                        field.options.forEach(function (option) {
+
+                            if (typeof option === 'object') {
+
+                                select.append(
+                                    $('<option>', {
+                                        value: option.value,
+                                        text: option.label
+                                    })
+                                );
+
+                            } else {
+
+                                select.append(
+                                    $('<option>', {
+                                        value: option,
+                                        text: option
+                                    })
+                                );
+
+                            }
+
+                        });
+
+                    }
+
+                    wrapper.append(label);
+                    wrapper.append(select);
+
+                }
+
+
+                /* ==========================
+                   ATTACHMENT
+                ========================== */
+
+                else if (field.type === 'attachment') {
+
+                    var label = $('<label class="form-label"></label>')
+                        .text(field.label);
+
+                    var uploadBox = $('<div class="upload-box"></div>');
+
+                    var input = $('<input>', {
+                        type: 'file',
+                        id: field.name,
+                        class: 'form-control-file'
+                    });
+
+                    if (field.accept) {
+                        input.attr('accept', field.accept);
+                    }
+
+                    uploadBox.append(input);
+
+                    wrapper.append(label);
+                    wrapper.append(uploadBox);
+
+                }
+
+                row.append(wrapper);
+
+            });
+
+            container.append(row);
+
+            console.log(
+                'Additional Info rendered from additional-info.json'
+            );
+
+        })
+        .catch(error => {
+
+            console.error(
+                'Error loading Additional Info configuration:',
+                error
+            );
+
+        });
+}
+
+
+/* Load Additional Info configuration */
+$(document).ready(function () {
+
+    loadAdditionalInfoConfig();
+
+});
+
+</script>

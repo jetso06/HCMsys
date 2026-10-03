@@ -1,0 +1,115 @@
+{
+  "tab": "User Info",
+  "fields": [
+    {
+      "name": "userName",
+      "label": "User Name",
+      "type": "text"
+    },
+    {
+      "name": "userCode",
+      "label": "User Code",
+      "type": "numeric",
+      "digits": 4
+    },
+    {
+      "name": "userActive",
+      "label": "Active",
+      "type": "checkbox"
+    },
+    {
+      "name": "fullName",
+      "label": "Full Name",
+      "type": "text"
+    },
+    {
+      "name": "emailId",
+      "label": "Email Id",
+      "type": "text"
+    },
+    {
+      "name": "password",
+      "label": "Password",
+      "type": "text"
+    },
+    {
+      "name": "confirmPassword",
+      "label": "Confirm Password",
+      "type": "text"
+    },
+    {
+      "name": "mobileNo",
+      "label": "Mobile No",
+      "type": "text"
+    },
+    {
+      "name": "telephoneNo",
+      "label": "Telephone No",
+      "type": "text"
+    },
+    {
+      "name": "address",
+      "label": "Address",
+      "type": "text"
+    },
+    {
+      "name": "role",
+      "label": "Role",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "reportingTo",
+      "label": "Reporting To",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "location",
+      "label": "Location",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "entity",
+      "label": "Entity",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "department",
+      "label": "Department",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "state",
+      "label": "State",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "country",
+      "label": "Country",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "timeZone",
+      "label": "TimeZone",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "language",
+      "label": "Language",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "comments",
+      "label": "Comments",
+      "type": "text"
+    }
+  ]
+}

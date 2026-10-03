@@ -1,0 +1,23 @@
+{
+  "tab": "Additional Info",
+  "fields": [
+    {
+      "name": "passwordPolicy",
+      "label": "Password Policy",
+      "type": "dropdown",
+      "options": []
+    },
+    {
+      "name": "signatureImage",
+      "label": "Signature Image",
+      "type": "attachment",
+      "accept": "image/*"
+    },
+    {
+      "name": "photo",
+      "label": "Photo",
+      "type": "attachment",
+      "accept": "image/*"
+    }
+  ]
+}

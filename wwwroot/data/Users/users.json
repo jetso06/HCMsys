@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "code": "USR-0001",
+    "name": "Administrator",
+    "createdBy": "Admin",
+    "createdDate": "01-Jan-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "15-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 2,
+    "code": "USR-0002",
+    "name": "John Smith",
+    "createdBy": "Admin",
+    "createdDate": "10-Feb-2025",
+    "modifiedBy": "John Smith",
+    "modifiedDate": "20-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 3,
+    "code": "USR-0003",
+    "name": "Sarah Lee",
+    "createdBy": "Admin",
+    "createdDate": "05-Mar-2025",
+    "modifiedBy": "Sarah Lee",
+    "modifiedDate": "22-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 4,
+    "code": "USR-0004",
+    "name": "Mike Johnson",
+    "createdBy": "Admin",
+    "createdDate": "18-Mar-2025",
+    "modifiedBy": "Mike Johnson",
+    "modifiedDate": "25-Jun-2025",
+    "active": true
+  },
+  {
+    "id": 5,
+    "code": "USR-0005",
+    "name": "Emily Davis",
+    "createdBy": "Admin",
+    "createdDate": "01-Apr-2025",
+    "modifiedBy": "Admin",
+    "modifiedDate": "28-Jun-2025",
+    "active": false
+  }
+]

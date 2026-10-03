@@ -1,0 +1,70 @@
+{
+  "tab": "Restrictions",
+  "masters": [
+    "Master 1",
+    "Master 2",
+    "Master 3",
+    "Master 4",
+    "Master 5",
+    "Master 6",
+    "Master 7",
+    "Master 8",
+    "Master 9",
+    "Master 10"
+  ],
+  "employee": {
+    "label": "Employee",
+    "fields": [
+      {
+        "master": "Master 1",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 2",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 3",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 4",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 5",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 6",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 7",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 8",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 9",
+        "type": "dropdown",
+        "options": []
+      },
+      {
+        "master": "Master 10",
+        "type": "dropdown",
+        "options": []
+      }
+    ]
+  }
+}

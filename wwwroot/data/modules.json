@@ -1,0 +1,40 @@
+{
+  "modules": [
+    {
+      "iId": 1,
+      "sName": "HR",
+      "iSortOrder": 1,
+      "bStatus": 1
+    },
+    {
+      "iId": 2,
+      "sName": "Payroll",
+      "iSortOrder": 2,
+      "bStatus": 1
+    },
+    {
+      "iId": 3,
+      "sName": "Contract Management",
+      "iSortOrder": 3,
+      "bStatus": 1
+    },
+    {
+      "iId": 4,
+      "sName": "Finance",
+      "iSortOrder": 4,
+      "bStatus": 1
+    },
+    {
+      "iId": 5,
+      "sName": "Procurement & Order Management",
+      "iSortOrder": 5,
+      "bStatus": 0
+    },
+    {
+      "iId": 6,
+      "sName": "Sales & Order Management",
+      "iSortOrder": 6,
+      "bStatus": 1
+    }
+  ]
+}

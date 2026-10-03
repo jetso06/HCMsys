@@ -1,0 +1,22 @@
+{
+    "id": "master-links",
+    "title": "Master Links",
+    "type": "form",
+    "fields": [
+        {
+            "id": "category",
+            "label": "Category",
+            "type": "master-selection",
+            "possibleValues": "",
+            "validation": "Optional",
+            "remarks": "Applicable to Customer/Vendors"
+        },
+        {
+            "id": "modeOfPayment",
+            "label": "Mode of Payment",
+            "type": "master-selection",
+            "possibleValues": "Selection from Payment Mode",
+            "validation": "Optional"
+        }
+    ]
+}

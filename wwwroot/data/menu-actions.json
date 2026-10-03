@@ -1,0 +1,134 @@
+{
+  "menuActions": [
+    {
+      "iId": 1,
+      "sName": "View",
+      "iSortOrder": 1,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "Yes"
+    },
+    {
+      "iId": 2,
+      "sName": "Add",
+      "iSortOrder": 2,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "No"
+    },
+    {
+      "iId": 3,
+      "sName": "Edit",
+      "iSortOrder": 3,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "NA"
+    },
+    {
+      "iId": 4,
+      "sName": "Delete",
+      "iSortOrder": 4,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "Yes"
+    },
+    {
+      "iId": 5,
+      "sName": "Clone",
+      "iSortOrder": 5,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "No"
+    },
+    {
+      "iId": 6,
+      "sName": "Print",
+      "iSortOrder": 6,
+      "bStatus": 1,
+      "iMenuTypeId": 8,
+      "DAction": "NA"
+    },
+
+    {
+      "iId": 7,
+      "sName": "View",
+      "iSortOrder": 1,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "Yes"
+    },
+    {
+      "iId": 8,
+      "sName": "Add",
+      "iSortOrder": 2,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "No"
+    },
+    {
+      "iId": 9,
+      "sName": "Edit",
+      "iSortOrder": 3,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "NA"
+    },
+    {
+      "iId": 10,
+      "sName": "Delete",
+      "iSortOrder": 4,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "Yes"
+    },
+    {
+      "iId": 11,
+      "sName": "Clone",
+      "iSortOrder": 5,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "No"
+    },
+    {
+      "iId": 12,
+      "sName": "Print",
+      "iSortOrder": 6,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "NA"
+    },
+    {
+      "iId": 13,
+      "sName": "earnings Tba",
+      "iSortOrder": 7,
+      "bStatus": 1,
+      "iMenuTypeId": 5,
+      "DAction": "Yes"
+    },
+
+    {
+      "iId": 14,
+      "sName": "View",
+      "iSortOrder": 1,
+      "bStatus": 1,
+      "iMenuTypeId": 7,
+      "DAction": "No"
+    },
+    {
+      "iId": 15,
+      "sName": "Add",
+      "iSortOrder": 2,
+      "bStatus": 1,
+      "iMenuTypeId": 7,
+      "DAction": "NA"
+    },
+    {
+      "iId": 16,
+      "sName": "Option",
+      "iSortOrder": 3,
+      "bStatus": 1,
+      "iMenuTypeId": 7,
+      "DAction": "Yes"
+    }
+  ]
+}

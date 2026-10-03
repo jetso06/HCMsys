@@ -1,0 +1,16 @@
+{
+  "roles": [
+    {
+      "iId": 1,
+      "sName": "Administrator",
+      "sDescription": "System Administrator",
+      "bStatus": 1
+    },
+    {
+      "iId": 2,
+      "sName": "Employee",
+      "sDescription": "Standard Employee",
+      "bStatus": 1
+    }
+  ]
+}

@@ -1,0 +1,2546 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html { font-size: 14px; }
+
+    .role-page {
+    width: 100%;
+    max-width: none;
+    padding: 18px 0 25px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.role-page > .card {
+    width: 100%;
+    max-width: none;
+    margin-bottom: 40px !important;
+}
+
+.role-page > .card:last-child {
+    margin-bottom: 0 !important;
+}
+
+    .role-page * { box-sizing: border-box; }
+
+    .page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+    .page-title-text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #5a5c69;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-title-text i {
+    color: #4e73df;
+}
+
+    .page-title-text i { color: #4e73df; }
+
+    .btn-group-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .btn-group-actions .btn { font-size: .75rem; }
+
+    .role-page .card {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+    .role-page > .card:nth-child(2) {
+    border: 1px solid #e1e6ed;
+    background: #ffffff;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+    overflow: hidden;
+}
+
+.role-page > .card:nth-child(2) .card-header {
+    background: #eef0f3;
+    border-bottom: 1px solid #e1e6ed;
+}
+
+.role-page > .card:nth-child(2) .card-header h6 {
+    color: #4e73df !important;
+}
+
+.role-page > .card:nth-child(2) .card-header h6 i {
+    color: #4e73df;
+}
+
+.role-page > .card:nth-child(2) .card-body {
+    background: #ffffff;
+}
+
+    .workflow-tabs {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+        border-bottom: 1px solid #dfe3eb;
+        background: #fff;
+        scrollbar-width: thin;
+    }
+
+    .workflow-tab {
+        flex: 1 0 auto;
+        min-width: 150px;
+        padding: 11px 16px;
+        border: 0;
+        border-right: 1px solid #edf0f5;
+        background: #f8f9fc;
+        color: #858796;
+        font-size: .76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        cursor: pointer;
+        text-align: center;
+        transition: all .15s ease;
+    }
+
+    .workflow-tab:hover {
+        background: #eef2ff;
+        color: #4e73df;
+    }
+
+    .workflow-tab.active {
+        background: #4e73df;
+        color: #fff;
+        box-shadow: inset 0 -3px 0 #224abe;
+    }
+
+    .workflow-tab i { margin-right: 5px; }
+
+    .workflow-panel { display: none; }
+    .workflow-panel.active { display: block; }
+
+    .role-selected-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 9px 12px;
+        margin-bottom: 12px;
+        background: #f0f3ff;
+        border: 1px solid #d9e1ff;
+        border-radius: .35rem;
+    }
+
+    .role-name {
+        color: #4e73df;
+        font-size: .8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .role-hint {
+        color: #858796;
+        font-size: .72rem;
+        margin-top: 2px;
+    }
+
+    .role-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .role-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+        font-size: .78rem;
+    }
+
+    .role-table thead th {
+        background: #4e73df;
+        color: #fff;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        border-color: #3d5cbe;
+        vertical-align: middle;
+        white-space: nowrap;
+        padding: 9px 10px;
+    }
+
+    .role-table tbody td {
+        color: #5a5c69;
+        vertical-align: middle;
+        padding: 8px 10px;
+    }
+
+    .role-table tbody tr:nth-child(even) { background: #f8f9fc; }
+    .role-table tbody tr:hover { background: #f0f3ff; }
+
+    .select-column {
+        width: 70px;
+        text-align: center;
+    }
+
+    .status-column { width: 100px; }
+    .check-cell { width: 90px; text-align: center; }
+
+    .module-access-title {
+        font-size: .76rem;
+        font-weight: 800;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        margin-bottom: 8px;
+    }
+
+    .module-access-title i { color: #4e73df; }
+
+    .module-access-tabs {
+        width: 100%;
+        display: flex;
+        align-items: stretch;
+        border: 1px solid #d8e1f5;
+        border-radius: .35rem;
+        overflow: hidden;
+        background: #eaf1ff;
+        margin-bottom: 12px;
+    }
+
+    .module-tab-arrow {
+        flex: 0 0 34px;
+        border: 0;
+        background: #dce7fb;
+        color: #4e73df;
+        cursor: pointer;
+    }
+
+    .module-tab-arrow:hover { background: #cbdaf8; }
+
+    .module-tabs-container {
+        display: flex;
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+    }
+
+    .module-tab {
+        flex: 0 0 auto;
+        padding: 9px 13px;
+        background: transparent;
+        color: #5a5c69;
+        border-right: 1px solid #d8e1f5;
+        text-decoration: none !important;
+        font-size: .69rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .module-tab:hover {
+        background: #dce7fb;
+        color: #224abe;
+    }
+
+    .module-tab.active {
+        background: #4e73df;
+        color: #fff;
+    }
+
+    .module-tab.module-disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    .access-selection-area {
+        display: grid;
+        grid-template-columns: minmax(260px, 30%) minmax(0, 70%);
+        width: 100%;
+        min-height: 350px;
+        border: 1px solid #e1e4eb;
+        border-radius: .35rem;
+        overflow: hidden;
+    }
+
+    .menu-grid {
+        min-width: 0;
+        background: #f8f9fc;
+        border-right: 1px solid #e1e4eb;
+    }
+
+    .menu-grid-header {
+        background: #4e73df;
+        color: #fff;
+        padding: 9px 12px;
+        font-size: .72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .menu-grid-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        padding: 8px 10px;
+        border-bottom: 1px solid #e9ebf0;
+        cursor: pointer;
+        background: #fff;
+    }
+
+    .menu-grid-row:hover { background: #eef2ff; }
+
+    .menu-grid-row.active {
+        background: #dfe7ff;
+        border-left: 3px solid #4e73df;
+        padding-left: 7px;
+    }
+
+    .menu-name {
+        font-size: .75rem;
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .menu-grid-row.active .menu-name {
+        color: #224abe;
+        font-weight: 800;
+    }
+
+    .menu-type {
+        font-size: .64rem;
+        color: #858796;
+        white-space: nowrap;
+    }
+
+    .no-menu-message {
+        padding: 25px 12px;
+        text-align: center;
+        color: #858796;
+        font-size: .75rem;
+    }
+
+    .access-grid {
+        min-width: 0;
+        background: #fff;
+        display: none;
+    }
+
+    .access-grid.visible { display: block; }
+
+    .access-context {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 10px 13px;
+        background: #f1f6ff;
+        border-bottom: 1px solid #dce5f7;
+    }
+
+    .access-context-main {
+        color: #4e73df;
+        font-size: .8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .access-context-type {
+        margin-top: 2px;
+        color: #858796;
+        font-size: .66rem;
+    }
+
+    .access-context-icon {
+        color: #4e73df;
+        font-size: 1.1rem;
+    }
+
+    .access-grid-header,
+    .access-grid-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 140px;
+        gap: 10px;
+    }
+
+    .access-grid-header {
+        padding: 8px 12px;
+        background: #4e73df;
+        color: #fff;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .access-grid-row {
+        align-items: center;
+        padding: 7px 12px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .access-grid-row:nth-child(even) { background: #fafbfc; }
+
+    .access-action-name {
+        font-size: .74rem;
+        color: #5a5c69;
+        font-weight: 600;
+    }
+
+    .access-select {
+        width: 100%;
+        min-width: 0;
+        height: 29px;
+        padding: 3px 7px;
+        border: 1px solid #d1d3e2;
+        border-radius: .25rem;
+        background: #fff;
+        color: #5a5c69;
+        font-size: .7rem;
+    }
+
+    .public-access-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        padding: 9px 12px;
+        background: #f8f9fc;
+        border: 1px solid #e1e4eb;
+        border-radius: .35rem;
+    }
+
+    .public-access-bar .hint {
+        color: #858796;
+        font-size: .7rem;
+    }
+
+    .public-access-bar .btn { font-size: .7rem; }
+
+    .report-name,
+    .dashboard-name {
+        font-weight: 600;
+        color: #5a5c69;
+    }
+
+    .modal-header-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        border-bottom: none;
+        padding: 14px 20px;
+        color: #fff;
+    }
+
+    .form-label {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: #596579;
+    text-transform: uppercase;
+    letter-spacing: 0.055em;
+    margin-bottom: 5px;
+}
+
+.role-page .form-control {
+    height: 36px;
+    width: 100%;
+    font-size: 0.83rem;
+    color: #4d596b;
+    background: #ffffff;
+    border: 1px solid #cdd7e5;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.role-page .form-control:focus {
+    border-color: #7fa2e8;
+    box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+}
+
+    @@media (max-width: 1199px) {
+        .access-selection-area {
+            grid-template-columns: minmax(240px, 32%) minmax(0, 68%);
+        }
+    }
+
+    @@media (max-width: 991px) {
+        .access-selection-area {
+            grid-template-columns: minmax(220px, 35%) minmax(0, 65%);
+        }
+
+        .workflow-tab { min-width: 130px; }
+    }
+
+    @@media (max-width: 767px) {
+        .role-page { padding-top: 12px; }
+
+        .btn-group-actions { width: 100%; }
+
+        .btn-group-actions .btn {
+            flex: 1 1 auto;
+        }
+
+        .access-selection-area {
+            grid-template-columns: 1fr;
+        }
+
+        .menu-grid {
+            border-right: 0;
+            border-bottom: 1px solid #e1e4eb;
+            max-height: 260px;
+            overflow-y: auto;
+        }
+
+        .access-grid-header,
+        .access-grid-row {
+            grid-template-columns: minmax(0, 1fr) 120px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .role-page .card-body { padding: 10px; }
+
+        .workflow-tab {
+            min-width: 115px;
+            padding: 9px 10px;
+            font-size: .66rem;
+        }
+
+        .access-grid-header,
+        .access-grid-row {
+            grid-template-columns: minmax(0, 1fr) 105px;
+        }
+    }
+
+
+.role-page {
+    background: #f8fafc;
+}
+
+.page-title-text {
+    color: #344054;
+}
+
+.page-title-text i {
+    color: #4e73df;
+}
+
+
+/* CARDS */
+
+.role-page .card {
+    background: #ffffff;
+    border-color: #dbe3ec;
+}
+
+
+/* CARD HEADERS */
+
+.role-page .card-header {
+    background: #e8f1ff;
+    border-bottom-color: #d5dce5;
+}
+
+.role-page .card-header h6 {
+    color: #17345f;
+}
+
+.role-page .card-header h6 i {
+    color: #4e73df;
+}
+
+
+/* FORM AREA */
+
+.role-page .card-body {
+    background: #ffffff;
+}
+
+.form-label {
+    color: #344054;
+}
+
+.role-page .form-control {
+    background: #ffffff;
+    border-color: #d1d3e2;
+    color: #344054;
+}
+
+.role-page .form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .14);
+}
+
+
+/* WORKFLOW TABS */
+
+.workflow-tabs {
+    background: #0a2550;
+    border-bottom-color: #0a2550;
+}
+
+.workflow-tab {
+    background: #0a2550;
+    color: #ffffff;
+    border-right-color: #31527f;
+}
+
+.workflow-tab:hover {
+    background: #31527f;
+    color: #ffffff;
+}
+
+.workflow-tab.active {
+    background: #4e73df;
+    color: #ffffff;
+    box-shadow: inset 0 -3px 0 #0a2550;
+}
+
+
+/* SELECTED ROLE INFORMATION */
+
+.role-selected-info {
+    background: #e8f1ff;
+    border-color: #d5dce5;
+}
+
+.role-name {
+    color: #4e73df;
+}
+
+.role-hint {
+    color: #7b8798;
+}
+
+
+/* ROLE TABLE */
+
+.role-table thead th {
+    background: #4e73df;
+    border-color: #31527f;
+}
+
+.role-table tbody td {
+    color: #4b5563;
+}
+
+.role-table tbody tr:nth-child(even) {
+    background: #ffffff;
+}
+
+.role-table tbody tr:hover {
+    background: #edf3ff;
+}
+
+
+/* MODULE ACCESS BAR */
+
+.module-access-tabs {
+    background: #e8f1ff;
+    border-color: #c5daf7;
+}
+
+.module-tab-arrow {
+    background: #dce7fb;
+    color: #315fbd;
+}
+
+.module-tab-arrow:hover {
+    background: #c5daf7;
+}
+
+.module-tab {
+    color: #31527f;
+    border-right-color: #c5daf7;
+}
+
+.module-tab:hover {
+    background: #d6e7ff;
+    color: #224abe;
+}
+
+.module-tab.active {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+
+/* LEFT + RIGHT ACCESS GRID */
+
+.access-selection-area {
+    border-color: #dbe3ec;
+}
+
+
+/* LEFT GRID */
+
+.menu-grid {
+    background: #dfeeff;
+    border-right-color: #d5dce5;
+}
+
+.menu-grid-header {
+    background: #e8f1ff;
+    color: #17345f;
+}
+
+.menu-grid-row {
+    background: #ffffff;
+    border-bottom-color: #e2e6eb;
+}
+
+.menu-grid-row:hover {
+    background: #edf3ff;
+}
+
+.menu-grid-row.active {
+    background: #0a2550;
+    border-left-color: #4e73df;
+}
+
+.menu-name {
+    color: #4b5563;
+}
+
+.menu-grid-row.active .menu-name {
+    color: #ffffff;
+}
+
+.menu-type {
+    color: #7b8797;
+}
+
+
+/* RIGHT GRID */
+
+.access-grid {
+    background: #ffffff;
+}
+
+.access-context {
+    background: #eef3f9;
+    border-bottom-color: #dbe3ec;
+}
+
+.access-context-main {
+    color: #344054;
+}
+
+.access-context-type {
+    color: #7b8798;
+}
+
+.access-context-icon {
+    color: #4e73df;
+}
+
+.access-grid-header {
+    background: #4e73df;
+    color: #ffffff;
+}
+
+.access-grid-row {
+    background: #ffffff;
+    border-bottom-color: #e3e8ef;
+}
+
+.access-grid-row:nth-child(even) {
+    background: #ffffff;
+}
+
+.access-action-name {
+    color: #4b5563;
+}
+
+
+/* ACCESS DROPDOWN */
+
+.access-select {
+    background: #ffffff;
+    border-color: #d1d3e2;
+    color: #4b5563;
+}
+
+.access-select:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 .15rem rgba(78, 115, 223, .12);
+}
+
+
+/* PUBLIC ACCESS */
+
+.public-access-bar {
+    background: #e8f1ff;
+    border-color: #d5dce5;
+}
+
+.public-access-bar .hint {
+    color: #7b8798;
+}
+
+
+/* REPORT / DASHBOARD */
+
+.report-name,
+.dashboard-name {
+    color: #4b5563;
+}
+
+
+/* MODAL */
+
+.modal-header-primary {
+    background: linear-gradient(
+        135deg,
+        #4e73df 0%,
+        #0a2550 100%
+    );
+}
+
+
+/* BUTTON OUTLINE */
+
+.btn-outline-primary {
+    color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-outline-primary:hover {
+    background: #4e73df;
+    border-color: #4e73df;
+}
+
+
+/* MOBILE */
+
+.menu-grid {
+    border-bottom-color: #dbe3ec;
+}
+
+
+
+/* =========================================================
+   ROLE MASTER TITLE BAR
+   ========================================================= */
+
+.role-page > .card:first-child {
+    width: 100%;
+    background: #ffffff !important;
+    border: 1px solid #e3e6f0 !important;
+    border-radius: 0.35rem;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+}
+
+.role-page > .card:first-child .card-header {
+    background: #eef0f3 !important;
+    border: none !important;
+    border-bottom: 1px solid #e3e6f0 !important;
+    padding: 14px 18px !important;
+}
+
+.role-page > .card:first-child .page-title-text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #5a5c69;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.role-page > .card:first-child .page-title-text i {
+    color: #4e73df;
+}
+
+</style>
+
+
+<div class="role-page">
+
+    <div class="card shadow mb-3">
+
+    <div class="card-header py-3">
+
+        <div class="page-title-bar">
+
+            <div class="page-title-text">
+
+                <i class="fas fa-user-shield fa-sm"></i>
+
+                Role Master
+
+            </div>
+
+
+            <div class="btn-group-actions">
+
+                <!-- ADD -->
+
+                <a href="#"
+                   class="btn btn-success btn-sm shadow-sm"
+                   onclick="addRole(); return false;">
+
+                    <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+
+                    Add
+
+                </a>
+
+
+                <!-- SAVE -->
+
+                <a href="#"
+                   class="btn btn-primary btn-sm shadow-sm"
+                   onclick="saveRole(); return false;">
+
+                    <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+
+                    Save
+
+                </a>
+
+
+                <!-- CLONE -->
+
+                <a href="#"
+                   class="btn btn-info btn-sm shadow-sm"
+                   onclick="cloneRole(); return false;">
+
+                    <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+
+                    Clone
+
+                </a>
+
+
+                <!-- DELETE -->
+
+                <a href="#"
+                   class="btn btn-danger btn-sm shadow-sm"
+                   onclick="deleteRole(); return false;">
+
+                    <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+
+                    Delete
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <!-- ROLE DEFINITION HEADER -->
+
+    <div class="card shadow mb-3">
+
+    <div class="card-header py-3">
+
+        <h6 class="m-0 font-weight-bold text-primary">
+
+            <i class="fas fa-id-card mr-2"></i>
+
+            Role Definition
+
+        </h6>
+
+    </div>
+
+
+    <div class="card-body py-3">
+
+        <div class="row">
+
+            <!-- Role Name -->
+
+            <div class="col-md-5">
+
+                <div class="form-group mb-0">
+
+                    <label class="form-label"
+                           for="role-name-header">
+
+                        Role Name
+
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="role-name-header"
+                           maxlength="100"
+                           placeholder="Enter role name" />
+
+                </div>
+
+            </div>
+
+
+            <!-- Description -->
+
+            <div class="col-md-5">
+
+                <div class="form-group mb-0">
+
+                    <label class="form-label"
+                           for="description-header">
+
+                        Description
+
+                    </label>
+
+                    <input type="text"
+                           class="form-control"
+                           id="description-header"
+                           maxlength="200"
+                           placeholder="Enter description" />
+
+                </div>
+
+            </div>
+
+
+            <!-- Active -->
+
+            <div class="col-md-2">
+
+                <div class="form-group mb-0">
+
+                    <label class="form-label d-block">
+                        Active
+                    </label>
+
+                    <div class="custom-control custom-checkbox">
+
+                        <input type="checkbox"
+                               class="custom-control-input"
+                               id="active-header">
+
+                        <label class="custom-control-label"
+                               for="active-header">
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+    <div class="card shadow">
+
+        <div class="workflow-tabs">
+
+            <button type="button" class="workflow-tab active" data-workflow="roles">
+                <i class="fas fa-user-shield"></i>
+                Roles
+            </button>
+
+            <button type="button" class="workflow-tab" data-workflow="access">
+                <i class="fas fa-key"></i>
+                Access Rights
+            </button>
+
+            <button type="button" class="workflow-tab" data-workflow="reports">
+                <i class="fas fa-file-alt"></i>
+                Reports
+            </button>
+
+            <button type="button" class="workflow-tab" data-workflow="dashboard">
+                <i class="fas fa-chart-line"></i>
+                Dashboard
+            </button>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <!-- ROLES -->
+
+            <div class="workflow-panel active" id="workflow-roles">
+
+                <div class="role-selected-info">
+
+                    <div>
+                        <span class="role-name" id="selectedRoleName">
+                            No Role Selected
+                        </span>
+
+                        <div class="role-hint">
+                            Select a role to configure its permissions.
+                        </div>
+                    </div>
+
+                    <span class="badge badge-primary" id="selectedRoleBadge">
+                        0 Selected
+                    </span>
+
+                </div>
+
+                <div class="role-table-wrapper">
+
+                    <table class="table table-bordered table-hover role-table"
+                           id="roleTable">
+
+                        <thead>
+                            <tr>
+                                <th class="select-column">Select</th>
+                                <th>Profile Name</th>
+                                <th>Description</th>
+                                <th class="status-column">Active</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="roleTableBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACCESS RIGHTS -->
+
+            <div class="workflow-panel" id="workflow-access">
+
+                <div class="role-selected-info">
+
+                    <div>
+                        <span class="role-name" id="accessRoleName">
+                            Select a Role
+                        </span>
+
+                        <div class="role-hint">
+                            Access rights are configured for the selected role.
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="module-access-title">
+                    <i class="fas fa-layer-group mr-2"></i>
+                    Module Access Rights
+                </div>
+
+
+                <div class="module-access-tabs">
+
+                    <button type="button" class="module-tab-arrow"
+                            onclick="scrollModuleTabs(-250)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <div class="module-tabs-container" id="moduleTabs"></div>
+
+                    <button type="button" class="module-tab-arrow"
+                            onclick="scrollModuleTabs(250)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+
+                </div>
+
+
+                <div class="access-selection-area">
+
+                    <div class="menu-grid">
+
+                        <div class="menu-grid-header">
+                            <i class="fas fa-list mr-2"></i>
+                            Menus
+                        </div>
+
+                        <div id="menuGridRows">
+                            <div class="no-menu-message">
+                                Select a module
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="access-grid" id="accessGrid">
+
+                        <div class="access-context">
+
+                            <div>
+                                <div class="access-context-main" id="accessMenuName">
+                                    Select a Menu
+                                </div>
+
+                                <div class="access-context-type" id="accessMenuType">
+                                    Menu Type
+                                </div>
+                            </div>
+
+                            <div class="access-context-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+
+                        </div>
+
+
+                        <div class="access-grid-header">
+                            <div>Access Right</div>
+                            <div>Access</div>
+                        </div>
+
+                        <div id="accessGridRows"></div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="public-access-bar">
+
+                    <div class="hint">
+                        Load all access rights for the selected module with Public Access.
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-outline-primary btn-sm"
+                            onclick="loadAllPublicAccess()">
+
+                        <i class="fas fa-globe mr-1"></i>
+                        Load All with Public Access
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- REPORTS -->
+
+            <div class="workflow-panel" id="workflow-reports">
+
+                <div class="role-selected-info">
+
+                    <div>
+                        <span class="role-name" id="reportsRoleName">
+                            Select a Role
+                        </span>
+
+                        <div class="role-hint">
+                            Select the reports available for this role.
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="role-table-wrapper">
+
+                    <table class="table table-bordered table-hover role-table">
+
+                        <thead>
+                            <tr>
+                                <th class="select-column">Select</th>
+                                <th>Reports</th>
+                                <th class="check-cell">Full Access</th>
+                                <th class="check-cell">Access</th>
+                                <th class="check-cell">Export</th>
+                                <th class="check-cell">Print</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="reportsTableBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- DASHBOARD -->
+
+            <div class="workflow-panel" id="workflow-dashboard">
+
+                <div class="role-selected-info">
+
+                    <div>
+                        <span class="role-name" id="dashboardRoleName">
+                            Select a Role
+                        </span>
+
+                        <div class="role-hint">
+                            Select the dashboards available for this role.
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="role-table-wrapper">
+
+                    <table class="table table-bordered table-hover role-table">
+
+                        <thead>
+                            <tr>
+                                <th class="select-column">Select</th>
+                                <th>Dashboard Name</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="dashboardTableBody"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- ROLE MODAL -->
+
+<div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content border-0 shadow-lg">
+
+            <div class="modal-header modal-header-primary">
+
+                <h6 class="modal-title">
+                    <i class="fas fa-user-shield mr-2"></i>
+                    Role
+                </h6>
+
+                <button type="button" class="close text-white"
+                        data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+
+            </div>
+
+
+            <div class="modal-body px-4 py-3">
+
+                <input type="hidden" id="roleId" />
+
+                <div class="form-group">
+
+                    <label class="form-label">Role Name</label>
+
+                    <input type="text"
+                           id="roleName"
+                           class="form-control"
+                           maxlength="100"
+                           placeholder="Enter role name" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label class="form-label">Description</label>
+
+                    <textarea id="roleDescription"
+                              class="form-control"
+                              rows="3"
+                              maxlength="200"
+                              placeholder="Enter description"></textarea>
+
+                </div>
+
+
+                <div class="custom-control custom-checkbox">
+
+                    <input type="checkbox"
+                           class="custom-control-input"
+                           id="roleActive"
+                           checked />
+
+                    <label class="custom-control-label form-label"
+                           for="roleActive">
+                        Active
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary btn-sm"
+                        data-dismiss="modal">
+                    Cancel
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary btn-sm"
+                        onclick="saveRoleModal()">
+
+                    <i class="fas fa-save mr-1"></i>
+                    Save
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================================
+       DATA
+    ========================================================= */
+
+    let rolesData = [];
+    let accessRightsData = [];
+    let reportsData = [];
+    let dashboardsData = [];
+
+    let modulesData = [];
+    let menusData = [];
+    let menuTypesData = [];
+    let menuActionsData = [];
+
+    let selectedRoleId = null;
+    let selectedModuleId = null;
+    let selectedMenuId = null;
+
+
+    const accessOptions = [
+        "No Access",
+        "Own",
+        "Team",
+        "Parent",
+        "Public",
+        "Location",
+        "Entity",
+        "Department"
+    ];
+
+
+    /* =========================================================
+       READY
+    ========================================================= */
+
+    $(document).ready(function () {
+
+        loadRoleData();
+        loadModuleData();
+
+
+        $('.workflow-tab').on('click', function () {
+
+            const workflow = $(this).data('workflow');
+
+            $('.workflow-tab').removeClass('active');
+            $(this).addClass('active');
+
+            $('.workflow-panel').removeClass('active');
+            $('#workflow-' + workflow).addClass('active');
+
+        });
+
+    });
+
+
+    /* =========================================================
+       LOAD ROLE JSON
+    ========================================================= */
+
+    function loadRoleData() {
+
+        Promise.all([
+
+            fetch('/data/roles.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Unable to load roles.json');
+                    }
+                    return response.json();
+                }),
+
+            fetch('/data/access-rights.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Unable to load access-rights.json');
+                    }
+                    return response.json();
+                }),
+
+            fetch('/data/reports.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Unable to load reports.json');
+                    }
+                    return response.json();
+                }),
+
+            fetch('/data/dashboards.json')
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Unable to load dashboards.json');
+                    }
+                    return response.json();
+                })
+
+        ])
+
+        .then(function (data) {
+
+            rolesData = data[0].roles || [];
+            accessRightsData = data[1].accessRights || [];
+            reportsData = data[2].reports || [];
+            dashboardsData = data[3].dashboards || [];
+
+            renderRoles();
+            renderReports();
+            renderDashboards();
+
+        })
+
+        .catch(function (error) {
+
+            console.error('Role JSON loading error:', error);
+
+            $('#roleTableBody').html(`
+                <tr>
+                    <td colspan="4" class="text-center text-danger py-4">
+                        Unable to load roles.json
+                    </td>
+                </tr>
+            `);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       LOAD MODULE JSON
+    ========================================================= */
+
+    function loadModuleData() {
+
+        Promise.all([
+
+            fetch('/data/modules.json').then(function (response) {
+                if (!response.ok) throw new Error('Unable to load modules.json');
+                return response.json();
+            }),
+
+            fetch('/data/menus.json').then(function (response) {
+                if (!response.ok) throw new Error('Unable to load menus.json');
+                return response.json();
+            }),
+
+            fetch('/data/menu-types.json').then(function (response) {
+                if (!response.ok) throw new Error('Unable to load menu-types.json');
+                return response.json();
+            }),
+
+            fetch('/data/menu-actions.json').then(function (response) {
+                if (!response.ok) throw new Error('Unable to load menu-actions.json');
+                return response.json();
+            })
+
+        ])
+
+        .then(function (data) {
+
+            modulesData = data[0].modules || [];
+            menusData = data[1].menus || [];
+            menuTypesData = data[2].menuTypes || [];
+            menuActionsData = data[3].menuActions || [];
+
+            modulesData.sort(function (a, b) {
+                return Number(a.iSortOrder) - Number(b.iSortOrder);
+            });
+
+            renderModuleTabs();
+
+            const firstActiveModule =
+                modulesData.find(function (module) {
+                    return Number(module.bStatus) === 1;
+                });
+
+            if (firstActiveModule) {
+                selectModule(firstActiveModule.iId);
+            }
+
+        })
+
+        .catch(function (error) {
+
+            console.error('Module JSON loading error:', error);
+
+            $('#moduleTabs').empty();
+
+            $('#menuGridRows').html(`
+                <div class="no-menu-message">
+                    Unable to load module data.
+                </div>
+            `);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       RENDER ROLES
+    ========================================================= */
+
+    function renderRoles() {
+
+        const tbody = $('#roleTableBody');
+
+        tbody.empty();
+
+        rolesData.forEach(function (role) {
+
+            tbody.append(`
+                <tr>
+
+                    <td class="select-column">
+
+                        <input type="checkbox"
+                               class="role-selector"
+                               value="${escapeHtml(role.iId)}"
+                               onchange="selectRole(${Number(role.iId)})" />
+
+                    </td>
+
+                    <td>
+                        ${escapeHtml(role.sName)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(role.sDescription)}
+                    </td>
+
+                    <td class="status-column">
+
+                        <span class="badge ${
+                            Number(role.bStatus) === 1
+                                ? 'badge-success'
+                                : 'badge-secondary'
+                        }">
+
+                            ${
+                                Number(role.bStatus) === 1
+                                    ? 'Active'
+                                    : 'Inactive'
+                            }
+
+                        </span>
+
+                    </td>
+
+                </tr>
+            `);
+
+        });
+
+        if (rolesData.length === 0) {
+
+            tbody.html(`
+                <tr>
+                    <td colspan="4"
+                        class="text-center text-muted py-4">
+                        No roles available.
+                    </td>
+                </tr>
+            `);
+
+        }
+
+    }
+
+
+    /* =========================================================
+       SELECT ROLE
+    ========================================================= */
+
+    function selectRole(roleId) {
+
+        selectedRoleId = Number(roleId);
+
+        $('.role-selector').prop('checked', false);
+
+        $(`.role-selector[value="${roleId}"]`)
+            .prop('checked', true);
+
+
+        const role = rolesData.find(function (item) {
+            return Number(item.iId) === Number(roleId);
+        });
+
+        if (!role) return;
+
+
+        $('#selectedRoleName').text(role.sName);
+        $('#selectedRoleBadge').text('1 Selected');
+
+        $('#accessRoleName').text(role.sName);
+        $('#reportsRoleName').text(role.sName);
+        $('#dashboardRoleName').text(role.sName);
+
+
+        renderReports();
+
+    }
+
+
+    /* =========================================================
+       MODULE TABS
+    ========================================================= */
+
+    function renderModuleTabs() {
+
+        const container = $('#moduleTabs');
+
+        container.empty();
+
+        modulesData.forEach(function (module) {
+
+            const disabledClass =
+                Number(module.bStatus) === 0
+                    ? ' module-disabled'
+                    : '';
+
+            container.append(`
+                <a href="#"
+                   class="module-tab${disabledClass}"
+                   data-module-id="${module.iId}">
+
+                    ${escapeHtml(module.sName)}
+
+                </a>
+            `);
+
+        });
+
+    }
+
+
+    $(document).on('click', '.module-tab', function (e) {
+
+        e.preventDefault();
+
+        const moduleId =
+            Number($(this).data('module-id'));
+
+        const module =
+            modulesData.find(function (item) {
+                return Number(item.iId) === moduleId;
+            });
+
+        if (!module || Number(module.bStatus) === 0) {
+            return;
+        }
+
+        selectModule(moduleId);
+
+    });
+
+
+    /* =========================================================
+       SELECT MODULE
+    ========================================================= */
+
+    function selectModule(moduleId) {
+
+        selectedModuleId = Number(moduleId);
+        selectedMenuId = null;
+
+        $('.module-tab').removeClass('active');
+
+        $(`.module-tab[data-module-id="${selectedModuleId}"]`)
+            .addClass('active');
+
+        $('#accessGrid').removeClass('visible');
+        $('#accessGridRows').empty();
+
+        $('#accessMenuName').text('Select a Menu');
+        $('#accessMenuType').text('Menu Type');
+
+        renderMenuList(selectedModuleId);
+        renderReports();
+
+    }
+
+
+    /* =========================================================
+       MENU LIST
+    ========================================================= */
+
+    function renderMenuList(moduleId) {
+
+        const container = $('#menuGridRows');
+
+        container.empty();
+
+        const menus =
+            menusData
+                .filter(function (menu) {
+
+                    return Number(menu.iModuleId) === Number(moduleId)
+                        && Number(menu.bStatus) === 1;
+
+                })
+                .sort(function (a, b) {
+
+                    return Number(a.iSortOrder)
+                        - Number(b.iSortOrder);
+
+                });
+
+
+        if (menus.length === 0) {
+
+            container.html(`
+                <div class="no-menu-message">
+                    No menus available.
+                </div>
+            `);
+
+            return;
+        }
+
+
+        menus.forEach(function (menu) {
+
+            const menuType =
+                menuTypesData.find(function (type) {
+
+                    return Number(type.iId)
+                        === Number(menu.iMenuTypeId);
+
+                });
+
+
+            const menuTypeName =
+                menuType
+                    ? menuType.sName
+                    : 'Menu';
+
+
+            container.append(`
+                <div class="menu-grid-row"
+                     data-menu-id="${menu.iId}">
+
+                    <div class="menu-name">
+
+                        <i class="fas fa-bars mr-2 text-primary"></i>
+
+                        ${escapeHtml(menu.sName)}
+
+                    </div>
+
+                    <div class="menu-type">
+                        ${escapeHtml(menuTypeName)}
+                    </div>
+
+                </div>
+            `);
+
+        });
+
+
+        $('.menu-grid-row').on('click', function () {
+
+            selectMenu(
+                Number($(this).data('menu-id'))
+            );
+
+        });
+
+    }
+
+
+    /* =========================================================
+       SELECT MENU
+    ========================================================= */
+
+    function selectMenu(menuId) {
+
+        selectedMenuId = Number(menuId);
+
+        $('.menu-grid-row').removeClass('active');
+
+        $(`.menu-grid-row[data-menu-id="${menuId}"]`)
+            .addClass('active');
+
+
+        const menu =
+            menusData.find(function (item) {
+                return Number(item.iId) === Number(menuId);
+            });
+
+        if (!menu) return;
+
+
+        const menuType =
+            menuTypesData.find(function (type) {
+                return Number(type.iId)
+                    === Number(menu.iMenuTypeId);
+            });
+
+
+        $('#accessMenuName')
+            .text(menu.sName || 'Menu');
+
+        $('#accessMenuType')
+            .text(
+                menuType
+                    ? menuType.sName
+                    : 'Menu Type'
+            );
+
+
+        renderAccessGrid(menu);
+
+        $('#accessGrid').addClass('visible');
+
+    }
+
+
+    /* =========================================================
+       ACCESS GRID
+    ========================================================= */
+
+    function renderAccessGrid(menu) {
+
+        const container = $('#accessGridRows');
+
+        container.empty();
+
+
+        const actions = menuActionsData
+    .filter(function (action) {
+        return Number(action.iMenuTypeId) === Number(menu.iMenuTypeId)
+            && Number(action.bStatus) === 1;
+    })
+    .sort(function (a, b) {
+        return Number(a.iSortOrder) - Number(b.iSortOrder);
+    });
+
+
+        const savedAccess =
+            accessRightsData.find(function (item) {
+
+                return Number(item.iRoleId)
+                    === Number(selectedRoleId)
+
+                    && Number(item.iModuleId)
+                    === Number(selectedModuleId)
+
+                    && Number(item.iMenuId)
+                    === Number(menu.iId);
+
+            });
+
+
+        actions.forEach(function (action) {
+
+            const actionName =
+                action.sName
+                || action.name
+                || action.Action
+                || 'Access';
+
+
+            let selectedValue = 'No Access';
+
+
+            if (savedAccess && savedAccess.actions) {
+
+                selectedValue =
+                    savedAccess.actions[actionName]
+                    || 'No Access';
+
+            }
+
+
+            container.append(`
+                <div class="access-grid-row">
+
+                    <div class="access-action-name">
+
+                        ${getActionIcon(actionName)}
+
+                        ${escapeHtml(actionName)}
+
+                    </div>
+
+                    <div>
+
+                        <select class="access-select"
+                                data-action="${escapeHtml(actionName)}">
+
+                            ${buildAccessOptions(selectedValue)}
+
+                        </select>
+
+                    </div>
+
+                </div>
+            `);
+
+        });
+
+    }
+
+
+    /* =========================================================
+       ACCESS OPTIONS
+    ========================================================= */
+
+    function buildAccessOptions(selectedValue) {
+
+        return accessOptions.map(function (option) {
+
+            return `
+                <option value="${escapeHtml(option)}"
+                        ${option === selectedValue ? 'selected' : ''}>
+
+                    ${escapeHtml(option)}
+
+                </option>
+            `;
+
+        }).join('');
+
+    }
+
+
+    /* =========================================================
+       LOAD ALL PUBLIC
+    ========================================================= */
+
+    function loadAllPublicAccess() {
+
+        if (!selectedRoleId) {
+            alert('Please select a role first.');
+            return;
+        }
+
+        if (!selectedModuleId) {
+            alert('Please select a module first.');
+            return;
+        }
+
+        $('#accessGridRows')
+            .find('.access-select')
+            .val('Public');
+
+    }
+
+
+    /* =========================================================
+       ACTION ICON
+    ========================================================= */
+
+    function getActionIcon(actionName) {
+
+        const name =
+            String(actionName).toLowerCase();
+
+        if (name.includes('read')) {
+            return '<i class="fas fa-eye text-primary mr-2"></i>';
+        }
+
+        if (name.includes('add')) {
+            return '<i class="fas fa-plus text-success mr-2"></i>';
+        }
+
+        if (name.includes('edit')) {
+            return '<i class="fas fa-edit text-info mr-2"></i>';
+        }
+
+        if (name.includes('delete')) {
+            return '<i class="fas fa-trash text-danger mr-2"></i>';
+        }
+
+        return '<i class="fas fa-key text-primary mr-2"></i>';
+
+    }
+
+
+    /* =========================================================
+       REPORTS
+    ========================================================= */
+
+    function renderReports() {
+
+        const tbody = $('#reportsTableBody');
+
+        tbody.empty();
+
+
+        const filteredReports =
+            reportsData.filter(function (report) {
+
+                const roleMatches =
+                    !report.iRoleId
+                    || !selectedRoleId
+                    || Number(report.iRoleId)
+                        === Number(selectedRoleId);
+
+
+                const moduleMatches =
+                    !report.iModuleId
+                    || !selectedModuleId
+                    || Number(report.iModuleId)
+                        === Number(selectedModuleId);
+
+
+                return roleMatches
+                    && moduleMatches
+                    && Number(report.bStatus) === 1;
+
+            });
+
+
+        filteredReports.forEach(function (report) {
+
+            tbody.append(`
+                <tr>
+
+                    <td class="select-column">
+                        <input type="checkbox"
+                               class="report-selector"
+                               value="${escapeHtml(report.iId)}" />
+                    </td>
+
+                    <td class="report-name">
+                        ${escapeHtml(report.sName)}
+                    </td>
+
+                    <td class="check-cell">
+                        <input type="checkbox" />
+                    </td>
+
+                    <td class="check-cell">
+                        <input type="checkbox" />
+                    </td>
+
+                    <td class="check-cell">
+                        <input type="checkbox" />
+                    </td>
+
+                    <td class="check-cell">
+                        <input type="checkbox" />
+                    </td>
+
+                </tr>
+            `);
+
+        });
+
+
+        if (filteredReports.length === 0) {
+
+            tbody.html(`
+                <tr>
+                    <td colspan="6"
+                        class="text-center text-muted py-4">
+                        No reports available.
+                    </td>
+                </tr>
+            `);
+
+        }
+
+    }
+
+
+    /* =========================================================
+       DASHBOARDS
+    ========================================================= */
+
+    function renderDashboards() {
+
+        const tbody = $('#dashboardTableBody');
+
+        tbody.empty();
+
+
+        const activeDashboards =
+            dashboardsData.filter(function (dashboard) {
+
+                return Number(dashboard.bStatus) === 1;
+
+            });
+
+
+        activeDashboards.forEach(function (dashboard) {
+
+            tbody.append(`
+                <tr>
+
+                    <td class="select-column">
+
+                        <input type="checkbox"
+                               class="dashboard-selector"
+                               value="${escapeHtml(dashboard.iId)}" />
+
+                    </td>
+
+                    <td class="dashboard-name">
+
+                        ${escapeHtml(dashboard.sName)}
+
+                    </td>
+
+                </tr>
+            `);
+
+        });
+
+
+        if (activeDashboards.length === 0) {
+
+            tbody.html(`
+                <tr>
+                    <td colspan="2"
+                        class="text-center text-muted py-4">
+                        No dashboards available.
+                    </td>
+                </tr>
+            `);
+
+        }
+
+    }
+
+
+    /* =========================================================
+       MODULE TAB SCROLL
+    ========================================================= */
+
+    function scrollModuleTabs(amount) {
+
+        const container =
+            document.getElementById('moduleTabs');
+
+        if (!container) return;
+
+        container.scrollBy({
+            left: amount,
+            behavior: 'smooth'
+        });
+
+    }
+
+
+    /* =========================================================
+       ADD
+    ========================================================= */
+
+    function addRole() {
+
+        $('#roleId').val('');
+        $('#roleName').val('');
+        $('#roleDescription').val('');
+        $('#roleActive').prop('checked', true);
+
+        $('#roleModal').modal('show');
+
+    }
+
+
+    /* =========================================================
+       SAVE / EDIT
+    ========================================================= */
+
+    function saveRole() {
+
+        if (!selectedRoleId) {
+
+            alert('Please select a role.');
+
+            return;
+        }
+
+
+        const role =
+            rolesData.find(function (item) {
+
+                return Number(item.iId)
+                    === Number(selectedRoleId);
+
+            });
+
+
+        if (!role) return;
+
+
+        $('#roleId').val(role.iId);
+        $('#roleName').val(role.sName);
+        $('#roleDescription').val(role.sDescription);
+        $('#roleActive').prop(
+            'checked',
+            Number(role.bStatus) === 1
+        );
+
+
+        $('#roleModal').modal('show');
+
+    }
+
+
+    /* =========================================================
+       SAVE MODAL
+    ========================================================= */
+
+    function saveRoleModal() {
+
+        const id =
+            $('#roleId').val();
+
+        const name =
+            $('#roleName').val().trim();
+
+        const description =
+            $('#roleDescription').val().trim();
+
+        const active =
+            $('#roleActive').is(':checked');
+
+
+        if (!name) {
+
+            alert('Role name is required.');
+
+            return;
+        }
+
+
+        if (!id) {
+
+            const newId =
+                rolesData.length > 0
+                    ? Math.max(
+                        ...rolesData.map(
+                            function (r) {
+                                return Number(r.iId);
+                            }
+                        )
+                    ) + 1
+                    : 1;
+
+
+            rolesData.push({
+
+                iId: newId,
+                sName: name,
+                sDescription: description,
+                bStatus: active ? 1 : 0
+
+            });
+
+
+            selectedRoleId = newId;
+
+        }
+        else {
+
+            const role =
+                rolesData.find(function (item) {
+
+                    return Number(item.iId)
+                        === Number(id);
+
+                });
+
+
+            if (role) {
+
+                role.sName = name;
+                role.sDescription = description;
+                role.bStatus = active ? 1 : 0;
+
+            }
+
+        }
+
+
+        renderRoles();
+
+        selectRole(selectedRoleId);
+
+        $('#roleModal').modal('hide');
+
+    }
+
+
+    /* =========================================================
+       CLONE
+    ========================================================= */
+
+    function cloneRole() {
+
+        if (!selectedRoleId) {
+
+            alert('Please select a role to clone.');
+
+            return;
+        }
+
+
+        const role =
+            rolesData.find(function (item) {
+
+                return Number(item.iId)
+                    === Number(selectedRoleId);
+
+            });
+
+
+        if (!role) return;
+
+
+        $('#roleId').val('');
+
+        $('#roleName').val(
+            role.sName + ' Copy'
+        );
+
+        $('#roleDescription').val(
+            role.sDescription
+        );
+
+        $('#roleActive').prop(
+            'checked',
+            true
+        );
+
+
+        $('#roleModal').modal('show');
+
+    }
+
+
+    /* =========================================================
+       DELETE
+    ========================================================= */
+
+    function deleteRole() {
+
+        if (!selectedRoleId) {
+
+            alert('Please select a role.');
+
+            return;
+        }
+
+
+        const role =
+            rolesData.find(function (item) {
+
+                return Number(item.iId)
+                    === Number(selectedRoleId);
+
+            });
+
+
+        if (!role) return;
+
+
+        if (!confirm(
+            'Are you sure you want to delete "' +
+            role.sName +
+            '"?'
+        )) {
+            return;
+        }
+
+
+        rolesData =
+            rolesData.filter(function (item) {
+
+                return Number(item.iId)
+                    !== Number(selectedRoleId);
+
+            });
+
+
+        selectedRoleId = null;
+
+        renderRoles();
+
+        $('#selectedRoleName')
+            .text('No Role Selected');
+
+        $('#selectedRoleBadge')
+            .text('0 Selected');
+
+        $('#accessRoleName')
+            .text('Select a Role');
+
+        $('#reportsRoleName')
+            .text('Select a Role');
+
+        $('#dashboardRoleName')
+            .text('Select a Role');
+
+    }
+
+
+    /* =========================================================
+       HTML ESCAPE
+    ========================================================= */
+
+    function escapeHtml(value) {
+
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+
+    }
+
+</script>
