@@ -1389,162 +1389,136 @@
            GRID RENDERING
         ========================================================= */
 
-        function renderGrid(data) {
+        /* =========================================================
+   GRID RENDERING
+========================================================= */
 
-            const columns =
-                Array.isArray(data.columns)
-                    ? data.columns
-                    : [];
+function renderGrid(data) {
 
+    const columns =
+        Array.isArray(data.columns)
+            ? data.columns
+            : [];
 
-            const savedRows =
-                Array.isArray(gridState[data.id])
-                    ? gridState[data.id]
-                    : [];
+    /*
+       Always start with one empty row
+       when there is no existing grid data.
+    */
+    let savedRows =
+        Array.isArray(gridState[data.id]) &&
+        gridState[data.id].length > 0
+            ? gridState[data.id]
+            : [{}];
 
+    gridState[data.id] = savedRows;
 
-            let html =
-                '<div class="tab-heading">' +
-                escapeHtml(data.title || '') +
-                '</div>';
+    let html =
+        '<div class="tab-heading">' +
+        escapeHtml(data.title || '') +
+        '</div>';
 
+    html +=
+        '<div class="grid-toolbar">';
+
+    html +=
+        '<button type="button" ' +
+        'class="btn btn-sm btn-primary" ' +
+        'id="btnAddGridRow">';
+
+    html +=
+        '<i class="fas fa-plus mr-1"></i>' +
+        'Add Row';
+
+    html +=
+        '</button>';
+
+    html +=
+        '</div>';
+
+    html +=
+        '<div class="accounts-grid-wrapper">';
+
+    html +=
+        '<table class="accounts-grid">';
+
+    html +=
+        '<thead><tr>';
+
+    columns.forEach(function (column) {
+
+        html +=
+            '<th>' +
+            escapeHtml(
+                column.label ||
+                column.id
+            ) +
+            '</th>';
+
+    });
+
+    html +=
+        '<th style="width:55px;">Action</th>';
+
+    html +=
+        '</tr></thead>';
+
+    html +=
+        '<tbody id="accountsGridBody">';
+
+    savedRows.forEach(
+        function (row, index) {
 
             html +=
-                '<div class="grid-toolbar">';
-
-
-            html +=
-                '<button type="button" ' +
-                'class="btn btn-sm btn-primary" ' +
-                'id="btnAddGridRow">';
-
-
-            html +=
-                '<i class="fas fa-plus mr-1"></i>' +
-                'Add Row';
-
-
-            html +=
-                '</button>';
-
-
-            html +=
-                '</div>';
-
-
-            html +=
-                '<div class="accounts-grid-wrapper">';
-
-
-            html +=
-                '<table class="accounts-grid">';
-
-
-            html +=
-                '<thead><tr>';
-
-
-            columns.forEach(function (column) {
-
-                html +=
-                    '<th>' +
-                    escapeHtml(
-                        column.label ||
-                        column.id
-                    ) +
-                    '</th>';
-
-            });
-
-
-            html +=
-                '<th style="width:55px;">Action</th>';
-
-
-            html +=
-                '</tr></thead>';
-
-
-            html +=
-                '<tbody id="accountsGridBody">';
-
-
-            if (savedRows.length === 0) {
-
-                html +=
-                    '<tr class="grid-empty-row">' +
-                    '<td class="accounts-grid-empty" colspan="' +
-                    (columns.length + 1) +
-                    '">' +
-                    'No records. Click Add Row to enter data.' +
-                    '</td>' +
-                    '</tr>';
-
-            }
-            else {
-
-                savedRows.forEach(
-                    function (row, index) {
-
-                        html +=
-                            buildGridRow(
-                                columns,
-                                row,
-                                index
-                            );
-
-                    }
+                buildGridRow(
+                    columns,
+                    row,
+                    index
                 );
 
-            }
+        }
+    );
+
+    html +=
+        '</tbody></table></div>';
+
+    $('#accountsContent')
+        .html(html);
 
 
-            html +=
-                '</tbody></table></div>';
+    /* =====================================================
+       ADD ROW
+    ===================================================== */
 
+    $('#btnAddGridRow').on(
+        'click',
+        function () {
 
-            $('#accountsContent')
-                .html(html);
+            const currentRows =
+                collectGridRows();
 
+            currentRows.push({});
 
-            $('#btnAddGridRow').on(
-                'click',
-                function () {
+            gridState[data.id] =
+                currentRows;
 
-                    $('.grid-empty-row')
-                        .remove();
-
-
-                    const currentRows =
-                        collectGridRows();
-
-
-                    currentRows.push({});
-
-
-                    gridState[data.id] =
-                        currentRows;
-
-
-                    $('#accountsGridBody')
-                        .append(
-                            buildGridRow(
-                                columns,
-                                {},
-                                currentRows.length - 1
-                            )
-                        );
-
-
-                    bindGridEvents();
-
-                }
-            );
-
+            $('#accountsGridBody')
+                .append(
+                    buildGridRow(
+                        columns,
+                        {},
+                        currentRows.length - 1
+                    )
+                );
 
             bindGridEvents();
 
         }
+    );
+
+
+    bindGridEvents();
+
+}
 
 
         /* =========================================================
@@ -1700,76 +1674,101 @@
 
 
         /* =========================================================
-           GRID EVENTS
-        ========================================================= */
+   GRID EVENTS
+========================================================= */
 
-        function bindGridEvents() {
+function bindGridEvents() {
 
-            $('.grid-row-delete')
-                .off('click')
-                .on('click', function () {
+    $('.grid-row-delete')
+        .off('click')
+        .on('click', function () {
 
-                    const row =
-                        $(this).closest('tr');
+            const row =
+                $(this).closest('tr');
+
+            row.remove();
 
 
-                    row.remove();
+            /*
+               Never allow the grid to become completely empty.
+               If the last row is deleted, create one blank row.
+            */
+            if (
+                $('#accountsGridBody tr')
+                    .length === 0
+            ) {
 
+                const tab =
+                    accountsTabs.find(
+                        function (item) {
+                            return item.id === activeTabId;
+                        }
+                    );
 
-                    if (
-                        $('#accountsGridBody tr')
-                            .length === 0
-                    ) {
+                if (tab) {
 
-                        const columnCount =
-                            $('#accountsGridBody')
-                                .closest('table')
-                                .find('thead th')
-                                .length;
+                    const data =
+                        tabDataCache[tab.file];
 
+                    if (data) {
+
+                        gridState[data.id] = [{}];
 
                         $('#accountsGridBody')
-                            .html(
-                                '<tr class="grid-empty-row">' +
-                                '<td class="accounts-grid-empty" colspan="' +
-                                columnCount +
-                                '">' +
-                                'No records. Click Add Row to enter data.' +
-                                '</td>' +
-                                '</tr>'
+                            .append(
+                                buildGridRow(
+                                    data.columns,
+                                    {},
+                                    0
+                                )
                             );
 
                     }
 
-                });
-
-
-            $('.grid-field').each(function () {
-
-                const type =
-                    $(this)
-                        .prop('tagName')
-                        .toLowerCase();
-
-
-                if (type !== 'select') {
-                    return;
                 }
 
+            }
 
-                if ($(this).children().length === 1) {
 
-                    $(this).append(
-                        '<option value="system-default">' +
-                        'System Default' +
-                        '</option>'
-                    );
+            /*
+               Re-bind events after creating
+               the replacement row.
+            */
+            bindGridEvents();
 
-                }
+        });
 
-            });
+
+    /* =====================================================
+       DROPDOWN DEFAULT OPTIONS
+    ===================================================== */
+
+    $('.grid-field').each(function () {
+
+        const type =
+            $(this)
+                .prop('tagName')
+                .toLowerCase();
+
+
+        if (type !== 'select') {
+            return;
+        }
+
+
+        if ($(this).children().length === 1) {
+
+            $(this).append(
+                '<option value="system-default">' +
+                'System Default' +
+                '</option>'
+            );
 
         }
+
+    });
+
+}
 
 
         /* =========================================================
