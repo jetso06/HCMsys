@@ -169,14 +169,43 @@
                     Account Master
                 </div>
                 <div class="btn-group-actions">
-                    <a href="#" class="btn btn-primary btn-sm shadow-sm">
-                        <i class="fas fa-home fa-sm text-white-50 mr-1"></i> Home
-                    </a>
-                    <a href="@Url.Action("Account", "Master")"
-   class="btn btn-success btn-sm shadow-sm">
-    <i class="fas fa-plus fa-sm text-white-50 mr-1"></i> New
-</a>
-                </div>
+
+    <button type="button"
+            class="btn btn-primary btn-sm shadow-sm"
+            id="btnHome">
+        <i class="fas fa-home fa-sm text-white-50 mr-1"></i>
+        Home
+    </button>
+
+    <button type="button"
+            class="btn btn-success btn-sm shadow-sm"
+            id="btnNew">
+        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+        New
+    </button>
+
+    <button type="button"
+            class="btn btn-primary btn-sm shadow-sm"
+            id="btnSave">
+        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+        Save
+    </button>
+
+    <button type="button"
+            class="btn btn-info btn-sm shadow-sm"
+            id="btnClone">
+        <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+        Clone
+    </button>
+
+    <button type="button"
+            class="btn btn-danger btn-sm shadow-sm"
+            id="btnDelete">
+        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+        Delete
+    </button>
+
+</div>
             </div>
         </div>
     </div>
@@ -299,7 +328,12 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
 
     <script>
+        $('#btnNew').on('click', function () {
 
+    window.location.href =
+        '@Url.Action("Account", "Master")';
+
+});
     $(document).ready(function () {
 
         fetch('/data/Accounts/accounts.json')
