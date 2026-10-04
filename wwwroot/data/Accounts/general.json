@@ -28,6 +28,13 @@
       "validation": "Mandatory"
     },
     {
+      "id": "accountGroup",
+      "label": "Account Group",
+      "type": "master-selection",
+      "possibleValues": "System Default",
+      "validation": "Mandatory"
+    },
+    {
       "id": "accountType",
       "label": "Account Type",
       "type": "master-selection",
