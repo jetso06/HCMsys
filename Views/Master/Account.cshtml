@@ -438,6 +438,49 @@
             padding-right: 13px;
         }
     }
+/* =========================
+   ADDRESS SECTIONS
+   ========================= */
+
+.address-section {
+    margin-bottom: 20px;
+    border: 1px solid #e1e6ed;
+    border-radius: .35rem;
+    overflow: hidden;
+}
+
+.address-section-title {
+    background: #eef0f3;
+    border-bottom: 1px solid #e1e6ed;
+    padding: 10px 14px;
+    font-size: .78rem;
+    font-weight: 800;
+    color: #4e73df;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.address-section .form-grid {
+    padding: 14px;
+}
+
+.same-address-check {
+    padding: 0 14px 14px 14px;
+}
+
+.same-address-check label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #5a5c69;
+    cursor: pointer;
+}
+
+.same-address-check input {
+    cursor: pointer;
+}
 </style>
 
 
@@ -560,68 +603,77 @@
 </div>
 
 
+
 <script>
 
     (function () {
 
-        /*
-         * Only these 8 JSON files are used.
-         * No master-tabs.json.
-         * No separate country/currency/etc. JSON files.
-         */
+        /* =========================================================
+           ACCOUNTS JSON CONFIGURATION
+        ========================================================= */
 
-        const accountsBasePath = '/data/accounts/';
+        const accountsBasePath = '/data/Accounts/';
 
         const accountsTabs = [
+
             {
                 id: 'general',
                 title: 'General',
                 file: 'general.json',
                 type: 'form'
             },
+
             {
                 id: 'settings',
                 title: 'Settings',
                 file: 'settings.json',
                 type: 'form'
             },
+
             {
                 id: 'master-links',
                 title: 'Master Links',
                 file: 'master-links.json',
                 type: 'form'
             },
+
             {
                 id: 'address',
                 title: 'Address',
                 file: 'address.json',
                 type: 'form'
             },
+
             {
                 id: 'contact',
                 title: 'Contact',
                 file: 'contact.json',
                 type: 'grid'
             },
+
             {
                 id: 'tax-info',
                 title: 'Tax Info',
                 file: 'tax-info.json',
                 type: 'form'
             },
+
             {
                 id: 'bank-details',
                 title: 'Bank Details',
                 file: 'bank-details.json',
                 type: 'form'
             },
+
             {
                 id: 'attachments',
                 title: 'Attachments',
                 file: 'attachments.json',
                 type: 'grid'
             }
+
         ];
+
 
         let activeTabId = null;
 
@@ -632,23 +684,20 @@
         let gridState = {};
 
 
-        /* =========================
+        /* =========================================================
            INITIALIZATION
-           ========================= */
+        ========================================================= */
 
         $(document).ready(function () {
 
             renderTabs();
 
-            /*
-             * First tab opens automatically.
-             */
             selectTab('general');
 
 
-            /* =========================
+            /* =====================================================
                HEADER BUTTONS
-               ========================= */
+            ===================================================== */
 
             $('#btnHome').on('click', function () {
 
@@ -726,15 +775,9 @@
             });
 
 
-            /* =========================
+            /* =====================================================
                TAB BAR ARROWS
-
-               IMPORTANT:
-               These ONLY scroll the
-               horizontal tab bar.
-
-               They DO NOT change tabs.
-               ========================= */
+            ===================================================== */
 
             $('#accountsTabPrev').on('click', function () {
 
@@ -762,34 +805,39 @@
         });
 
 
-        /* =========================
+        /* =========================================================
            RENDER TABS
-           ========================= */
+        ========================================================= */
 
         function renderTabs() {
 
-            const container = $('#accountsTabs');
+            const container =
+                $('#accountsTabs');
 
             container.empty();
 
             accountsTabs.forEach(function (tab) {
 
-                const button = $('<button>', {
-                    type: 'button',
-                    class: 'accounts-tab',
-                    text: tab.title
-                });
+                const button =
+                    $('<button>', {
+                        type: 'button',
+                        class: 'accounts-tab',
+                        text: tab.title
+                    });
+
 
                 button.attr(
                     'data-tab-id',
                     tab.id
                 );
 
+
                 button.on('click', function () {
 
                     selectTab(tab.id);
 
                 });
+
 
                 container.append(button);
 
@@ -798,30 +846,26 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            SELECT TAB
-           ========================= */
+        ========================================================= */
 
         async function selectTab(tabId) {
 
-            const tab = accountsTabs.find(function (item) {
+            const tab =
+                accountsTabs.find(function (item) {
 
-                return item.id === tabId;
+                    return item.id === tabId;
 
-            });
+                });
+
 
             if (!tab) {
                 return;
             }
 
 
-            /*
-             * Save current visible fields
-             * before changing tab.
-             */
-
             collectCurrentTabData();
-
 
             activeTabId = tabId;
 
@@ -881,7 +925,11 @@
             }
             catch (error) {
 
-                console.error(error);
+                console.error(
+                    'Accounts tab error:',
+                    error
+                );
+
 
                 $('#accountsContent').html(
                     '<div class="alert alert-danger mb-0">' +
@@ -896,9 +944,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            ACTIVE TAB
-           ========================= */
+        ========================================================= */
 
         function setActiveTab() {
 
@@ -916,95 +964,305 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            FORM RENDERING
-           ========================= */
+        ========================================================= */
 
         function renderForm(data) {
 
-            const fields =
-                Array.isArray(data.fields)
-                    ? data.fields
-                    : [];
-
-
             let html =
-    '<div class="tab-heading">' +
-    '<i class="fas fa-university"></i>' +
-    escapeHtml(data.title || '') +
-    '</div>';
+                '<div class="tab-heading">' +
+                '<i class="fas fa-university"></i>' +
+                escapeHtml(data.title || '') +
+                '</div>';
 
 
-            html +=
-                '<div class="form-grid">';
+            /* =====================================================
+               NORMAL FORM
+            ===================================================== */
 
-
-            fields.forEach(function (field) {
-
-                const fullWidth =
-                    String(field.type).toLowerCase() ===
-                    'textarea'
-                        ? ' full-width'
-                        : '';
-
+            if (Array.isArray(data.fields)) {
 
                 html +=
-                    '<div class="form-field' +
-                    fullWidth +
-                    '">';
+                    '<div class="form-grid">';
 
 
-                html +=
-                    '<label class="form-label" for="' +
-                    escapeAttr(field.id) +
-                    '">';
-
-
-                html +=
-                    escapeHtml(
-                        field.label || field.id
-                    );
-
-
-                if (
-                    String(field.validation || '')
-                        .toLowerCase() ===
-                    'mandatory'
-                ) {
+                data.fields.forEach(function (field) {
 
                     html +=
-                        '<span class="mandatory">*</span>';
+                        buildFormFieldWrapper(field);
 
-                }
-
-
-                html += '</label>';
+                });
 
 
                 html +=
-                    buildFormField(field);
+                    '</div>';
+
+            }
 
 
-                
+            /* =====================================================
+               SECTION BASED FORM
+               Used by Address tab
+            ===================================================== */
+
+            else if (Array.isArray(data.sections)) {
+
+                data.sections.forEach(function (section) {
+
+                    html +=
+                        '<div class="address-section">';
 
 
-                html += '</div>';
+                    html +=
+                        '<div class="address-section-title">' +
+                        escapeHtml(
+                            section.title || ''
+                        ) +
+                        '</div>';
 
-            });
+
+                    html +=
+                        '<div class="form-grid">';
 
 
-            html += '</div>';
+                    if (
+                        Array.isArray(section.fields)
+                    ) {
+
+                        section.fields.forEach(
+                            function (field) {
+
+                                html +=
+                                    buildFormFieldWrapper(
+                                        field
+                                    );
+
+                            }
+                        );
+
+                    }
 
 
-            $('#accountsContent')
-                .html(html);
+                    html +=
+                        '</div>';
+
+
+                    /* =============================================
+                       SAME AS BILLING CHECKBOX
+                    ============================================= */
+
+                    if (section.sameAsBilling) {
+
+                        html +=
+                            '<div class="same-address-check">' +
+
+                            '<label>' +
+
+                            '<input ' +
+                            'type="checkbox" ' +
+                            'class="account-field" ' +
+                            'id="' +
+                            escapeAttr(
+                                section.sameAsBilling.id
+                            ) +
+                            '" ' +
+                            'data-field-id="' +
+                            escapeAttr(
+                                section.sameAsBilling.id
+                            ) +
+                            '">' +
+
+                            '<span>' +
+                            escapeHtml(
+                                section.sameAsBilling.label ||
+                                'Same as Billing Address'
+                            ) +
+                            '</span>' +
+
+                            '</label>' +
+
+                            '</div>';
+
+                    }
+
+
+                    html +=
+                        '</div>';
+
+                });
+
+            }
+
+
+            $('#accountsContent').html(html);
+
+
+            /* =====================================================
+               SAME AS BILLING EVENT
+            ===================================================== */
+
+            $('#sameAsBillingAddress')
+                .on(
+                    'change',
+                    function () {
+
+                        if ($(this).is(':checked')) {
+
+                            copyBillingToOffice();
+
+                        }
+
+                    }
+                );
 
         }
 
 
-        /* =========================
+        /* =========================================================
+           FORM FIELD WRAPPER
+        ========================================================= */
+
+        function buildFormFieldWrapper(field) {
+
+            const type =
+                String(field.type || 'text')
+                    .toLowerCase();
+
+
+            let fullWidth = '';
+
+
+            if (type === 'textarea') {
+
+                fullWidth =
+                    ' full-width';
+
+            }
+
+
+            let html =
+                '<div class="form-field' +
+                fullWidth +
+                '">';
+
+
+            html +=
+                '<label class="form-label" for="' +
+                escapeAttr(field.id) +
+                '">';
+
+
+            html +=
+                escapeHtml(
+                    field.label ||
+                    field.id
+                );
+
+
+            if (
+                String(field.validation || '')
+                    .toLowerCase() === 'mandatory'
+            ) {
+
+                html +=
+                    '<span class="mandatory">*</span>';
+
+            }
+
+
+            html +=
+                '</label>';
+
+
+            html +=
+                buildFormField(field);
+
+
+            html +=
+                '</div>';
+
+
+            return html;
+
+        }
+
+
+        /* =========================================================
+           COPY BILLING ADDRESS TO OFFICE ADDRESS
+        ========================================================= */
+
+        function copyBillingToOffice() {
+
+            const mappings = {
+
+                billingAddress1:
+                    'officeAddress1',
+
+                billingAddress2:
+                    'officeAddress2',
+
+                billingCity:
+                    'officeCity',
+
+                billingCountry:
+                    'officeCountry',
+
+                billingTelephoneNo:
+                    'officeTelephoneNo',
+
+                billingFaxNo:
+                    'officeFaxNo',
+
+                billingWebsite:
+                    'officeWebsite',
+
+                billingCrNo:
+                    'officeCrNo',
+
+                billingEstablishedOn:
+                    'officeEstablishedOn',
+
+                billingSponsorName:
+                    'officeSponsorName'
+
+            };
+
+
+            Object.keys(mappings)
+                .forEach(function (billingId) {
+
+                    const officeId =
+                        mappings[billingId];
+
+
+                    const billingElement =
+                        $('#' + billingId);
+
+
+                    const officeElement =
+                        $('#' + officeId);
+
+
+                    if (
+                        billingElement.length &&
+                        officeElement.length
+                    ) {
+
+                        officeElement.val(
+                            billingElement.val()
+                        );
+
+                    }
+
+                });
+
+        }
+
+
+        /* =========================================================
            BUILD FORM FIELD
-           ========================= */
+        ========================================================= */
 
         function buildFormField(field) {
 
@@ -1021,7 +1279,35 @@
                     .toLowerCase();
 
 
-            /* TEXTAREA */
+            /* =====================================================
+               CHECKBOX
+            ===================================================== */
+
+            if (type === 'checkbox') {
+
+                return `
+                    <div class="same-address-check">
+                        <label>
+                            <input
+                                type="checkbox"
+                                class="account-field"
+                                id="${id}"
+                                data-field-id="${id}"
+                                ${value ? 'checked' : ''}
+                            >
+                            <span>
+                                ${escapeHtml(field.label || '')}
+                            </span>
+                        </label>
+                    </div>
+                `;
+
+            }
+
+
+            /* =====================================================
+               TEXTAREA
+            ===================================================== */
 
             if (type === 'textarea') {
 
@@ -1037,7 +1323,9 @@
             }
 
 
-            /* NUMBER */
+            /* =====================================================
+               NUMBER
+            ===================================================== */
 
             if (type === 'number') {
 
@@ -1054,7 +1342,9 @@
             }
 
 
-            /* MASTER SELECTION */
+            /* =====================================================
+               MASTER SELECTION / DROPDOWN
+            ===================================================== */
 
             if (
                 type === 'master-selection' ||
@@ -1077,7 +1367,9 @@
             }
 
 
-            /* DEFAULT TEXT */
+            /* =====================================================
+               DEFAULT TEXT
+            ===================================================== */
 
             return `
                 <input
@@ -1093,9 +1385,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            GRID RENDERING
-           ========================= */
+        ========================================================= */
 
         function renderGrid(data) {
 
@@ -1157,7 +1449,8 @@
                 html +=
                     '<th>' +
                     escapeHtml(
-                        column.label || column.id
+                        column.label ||
+                        column.id
                     ) +
                     '</th>';
 
@@ -1190,16 +1483,18 @@
             }
             else {
 
-                savedRows.forEach(function (row, index) {
+                savedRows.forEach(
+                    function (row, index) {
 
-                    html +=
-                        buildGridRow(
-                            columns,
-                            row,
-                            index
-                        );
+                        html +=
+                            buildGridRow(
+                                columns,
+                                row,
+                                index
+                            );
 
-                });
+                    }
+                );
 
             }
 
@@ -1252,9 +1547,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            BUILD GRID ROW
-           ========================= */
+        ========================================================= */
 
         function buildGridRow(
             columns,
@@ -1341,7 +1636,7 @@
                 }
 
 
-                /* DROPDOWN / MASTER SELECTION */
+                /* DROPDOWN */
 
                 if (
                     type === 'dropdown' ||
@@ -1395,7 +1690,8 @@
                 '</td>';
 
 
-            html += '</tr>';
+            html +=
+                '</tr>';
 
 
             return html;
@@ -1403,9 +1699,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            GRID EVENTS
-           ========================= */
+        ========================================================= */
 
         function bindGridEvents() {
 
@@ -1448,18 +1744,11 @@
                 });
 
 
-            /*
-             * For Master Selection /
-             * Dropdown fields we only show
-             * "Select..." because the JSON
-             * does not contain a separate
-             * master-data source.
-             */
-
             $('.grid-field').each(function () {
 
                 const type =
-                    $(this).prop('tagName')
+                    $(this)
+                        .prop('tagName')
                         .toLowerCase();
 
 
@@ -1483,9 +1772,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            COLLECT GRID DATA
-           ========================= */
+        ========================================================= */
 
         function collectGridRows() {
 
@@ -1505,17 +1794,23 @@
 
                             const fieldId =
                                 $(this)
-                                    .attr('data-field-id');
+                                    .attr(
+                                        'data-field-id'
+                                    );
 
 
-                            if ($(this).is(':checkbox')) {
+                            if (
+                                $(this).is(':checkbox')
+                            ) {
 
                                 row[fieldId] =
-                                    $(this).is(':checked');
+                                    $(this)
+                                        .is(':checked');
 
                             }
                             else if (
-                                $(this).attr('type') ===
+                                $(this)
+                                    .attr('type') ===
                                 'file'
                             ) {
 
@@ -1543,9 +1838,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            COLLECT CURRENT TAB DATA
-           ========================= */
+        ========================================================= */
 
         function collectCurrentTabData() {
 
@@ -1559,11 +1854,26 @@
 
                     const fieldId =
                         $(this)
-                            .attr('data-field-id');
+                            .attr(
+                                'data-field-id'
+                            );
 
 
-                    formState[fieldId] =
-                        $(this).val();
+                    if (
+                        $(this).is(':checkbox')
+                    ) {
+
+                        formState[fieldId] =
+                            $(this)
+                                .is(':checked');
+
+                    }
+                    else {
+
+                        formState[fieldId] =
+                            $(this).val();
+
+                    }
 
                 }
             );
@@ -1593,9 +1903,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            VALIDATION
-           ========================= */
+        ========================================================= */
 
         function validateCurrentTab() {
 
@@ -1613,11 +1923,15 @@
 
                     const fieldId =
                         $(this)
-                            .attr('data-field-id');
+                            .attr(
+                                'data-field-id'
+                            );
 
 
                     const field =
-                        findCurrentField(fieldId);
+                        findCurrentField(
+                            fieldId
+                        );
 
 
                     if (
@@ -1632,7 +1946,9 @@
                     ) {
 
                         $(this)
-                            .addClass('is-invalid');
+                            .addClass(
+                                'is-invalid'
+                            );
 
 
                         valid = false;
@@ -1672,9 +1988,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            FIND CURRENT FIELD
-           ========================= */
+        ========================================================= */
 
         function findCurrentField(fieldId) {
 
@@ -1698,31 +2014,93 @@
                 tabDataCache[tab.file];
 
 
-            if (
-                !data ||
-                !Array.isArray(data.fields)
-            ) {
-
+            if (!data) {
                 return null;
+            }
+
+
+            /* NORMAL FORM */
+
+            if (Array.isArray(data.fields)) {
+
+                return data.fields.find(
+                    function (field) {
+
+                        return field.id ===
+                            fieldId;
+
+                    }
+                ) || null;
 
             }
 
 
-            return data.fields.find(
-                function (field) {
+            /* SECTION BASED FORM */
 
-                    return field.id ===
-                        fieldId;
+            if (Array.isArray(data.sections)) {
+
+                for (
+                    let i = 0;
+                    i < data.sections.length;
+                    i++
+                ) {
+
+                    const section =
+                        data.sections[i];
+
+
+                    if (
+                        !Array.isArray(
+                            section.fields
+                        )
+                    ) {
+
+                        continue;
+
+                    }
+
+
+                    const field =
+                        section.fields.find(
+                            function (item) {
+
+                                return item.id ===
+                                    fieldId;
+
+                            }
+                        );
+
+
+                    if (field) {
+
+                        return field;
+
+                    }
+
+
+                    if (
+                        section.sameAsBilling &&
+                        section.sameAsBilling.id ===
+                        fieldId
+                    ) {
+
+                        return section.sameAsBilling;
+
+                    }
 
                 }
-            ) || null;
+
+            }
+
+
+            return null;
 
         }
 
 
-        /* =========================
+        /* =========================================================
            RESET
-           ========================= */
+        ========================================================= */
 
         function resetAccount() {
 
@@ -1733,6 +2111,7 @@
 
             $('.account-field')
                 .val('')
+                .prop('checked', false)
                 .removeClass('is-invalid');
 
 
@@ -1752,7 +2131,8 @@
                     }
                     else {
 
-                        $(this).val('');
+                        $(this)
+                            .val('');
 
                     }
 
@@ -1761,9 +2141,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            STATUS
-           ========================= */
+        ========================================================= */
 
         function showStatus(
             message,
@@ -1790,7 +2170,9 @@
             setTimeout(
                 function () {
 
-                    box.removeClass('show');
+                    box.removeClass(
+                        'show'
+                    );
 
                 },
                 3000
@@ -1799,9 +2181,9 @@
         }
 
 
-        /* =========================
+        /* =========================================================
            HTML ESCAPING
-           ========================= */
+        ========================================================= */
 
         function escapeHtml(value) {
 
@@ -1838,4 +2220,4 @@
 
     })();
 
-</script>
+</script>>

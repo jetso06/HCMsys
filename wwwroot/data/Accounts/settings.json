@@ -2,13 +2,29 @@
     "id": "settings",
     "title": "Settings",
     "type": "form",
-    "fields": [
-        {
-            "id": "defaultCurrency",
-            "label": "Default Currency",
-            "type": "master-selection",
-            "possibleValues": "Selection from Currency master",
-            "validation": "Optional"
-        }
-    ]
+  "fields": [
+    {
+      "id": "defaultCurrency",
+      "label": "Default Currency",
+      "type": "master-selection",
+      "possibleValues": "Selection from Currency master",
+      "validation": "Optional"
+    },
+    {
+      "id": "creditLimit",
+      "label": "Credit Limit",
+      "type": "number",
+      "possibleValues": "Applicable to Customer/Vendors",
+      "validation": "Optional",
+      "remarks": "Applicable to Customer/Vendors"
+    },
+    {
+      "id": "creditDays",
+      "label": "Credit Days",
+      "type": "number",
+      "possibleValues": "Applicable to Customer/Vendors",
+      "validation": "Optional",
+      "remarks": "Applicable to Customer/Vendors"
+    }
+  ]
 }
