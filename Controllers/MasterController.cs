@@ -89,6 +89,14 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult ApprovalIndex()
+        {
+            return View();
+        }
+        public ActionResult Approval()
+        {
+            return View();
+        }
 
     }
 }

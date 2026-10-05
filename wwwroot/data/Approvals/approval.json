@@ -1,0 +1,125 @@
+{
+  "title": "Approval",
+
+  "form": {
+    "fields": [
+      {
+        "id": "docNo",
+        "label": "Doc No",
+        "type": "dropdown",
+        "validation": "Mandatory",
+        "possibleValues": "Selection from Document Master"
+      },
+      {
+        "id": "docDate",
+        "label": "Doc Date",
+        "type": "date",
+        "validation": "Mandatory",
+        "possibleValues": "Document Date"
+      },
+      {
+        "id": "postDate",
+        "label": "Post Date",
+        "type": "date",
+        "validation": "Mandatory",
+        "possibleValues": "Posting Date"
+      }
+    ]
+  },
+
+  "grid": {
+    "columns": [
+      {
+        "id": "item",
+        "label": "Item",
+        "type": "text"
+      },
+      {
+        "id": "qty",
+        "label": "Qty",
+        "type": "number"
+      },
+      {
+        "id": "rate",
+        "label": "Rate",
+        "type": "number"
+      },
+      {
+        "id": "gross",
+        "label": "Gross",
+        "type": "number"
+      }
+    ]
+  },
+
+  "records": [
+    {
+      "id": 1,
+      "docNo": "DOC-0001",
+      "docDate": "01-Oct-2026",
+      "postDate": "01-Oct-2026",
+      "approvalStatus": "Pending",
+
+      "items": [
+        {
+          "item": "Item 001",
+          "qty": 2,
+          "rate": 100,
+          "gross": 200
+        },
+        {
+          "item": "Item 002",
+          "qty": 5,
+          "rate": 50,
+          "gross": 250
+        },
+        {
+          "item": "Item 003",
+          "qty": 1,
+          "rate": 750,
+          "gross": 750
+        }
+      ]
+    },
+
+    {
+      "id": 2,
+      "docNo": "DOC-0002",
+      "docDate": "02-Oct-2026",
+      "postDate": "02-Oct-2026",
+      "approvalStatus": "Approved",
+
+      "items": [
+        {
+          "item": "Item 004",
+          "qty": 3,
+          "rate": 150,
+          "gross": 450
+        },
+        {
+          "item": "Item 005",
+          "qty": 2,
+          "rate": 300,
+          "gross": 600
+        }
+      ]
+    },
+
+    {
+      "id": 3,
+      "docNo": "DOC-0003",
+      "docDate": "03-Oct-2026",
+      "postDate": "03-Oct-2026",
+      "approvalStatus": "Rejected",
+
+      "items": [
+        {
+          "item": "Item 006",
+          "qty": 4,
+          "rate": 200,
+          "gross": 800
+        }
+      ]
+    }
+  ]
+}
