@@ -258,7 +258,7 @@
                 <div class="card-body py-2">
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
-                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Records</div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Pending Approvals</div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800" id="stat-active">--</div>
                         </div>
                         <div class="col-auto">
@@ -351,14 +351,7 @@
 <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
 
     <script>
-        $('#btnNew').on('click', function () {
 
-    window.location.href =
-        '@Url.Action("Approval", "Master")';
-
-});
-
-});
 function getApprovalStatusBadge(status) {
 
     const value = String(status || 'Pending').toLowerCase();
@@ -373,124 +366,207 @@ function getApprovalStatusBadge(status) {
 
     return '<span class="badge badge-warning">Pending</span>';
 }
-    $(document).ready(function () {
 
-        fetch('/data/Approvals/approval-index.json', {
-    cache: 'no-store'
-})
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Unable to load approvals.json');
+
+$(document).ready(function () {
+
+    fetch('/data/Approvals/approval-index.json', {
+        cache: 'no-store'
+    })
+
+    .then(function (response) {
+
+        if (!response.ok) {
+            throw new Error(
+                'HTTP ' + response.status +
+                ' - approval-index.json could not be loaded'
+            );
+        }
+
+        return response.json();
+
+    })
+
+    .then(function (data) {
+
+        console.log('Approval JSON loaded:', data);
+
+        const approvals = data.records || [];
+
+        console.log('Approval records:', approvals);
+
+
+        // ==============================
+        // DATATABLE
+        // ==============================
+
+        $('#tblApproval').DataTable({
+
+            data: approvals.map(function (approval) {
+
+                return [
+
+                    // Action
+                    '<div class="action-btns" style="text-align:center;">' +
+
+                        '<a href="#" class="edit-item-btn" title="Edit">' +
+                            '<i class="fas fa-edit fa-sm fa-fw"></i>' +
+                        '</a>' +
+
+                        '<a href="#" class="remove-item-btn" title="Delete">' +
+                            '<i class="fas fa-trash-alt fa-sm fa-fw"></i>' +
+                        '</a>' +
+
+                    '</div>',
+
+                    // ID
+                    approval.id,
+
+                    // Code
+                    approval.code,
+
+                    // Name
+                    approval.name,
+
+                    // Approval Status
+                    getApprovalStatusBadge(
+                        approval.approvalStatus
+                    ),
+
+                    // Created By
+                    approval.createdBy,
+
+                    // Created Date
+                    approval.createdDate,
+
+                    // Modified By
+                    approval.modifiedBy,
+
+                    // Modified Date
+                    approval.modifiedDate
+
+                ];
+
+            }),
+
+            order: [[1, 'desc']],
+
+            pageLength: 15,
+
+            language: {
+
+                search: "",
+
+                searchPlaceholder: "Search approvals...",
+
+                lengthMenu: "Show _MENU_ entries",
+
+                info: "Showing _START_ to _END_ of _TOTAL_ approvals",
+
+                emptyTable: "No approval records found"
+
+            },
+
+            columnDefs: [
+
+                {
+                    orderable: false,
+                    targets: 0
                 }
 
-                return response.json();
-            })
-            .then(data => {
+            ]
 
-    const approvals = data.records || [];
-
-                var table = $('#tblApproval').DataTable({
-                    data: approvals.map(function (approval) {
-
-    return [
-
-    '<div class="action-btns" style="text-align:center;">' +
-        '<a href="#" class="edit-item-btn" title="Edit">' +
-            '<i class="fas fa-edit fa-sm fa-fw"></i>' +
-        '</a>' +
-        '<a href="#" class="remove-item-btn" title="Delete">' +
-            '<i class="fas fa-trash-alt fa-sm fa-fw"></i>' +
-        '</a>' +
-    '</div>',
-
-    approval.id,
-    approval.code,
-    approval.name,
-    getApprovalStatusBadge(approval.approvalStatus),
-    approval.createdBy,
-    approval.createdDate,
-    approval.modifiedBy,
-    approval.modifiedDate
-
-];
-
-}),
-
-                    order: [[1, 'desc']],
-                    pageLength: 15,
-
-                    language: {
-                        search: "",
-                        searchPlaceholder: "Search approvals...",
-                        lengthMenu: "Show _MENU_ entries",
-                        info: "Showing _START_ to _END_ of _TOTAL_ approvals",
-                        emptyTable: "No approval records found"
-                    },
-
-                    columnDefs: [
-                        {
-                            orderable: false,
-                            targets: 0
-                        }
-                    ]
-                });
+        });
 
 
-                // ==============================
-                // UPDATE STAT CARDS
-                // ==============================
+        // ==============================
+        // STAT CARDS
+        // ==============================
 
-                var totalApprovals = approvals.length;
-
-var pendingApprovals = approvals.filter(function (approval) {
-    return String(approval.approvalStatus || '').toLowerCase() === 'pending';
-}).length;
-
-$('#stat-total').text(totalApprovals);
-
-$('#stat-active').text(pendingApprovals);
-
-$('#record-count-badge').text(
-    totalApprovals + ' Records'
-);
+        const totalApprovals = approvals.length;
 
 
-                // ==============================
-                // LAST MODIFIED
-                // ==============================
+        const pendingApprovals = approvals.filter(
+            function (approval) {
 
-                if (approvals.length > 0) {
+                return String(
+                    approval.approvalStatus || ''
+                ).toLowerCase() === 'pending';
 
-    var latestApproval = approvals.reduce(function (latest, approval) {
+            }
+        ).length;
 
-        return new Date(approval.modifiedDate) >
-               new Date(latest.modifiedDate)
-            ? approval
-            : latest;
 
-    });
+        $('#stat-total').text(
+            totalApprovals
+        );
 
-    $('#stat-modified').text(
-        latestApproval.modifiedDate
-    );
 
-} else {
+        $('#stat-active').text(
+            pendingApprovals
+        );
 
-    $('#stat-modified').text('N/A');
 
-}
-            .catch(error => {
+        $('#record-count-badge').text(
+            totalApprovals + ' Records'
+        );
 
-                console.error('Error loading approvals:', error);
 
-                $('#stat-total').text('0');
-                $('#stat-active').text('0');
-                $('#stat-modified').text('N/A');
-                $('#record-count-badge').text('0 Records');
+        // ==============================
+        // LAST MODIFIED
+        // ==============================
 
-            });
+        if (approvals.length > 0) {
+
+            const latestApproval = approvals.reduce(
+                function (latest, approval) {
+
+                    return new Date(
+                        approval.modifiedDate
+                    ) > new Date(
+                        latest.modifiedDate
+                    )
+                        ? approval
+                        : latest;
+
+                }
+            );
+
+
+            $('#stat-modified').text(
+                latestApproval.modifiedDate
+            );
+
+        }
+        else {
+
+            $('#stat-modified').text('N/A');
+
+        }
+
+    })
+
+    .catch(function (error) {
+
+        console.error(
+            'Approval Index Error:',
+            error
+        );
+
+
+        $('#stat-total').text('0');
+
+        $('#stat-active').text('0');
+
+        $('#stat-modified').text('N/A');
+
+        $('#record-count-badge').text(
+            '0 Records'
+        );
 
     });
+
+});
 
 </script>
 </body>
