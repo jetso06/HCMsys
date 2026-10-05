@@ -199,11 +199,12 @@
     </button>
 
     <button type="button"
-            class="btn btn-success btn-sm shadow-sm"
-            id="btnNew">
-        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
-        New
-    </button>
+        class="btn btn-success btn-sm shadow-sm"
+        id="btnNew"
+        onclick="window.location.href='/Master/Approval';">
+    <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+    New
+</button>
 
     <button type="button"
             class="btn btn-primary btn-sm shadow-sm"
@@ -356,6 +357,8 @@
         '@Url.Action("Approval", "Master")';
 
 });
+
+});
 function getApprovalStatusBadge(status) {
 
     const value = String(status || 'Pending').toLowerCase();
@@ -372,7 +375,9 @@ function getApprovalStatusBadge(status) {
 }
     $(document).ready(function () {
 
-        fetch('/data/Approvals/approval-index.json')
+        fetch('/data/Approvals/approval-index.json', {
+    cache: 'no-store'
+})
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Unable to load approvals.json');
