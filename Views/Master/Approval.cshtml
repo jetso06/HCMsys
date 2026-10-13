@@ -3,7 +3,9 @@
 }
 
 <style>
-
+    html {
+    font-size: 14px;
+}
     .approval-page {
         width: 100%;
         padding: 18px 0 25px;
@@ -22,13 +24,20 @@
        HEADER
        ========================= */
 
-    .page-title-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
+    .page-title-bar .page-title-text {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #5a5c69;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-title-bar .page-title-text i {
+    color: #4e73df;
+}
 
     .page-title-text {
         margin: 0;

@@ -1,0 +1,28 @@
+{
+  "id": "account-links",
+  "title": "Account Links",
+  "type": "form",
+  "fields": [
+    {
+      "id": "purchaseAccount",
+      "label": "Purchase/Inventory Account",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "salesAccount",
+      "label": "Sales Account",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "expenseAccount",
+      "label": "Expense/Cogs Account",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    }
+  ]
+}

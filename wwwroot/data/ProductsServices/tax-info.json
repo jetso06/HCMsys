@@ -1,0 +1,14 @@
+{
+  "id": "tax-info",
+  "title": "Tax Info",
+  "type": "form",
+  "fields": [
+    {
+      "id": "taxCategory",
+      "label": "Tax Category",
+      "type": "master-selection",
+      "possibleValues": "User Input",
+      "validation": "Optional"
+    }
+  ]
+}

@@ -97,6 +97,14 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult ProductsServices()
+        {
+            return View();
+        }
+        public ActionResult ProductsServicesIndex()
+        {
+            return View();
+        }
 
     }
 }

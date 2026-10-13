@@ -1,0 +1,35 @@
+{
+  "id": "master-links",
+  "title": "Master Links",
+  "type": "form",
+  "fields": [
+    {
+      "id": "category",
+      "label": "Category",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "subCategory",
+      "label": "SubCategory",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "brand",
+      "label": "Brand",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "countryOfOrigin",
+      "label": "Country of Origin",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    }
+  ]
+}

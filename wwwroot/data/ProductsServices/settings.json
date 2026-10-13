@@ -1,0 +1,134 @@
+{
+  "id": "settings",
+  "title": "Settings",
+  "type": "form",
+  "fields": [
+    {
+      "id": "minimumStockLevel",
+      "label": "Minimum Stock Level",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "maximumStockLevel",
+      "label": "Maximum Stock Level",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "stockReOrderLevel",
+      "label": "Stock Re Order Level",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "baseUnit",
+      "label": "Base Unit",
+      "type": "master-selection",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "image",
+      "label": "Image",
+      "type": "image",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "lengthBaseUnit",
+      "label": "Length / Base Unit",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "widthBaseUnit",
+      "label": "Width / Base Unit",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "thicknessBaseUnit",
+      "label": "Thickness / Base Unit",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "grossWeightBaseUnit",
+      "label": "Gross Weight / Base Unit",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    },
+    {
+      "id": "netWeightBaseUnit",
+      "label": "Net Weight / Base Unit",
+      "type": "number",
+      "possibleValues": "",
+      "validation": "Optional"
+    }
+  ],
+  "grid": {
+    "title": "Properties",
+    "columns": [
+      {
+        "id": "property",
+        "label": "Properties",
+        "type": "text"
+      },
+      {
+        "id": "value",
+        "label": "Values",
+        "type": "checkbox"
+      }
+    ],
+    "rows": [
+      {
+        "property": "P1",
+        "value": false
+      },
+      {
+        "property": "P2",
+        "value": false
+      },
+      {
+        "property": "P3",
+        "value": false
+      },
+      {
+        "property": "P4",
+        "value": false
+      },
+      {
+        "property": "P5",
+        "value": false
+      },
+      {
+        "property": "P6",
+        "value": false
+      },
+      {
+        "property": "P7",
+        "value": true
+      },
+      {
+        "property": "P8",
+        "value": false
+      },
+      {
+        "property": "P9",
+        "value": false
+      },
+      {
+        "property": "P10",
+        "value": true
+      }
+    ]
+  }
+}
