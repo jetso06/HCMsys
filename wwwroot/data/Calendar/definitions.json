@@ -1,0 +1,24 @@
+[
+  {
+    "id": "DEF-OM-001",
+    "calendarId": "CAL-OM-001",
+    "docNo": "DOC-001",
+    "date": "2026-01-01",
+    "type": "WeeklyOff",
+    "fromDate": "2026-01-01",
+    "toDate": "2026-12-31",
+    "weekdays": [ 5, 6 ],
+    "holidayName": ""
+  },
+  {
+    "id": "DEF-OM-002",
+    "calendarId": "CAL-OM-001",
+    "docNo": "DOC-002",
+    "date": "2026-11-18",
+    "type": "Holiday",
+    "fromDate": "2026-11-18",
+    "toDate": "2026-11-18",
+    "weekdays": [],
+    "holidayName": "National Holiday"
+  }
+]

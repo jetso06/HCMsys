@@ -105,6 +105,13 @@ namespace HCMSys.Controllers
         {
             return View();
         }
-
+        public ActionResult Calendar()
+        {
+            return View();
+        }
+        public ActionResult PatternDefinition()
+        {
+            return View();
+        }
     }
 }

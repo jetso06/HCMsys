@@ -1,0 +1,24 @@
+[
+  {
+    "id": "EVT-d1020fd0-8016-4c6e-980d-ce97d7b7edd9",
+    "calendarId": "CAL-7d318127-c631-412d-865a-d025a6d18bc8",
+    "title": "holiday",
+    "type": "holiday",
+    "employee": "",
+    "start": "2026-10-15",
+    "end": "2026-10-15",
+    "status": "Pending",
+    "reason": ""
+  },
+  {
+    "id": "EVT-72f6c506-7b3f-4f48-8b11-a26a09d10b84",
+    "calendarId": "CAL-7d318127-c631-412d-865a-d025a6d18bc8",
+    "title": "aaa",
+    "type": "leave",
+    "employee": "aaa",
+    "start": "2026-10-16",
+    "end": "2026-10-23",
+    "status": "Pending",
+    "reason": ""
+  }
+]

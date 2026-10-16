@@ -1,0 +1,1715 @@
+@{
+    ViewData["Title"] = "Calendar Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html { font-size: 14px; }
+    .cm-page {
+    display: block;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+    padding: 0 20px 24px;
+    box-sizing: border-box;
+    color: #5a5c69;
+    font-size: 14px;
+}
+
+.cm-page *,
+.cm-page *::before,
+.cm-page *::after {
+    box-sizing: border-box;
+}
+    .cm-title { font-size:.9rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+    .cm-card { border:0; border-radius:.35rem; box-shadow:0 .15rem 1rem rgba(58,59,69,.12); margin-bottom:18px; overflow:hidden; }
+    .cm-card-header { padding:14px 18px; background:#fff; border-bottom:1px solid #e3e6f0; font-weight:700; }
+    .cm-card-body { padding:18px; background:#fff; }
+    .cm-tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+    .cm-tab { border:1px solid #d1d3e2; border-radius:4px; padding:9px 14px; background:#fff; color:#5a5c69; cursor:pointer; }
+    .cm-tab.active { color:#fff; background:#4e73df; border-color:#4e73df; }
+    .cm-panel { display:none; }
+    .cm-panel.active { display:block; }
+    .cm-grid-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .cm-field label { display:block; margin-bottom:5px; font-weight:700; font-size:.78rem; }
+    .cm-field input,.cm-field select,.cm-field textarea { width:100%; min-height:38px; border:1px solid #d1d3e2; border-radius:4px; padding:7px 10px; color:#5a5c69; background:#fff; }
+    .cm-field textarea { min-height:75px; }
+    .cm-full { grid-column:1/-1; }
+    .cm-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .cm-weekdays { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; }
+    .cm-weekday-check { border:1px solid #e3e6f0; border-radius:5px; padding:10px 4px; text-align:center; background:#f8f9fc; }
+    .cm-weekday-check label { display:block; margin:0; font-size:.78rem; }
+    .cm-table-wrap { overflow-x:auto; }
+    .cm-table { width:100%; border-collapse:collapse; }
+    .cm-table th,.cm-table td { border-bottom:1px solid #e3e6f0; padding:10px; text-align:left; vertical-align:middle; }
+    .cm-table th { background:#f8f9fc; font-size:.75rem; text-transform:uppercase; }
+    .cm-muted { color:#858796; font-size:.78rem; }
+    .cm-message { margin-top:12px; font-size:.82rem; white-space:pre-wrap; }
+    .cm-message.error { color:#c0392b; }
+    .cm-message.success { color:#16794f; }
+    .cm-preview-toolbar,.cm-cal-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:14px 18px; background:#fff; border-bottom:1px solid #e3e6f0; }
+    .cm-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+}
+    .cm-calendar-scroll {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+    .cm-day-heading { text-align:center; padding:12px 4px; background:#4e73df; color:#fff; font-size:.75rem; font-weight:700; }
+    .cm-day-heading.weekend-heading { background:#7257a8; }
+    .cm-day { min-height:100px; padding:6px; border-right:1px solid #e3e6f0; border-bottom:1px solid #e3e6f0; background:#fff; cursor:pointer; overflow:hidden; }
+    .cm-day:hover { background:#f4f6fc; }
+    .cm-day.weekend { background:#f2edfa; }
+    .cm-day.outside { background:#f8f9fc; }
+    .cm-day.outside .cm-day-num { color:#b7b9cc; }
+    .cm-day.today { box-shadow:inset 0 0 0 2px #4e73df; }
+    .cm-day-num { display:inline-flex; width:27px; height:27px; align-items:center; justify-content:center; border-radius:50%; font-weight:600; }
+    .cm-day.today .cm-day-num { background:#4e73df; color:#fff; }
+    .cm-day.has-leave { background:#fde9e7!important; box-shadow:inset 0 0 0 1px #e74a3b; }
+    .cm-day.has-leave .cm-day-num { background:#e74a3b; color:#fff; }
+    .cm-day.has-holiday { background:#e4f8ef!important; box-shadow:inset 0 0 0 1px #1cc88a; }
+    .cm-day.has-holiday .cm-day-num { background:#1cc88a; color:#fff; }
+    .cm-day.has-leave.has-holiday { background:linear-gradient(135deg,#fde9e7 0 50%,#e4f8ef 50% 100%)!important; }
+    .cm-day-label { display:block; margin-top:4px; font-size:.63rem; color:#7257a8; font-weight:700; }
+    .cm-event-chip { display:block; width:100%; border:0; border-left:3px solid #4e73df; border-radius:3px; background:#e8efff; color:#2e59a7; margin-top:4px; padding:4px; font-size:.65rem; text-align:left; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+    .cm-event-chip.leave { border-left-color:#e74a3b; background:#fde9e7; color:#a5281b; }
+    .cm-event-chip.holiday { border-left-color:#1cc88a; background:#e4f8ef; color:#16794f; }
+    .cm-event-chip.rejected { border-left-color:#858796; background:#eaecf4; color:#5a5c69; }
+    .cm-legend { display:flex; flex-wrap:wrap; gap:15px; padding:13px 18px; font-size:.75rem; }
+    .cm-dot { display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:5px; vertical-align:middle; }
+    .cm-dot-weekend { background:#f2edfa; border:1px solid #d8c9ee; }
+    .cm-dot-leave { background:#fde9e7; border:1px solid #e74a3b; }
+    .cm-dot-holiday { background:#e4f8ef; border:1px solid #1cc88a; }
+    .cm-modal-backdrop { display:none; position:fixed; inset:0; z-index:1100; padding:16px; align-items:center; justify-content:center; background:rgba(25,32,56,.48); }
+    .cm-modal-backdrop.open { display:flex; }
+    .cm-modal { width:min(560px,100%); max-height:90vh; overflow:auto; background:#fff; border-radius:8px; box-shadow:0 1rem 3rem rgba(0,0,0,.2); }
+    .cm-modal-head,.cm-modal-foot { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 18px; border-bottom:1px solid #e3e6f0; }
+    .cm-modal-head h5 { margin:0; font-weight:800; }
+    .cm-modal-body { padding:18px; }
+    .cm-modal-foot { border-top:1px solid #e3e6f0; border-bottom:0; background:#f8f9fc; }
+    @@media(max-width:700px) {
+        .cm-grid-form { grid-template-columns:1fr; }
+        .cm-full { grid-column:auto; }
+        .cm-weekdays { grid-template-columns:repeat(4,minmax(0,1fr)); }
+        .cm-day { min-height:75px; padding:4px; }
+    }
+    /* Expand the Calendar Master sections across the available content area */
+.cm-page > .card,
+.cm-page .cm-card {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+}
+
+.cm-page .card-body,
+.cm-page .cm-panel,
+.cm-page .cm-table-wrap {
+    width: 100%;
+    min-width: 0;
+}
+
+.cm-page .cm-table {
+    width: 100%;
+}
+
+/* Responsive spacing */
+@@media (max-width: 768px) {
+    .cm-page {
+        padding: 0 10px 18px;
+    }
+}
+/* New Calendar form is collapsed by default */
+.cm-create-calendar {
+    display: none;
+    margin-bottom: 18px;
+}
+
+.cm-create-calendar.open {
+    display: block;
+}
+
+.cm-create-toggle .fa-chevron-down {
+    transition: transform .2s ease;
+}
+
+.cm-create-toggle.open .fa-chevron-down {
+    transform: rotate(180deg);
+}
+.cm-edit-leave {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 3px 7px;
+    border: 1px solid #e74a3b;
+    border-radius: 4px;
+    background: #fff;
+    color: #c0392b;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.cm-edit-leave:hover {
+    background: #e74a3b;
+    color: #fff;
+}
+
+
+/* Product Master header styling */
+.page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.page-title-bar .page-title-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #5a5c69;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+}
+
+.page-title-bar .page-title-text i {
+    color: #5a5c69;
+}
+
+.page-title-bar .btn-group-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Match Product Master card and vertical spacing */
+.cm-top-header {
+    margin-top: 16px !important;
+    margin-bottom: 16px !important;
+    border: 0;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1rem rgba(58, 59, 69, 0.12);
+}
+
+.cm-top-header > .card-header {
+    padding: 12px 18px !important;
+    background: #fff;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+/* Match compact Product Master buttons */
+.cm-top-header .btn-group-actions .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    white-space: nowrap;
+}
+
+@@media (max-width: 768px) {
+    .page-title-bar {
+        align-items: flex-start;
+    }
+
+    .page-title-bar .btn-group-actions {
+        justify-content: flex-start;
+        width: 100%;
+    }
+}
+
+</style>
+
+<div class="cm-page">
+    
+    <!-- Product Master-style Calendar Master Header -->
+<div class="card shadow mb-3 cm-top-header">
+    <div class="card-header py-3">
+        <div class="page-title-bar">
+
+            <div class="page-title-text">
+                <i class="fas fa-calendar-alt fa-sm"></i>
+                Calendar Master
+            </div>
+
+            <div class="btn-group-actions">
+
+                <button type="button"
+                        class="btn btn-success btn-sm shadow-sm"
+                        id="cmTopNew">
+                    <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+                    New
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary btn-sm shadow-sm"
+                        id="cmTopEdit">
+                    <i class="fas fa-edit fa-sm text-white-50 mr-1"></i>
+                    Edit
+                </button>
+
+                <button type="button"
+                        class="btn btn-primary btn-sm shadow-sm"
+                        id="cmTopSave">
+                    <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+                    Save
+                </button>
+
+                <button type="button"
+                        class="btn btn-info btn-sm shadow-sm"
+                        id="cmTopClone">
+                    <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+                    Clone
+                </button>
+
+                <button type="button"
+                        class="btn btn-warning btn-sm shadow-sm"
+                        id="cmTopUnPost">
+                    <i class="fas fa-undo fa-sm text-white-50 mr-1"></i>
+                    UnPost
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary btn-sm shadow-sm"
+                        id="cmTopPrint">
+                    <i class="fas fa-print fa-sm text-white-50 mr-1"></i>
+                    Print
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger btn-sm shadow-sm"
+                        id="cmTopDelete">
+                    <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+                    Delete
+                </button>
+
+                <button type="button"
+                        class="btn btn-info btn-sm shadow-sm"
+                        id="cmTopNewGroup">
+                    <i class="fas fa-layer-group fa-sm text-white-50 mr-1"></i>
+                    New Group
+                </button>
+
+                <button type="button"
+                        class="btn btn-success btn-sm shadow-sm"
+                        id="cmTopApprove">
+                    <i class="fas fa-check fa-sm text-white-50 mr-1"></i>
+                    Approve
+                </button>
+
+                <button type="button"
+                        class="btn btn-danger btn-sm shadow-sm"
+                        id="cmTopReject">
+                    <i class="fas fa-times fa-sm text-white-50 mr-1"></i>
+                    Reject
+                </button>
+
+                <button type="button"
+                        class="btn btn-info btn-sm shadow-sm"
+                        id="cmTopAuthTracker">
+                    <i class="fas fa-route fa-sm text-white-50 mr-1"></i>
+                    Auth Tracker
+                </button>
+
+                <button type="button"
+                        class="btn btn-secondary btn-sm shadow-sm"
+                        id="cmTopClose">
+                    <i class="fas fa-times-circle fa-sm text-white-50 mr-1"></i>
+                    Close
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Product Master-style Header -->
+
+    <div class="card cm-card">
+        <div class="card-header py-3">
+            <div class="d-flex justify-content-between align-items-center flex-wrap" style="gap:10px">
+                <div class="cm-title"><i class="fas fa-calendar-alt text-primary mr-2"></i>Calendar Master</div>
+                <div class="cm-actions">
+                    <button type="button" class="btn btn-primary btn-sm" id="cmNewCalendar">
+                        <i class="fas fa-plus mr-1"></i>New Calendar
+                    </button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="cmOpenDefinition">
+                        <i class="fas fa-calendar-check mr-1"></i>Weekly Off &amp; Holiday
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="cm-tabs">
+                <button type="button" class="cm-tab active" data-panel="cmMainPanel">Calendar Master</button>
+                <button type="button" class="cm-tab" data-panel="cmIndexPanel">Index Page View</button>
+                <button type="button" class="cm-tab" data-panel="cmDefinitionPanel">Weekly Off &amp; Holiday Definitions</button>
+            </div>
+
+            <section class="cm-panel active" id="cmMainPanel">
+               
+<div class="cm-card">
+    <div class="cm-card-header">
+        <i class="fas fa-calendar-check text-primary mr-2"></i>
+        Selected Calendar
+    </div>
+
+    <div class="cm-card-body">
+
+        <div class="cm-actions mb-3">
+            <div style="flex:1; min-width:220px;">
+                <label for="cmMainCalendarSelect"
+                       class="cm-muted"
+                       style="display:block; margin-bottom:5px;">
+                    Available Calendars
+                </label>
+
+                <select id="cmMainCalendarSelect"
+                        class="form-control"
+                        style="width:100%; min-height:38px; border:1px solid #d1d3e2; border-radius:4px; padding:7px 10px;">
+                    <option value="">Loading calendars...</option>
+                </select>
+            </div>
+
+            <div style="align-self:flex-end;">
+                <button type="button"
+                        class="btn btn-primary btn-sm"
+                        id="cmLoadSelectedCalendar">
+                    <i class="fas fa-download mr-1"></i>
+                    Load Calendar
+                </button>
+            </div>
+        </div>
+
+        <div class="cm-grid-form">
+            <div>
+                <div class="cm-muted">Calendar Name</div>
+                <strong id="cmSelectedCalendarName">No calendar selected</strong>
+            </div>
+
+            <div>
+                <div class="cm-muted">Calendar Code</div>
+                <strong id="cmSelectedCalendarCode">—</strong>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+                <div class="cm-card">
+                    <div class="cm-preview-toolbar">
+                        <div>
+                            <strong id="cmPreviewName">Select or create a calendar</strong>
+                            <div class="cm-muted" id="cmPreviewCode"></div>
+                        </div>
+                        <div class="cm-actions">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="cmPrevMonth"><i class="fas fa-chevron-left"></i></button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="cmToday">Today</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="cmNextMonth"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="cm-preview-toolbar">
+                        <h5 class="mb-0" id="cmMonthTitle">Calendar Preview</h5>
+                        <button type="button" class="btn btn-primary btn-sm" id="cmNewEvent">
+                            <i class="fas fa-plus mr-1"></i>New Event
+                        </button>
+                    </div>
+                    <div class="cm-calendar-scroll">
+                        <div class="cm-calendar-grid" id="cmWeekdayHeadings"></div>
+                        <div class="cm-calendar-grid" id="cmCalendarDays"></div>
+                    </div>
+                    <div class="cm-legend">
+                        <span><i class="cm-dot cm-dot-weekend"></i>Configured weekly off</span>
+                        <span><i class="cm-dot cm-dot-leave"></i>Employee leave</span>
+                        <span><i class="cm-dot cm-dot-holiday"></i>Holiday</span>
+                    </div>
+                    <div class="cm-card-body cm-muted" id="cmCalendarFooter">Load or create a calendar to see its preview.</div>
+                </div>
+            </section>
+
+            <section class="cm-panel" id="cmIndexPanel">
+                <div class="cm-actions mb-3">
+    <button type="button"
+            class="btn btn-primary btn-sm cm-create-toggle"
+            id="cmToggleCreateCalendar"
+            aria-expanded="false"
+            aria-controls="cmCreateCalendar">
+        <i class="fas fa-plus mr-1"></i>
+        New Calendar
+        <i class="fas fa-chevron-down ml-2"></i>
+    </button>
+</div>
+
+<div class="cm-create-calendar" id="cmCreateCalendar">
+    <div class="cm-card">
+                    <div class="cm-card-header">Calendar Details</div>
+                    <div class="cm-card-body">
+                        <form id="cmCalendarForm">
+                            <div class="cm-grid-form">
+                                <div class="cm-field">
+                                    <label for="cmCalendarName">Calendar Name *</label>
+                                    <input id="cmCalendarName" maxlength="100" required placeholder="e.g. Oman Office Calendar">
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmCalendarCode">Calendar Code *</label>
+                                    <input id="cmCalendarCode" maxlength="40" required placeholder="e.g. CAL-OM-001">
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmCountry">Country / Region</label>
+                                    <input id="cmCountry" maxlength="100" placeholder="e.g. Oman">
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmCalendarStatus">Status</label>
+                                    <select id="cmCalendarStatus">
+                                        <option value="true">Active</option>
+                                        <option value="false">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="cm-field cm-full">
+                                    <label>Default Weekly Off Days *</label>
+                                    <div class="cm-weekdays" id="cmCalendarWeekdayChecks"></div>
+                                    <div class="cm-muted mt-2">Select the default non-working weekdays for this calendar. These settings are saved in calendars.json.</div>
+                                </div>
+                            </div>
+                            <div class="cm-actions mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm" id="cmSaveCalendar">Save Calendar</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="cmClearCalendar">Clear</button>
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="cmPreviewCalendar">Preview Calendar</button>
+                            </div>
+                            <div class="cm-message" id="cmCalendarMessage" aria-live="polite"></div>
+                        </form>
+                    </div>
+                </div>
+                </div>
+                <div class="cm-card">
+                    <div class="cm-card-header">Calendar Index</div>
+                    <div class="cm-card-body">
+                        <div class="cm-actions mb-3">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" id="cmReloadCalendars">Refresh</button>
+                        </div>
+                        <div class="cm-table-wrap">
+                            <table class="cm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Calendar Code</th>
+                                        <th>Calendar Name</th>
+                                        <th>Country</th>
+                                        <th>Weekly Off</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cmCalendarIndexRows">
+                                    <tr><td colspan="6">Loading calendars...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="cm-panel" id="cmDefinitionPanel">
+                <div class="cm-card">
+                    <div class="cm-card-header">Weekly Off &amp; Holiday Definitions</div>
+                    <div class="cm-card-body">
+                        <form id="cmDefinitionForm">
+                            <div class="cm-grid-form">
+                                <div class="cm-field">
+                                    <label for="cmDefinitionCalendar">Calendar *</label>
+                                    <select id="cmDefinitionCalendar" required></select>
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmDocNo">Doc No *</label>
+                                    <input id="cmDocNo" required maxlength="50" placeholder="e.g. DOC-001">
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmDocDate">Date *</label>
+                                    <input id="cmDocDate" type="date" required>
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmDefinitionType">Holiday / WeeklyOff *</label>
+                                    <select id="cmDefinitionType" required>
+                                        <option value="Holiday">Holiday</option>
+                                        <option value="WeeklyOff">WeeklyOff</option>
+                                    </select>
+                                </div>
+                                <div class="cm-field" id="cmHolidayNameField">
+                                    <label for="cmHolidayName">Holiday Name *</label>
+                                    <input id="cmHolidayName" maxlength="100" placeholder="e.g. National Day">
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmFromDate">From Date *</label>
+                                    <input id="cmFromDate" type="date" required>
+                                </div>
+                                <div class="cm-field">
+                                    <label for="cmToDate">To Date *</label>
+                                    <input id="cmToDate" type="date" required>
+                                </div>
+                                <div class="cm-field cm-full" id="cmDefinitionWeekdaysField">
+                                    <label>Weekly Off Days *</label>
+                                    <div class="cm-weekdays" id="cmDefinitionWeekdayChecks"></div>
+                                    <div class="cm-muted mt-2">For a WeeklyOff definition, select the weekdays that are non-working during this date range.</div>
+                                </div>
+                            </div>
+                            <div class="cm-actions mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm" id="cmSaveDefinition">Save Definition</button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="cmClearDefinition">Clear</button>
+                            </div>
+                            <div class="cm-message" id="cmDefinitionMessage" aria-live="polite"></div>
+                        </form>
+                    </div>
+                </div>
+                <div class="cm-card">
+                    <div class="cm-card-header">Saved Definitions</div>
+                    <div class="cm-card-body">
+                        <div class="cm-table-wrap">
+                            <table class="cm-table">
+                                <thead>
+                                    <tr>
+                                        <th>Doc No</th><th>Calendar</th><th>Date</th><th>Type</th>
+                                        <th>From Date</th><th>To Date</th><th>Details</th><th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cmDefinitionRows">
+                                    <tr><td colspan="8">Loading definitions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="cm-modal-backdrop" id="cmEventBackdrop" role="dialog" aria-modal="true" aria-labelledby="cmEventModalTitle">
+    <div class="cm-modal">
+        <div class="cm-modal-head">
+            <h5 id="cmEventModalTitle">New Event</h5>
+            <button type="button" class="btn btn-light btn-sm" id="cmEventClose">✕</button>
+        </div>
+        <form id="cmEventForm">
+            <div class="cm-modal-body">
+                <div class="cm-grid-form">
+                    <div class="cm-field cm-full">
+                        <label for="cmEventTitle">Event Title *</label>
+                        <input id="cmEventTitle" required maxlength="100">
+                    </div>
+                    <div class="cm-field">
+                        <label for="cmEventType">Type *</label>
+                        <select id="cmEventType">
+                            <option value="leave">Employee Leave</option>
+                            <option value="holiday">Company Holiday</option>
+                        </select>
+                    </div>
+                    <div class="cm-field" id="cmEventEmployeeField">
+                        <label for="cmEventEmployee">Employee *</label>
+                        <input id="cmEventEmployee" maxlength="100">
+                    </div>
+                    <div class="cm-field">
+                        <label for="cmEventStart">From Date *</label>
+                        <input id="cmEventStart" type="date" required>
+                    </div>
+                    <div class="cm-field">
+                        <label for="cmEventEnd">To Date *</label>
+                        <input id="cmEventEnd" type="date" required>
+                    </div>
+                    <div class="cm-field">
+                        <label for="cmEventStatus">Status</label>
+                        <select id="cmEventStatus">
+                            <option>Pending</option><option>Approved</option><option>Rejected</option>
+                        </select>
+                    </div>
+                    <div class="cm-field cm-full">
+                        <label for="cmEventReason">Reason / Notes</label>
+                        <textarea id="cmEventReason" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="cm-message" id="cmEventMessage" aria-live="polite"></div>
+            </div>
+            <div class="cm-modal-foot">
+                <button type="button" class="btn btn-outline-danger btn-sm" id="cmEventDelete" style="display:none;">Delete</button>
+                <div class="cm-actions">
+                    <button type="button" class="btn btn-light btn-sm" id="cmEventCancel">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm" id="cmEventSave">Save Event</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+(function () {
+    "use strict";
+
+    const api = {
+        calendars: '@Url.Content("~/Calendar/Calendars")',
+        definitions: '@Url.Content("~/Calendar/Definitions")',
+        events: '@Url.Content("~/Calendar/Events")'
+    };
+
+    const dayNames = [
+        "Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"
+    ];
+
+    const $ = id => document.getElementById(id);
+    // Product Master-style header button actions
+
+$("cmTopNew").addEventListener("click", () => {
+    $("cmNewCalendar").click();
+});
+
+$("cmTopEdit").addEventListener("click", () => {
+    const calendar = calendars.find(
+        item => item.id === selectedCalendarId
+    );
+
+    if (calendar) {
+        editCalendar(calendar.id);
+    } else {
+        alert("Please select a calendar to edit.");
+    }
+});
+
+$("cmTopSave").addEventListener("click", () => {
+    const form = $("cmCalendarForm");
+
+    if (form.checkValidity()) {
+        form.requestSubmit();
+    } else {
+        form.reportValidity();
+    }
+});
+
+$("cmTopPrint").addEventListener("click", () => {
+    window.print();
+});
+
+$("cmTopClose").addEventListener("click", () => {
+    setTab("cmMainPanel");
+});
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let calendars = [];
+    let definitions = [];
+    let events = [];
+    let selectedCalendarId = null;
+    let editingCalendarId = null;
+    let editingDefinitionId = null;
+    let editingEventId = null;
+    let displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selectedStart = iso(today);
+    let selectedEnd = iso(today);
+    let rangeAnchor = null;
+
+    function iso(date) {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function dateFromIso(value) {
+        const parts = value.split("-").map(Number);
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function makeId(prefix) {
+        return prefix + "-" +
+            (window.crypto && crypto.randomUUID
+                ? crypto.randomUUID()
+                : Date.now().toString(36) + Math.random().toString(36).slice(2));
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    async function getJson(url) {
+        const response = await fetch(url, {
+            headers: { "Accept": "application/json" },
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.text() || `Request failed (${response.status}).`);
+        }
+
+        return response.json();
+    }
+
+    async function postJson(url, data) {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.text() || `Save failed (${response.status}).`);
+        }
+
+        return response.json();
+    }
+
+    function message(id, text, isError = false) {
+        const element = $(id);
+        element.textContent = text || "";
+        element.className = "cm-message" +
+            (text ? (isError ? " error" : " success") : "");
+    }
+
+    function setTab(panelId) {
+        document.querySelectorAll(".cm-tab").forEach(button => {
+            button.classList.toggle("active", button.dataset.panel === panelId);
+        });
+
+        document.querySelectorAll(".cm-panel").forEach(panel => {
+            panel.classList.toggle("active", panel.id === panelId);
+        });
+    }
+
+    document.querySelectorAll(".cm-tab").forEach(button => {
+        button.addEventListener("click", () => setTab(button.dataset.panel));
+    });
+
+    function renderWeekdayChecks(containerId, selectedDays = []) {
+        const container = $(containerId);
+        container.innerHTML = "";
+
+        dayNames.forEach((name, index) => {
+            const wrapper = document.createElement("div");
+            wrapper.className = "cm-weekday-check";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = index;
+            checkbox.id = `${containerId}_${index}`;
+            checkbox.checked = selectedDays.includes(index);
+
+            const label = document.createElement("label");
+            label.htmlFor = checkbox.id;
+            label.textContent = name.substring(0, 3);
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+            container.appendChild(wrapper);
+        });
+    }
+
+    function selectedDays(containerId) {
+        return Array.from(
+            $(containerId).querySelectorAll('input[type="checkbox"]:checked')
+        ).map(input => Number(input.value));
+    }
+
+    function renderCalendarSelect() {
+        const select = $("cmDefinitionCalendar");
+        select.innerHTML = "";
+
+        calendars.forEach(calendar => {
+            const option = document.createElement("option");
+            option.value = calendar.id;
+            option.textContent = `${calendar.code} — ${calendar.name}`;
+            select.appendChild(option);
+        });
+
+        if (selectedCalendarId && calendars.some(c => c.id === selectedCalendarId)) {
+            select.value = selectedCalendarId;
+        }
+    }
+    
+function renderMainCalendarSelect() {
+    const select = $("cmMainCalendarSelect");
+    const previousValue = selectedCalendarId;
+
+    select.innerHTML = "";
+
+    if (!calendars.length) {
+        select.innerHTML =
+            '<option value="">No calendars available</option>';
+        return;
+    }
+
+    calendars.forEach(calendar => {
+        const option = document.createElement("option");
+        option.value = calendar.id;
+        option.textContent = `${calendar.name} (${calendar.code})`;
+        select.appendChild(option);
+    });
+
+    if (calendars.some(calendar => calendar.id === previousValue)) {
+        select.value = previousValue;
+    } else {
+        select.value = calendars[0].id;
+    }
+}
+
+$("cmLoadSelectedCalendar").addEventListener("click", () => {
+    const calendarId = $("cmMainCalendarSelect").value;
+
+    if (!calendarId || !calendars.some(c => c.id === calendarId)) {
+        alert("Please select a calendar.");
+        return;
+    }
+
+    selectedCalendarId = calendarId;
+
+    // Reset the selected date range when switching calendars.
+    rangeAnchor = null;
+    selectedStart = iso(today);
+    selectedEnd = iso(today);
+
+    renderAll();
+    setTab("cmMainPanel");
+});
+
+
+    function selectedCalendar() {
+        return calendars.find(calendar => calendar.id === selectedCalendarId) || null;
+    }
+
+    function renderCalendarIndex() {
+        const body = $("cmCalendarIndexRows");
+
+        if (!calendars.length) {
+            body.innerHTML = '<tr><td colspan="6">No calendars created yet.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = calendars.map(calendar => {
+            const offDays = (calendar.weeklyOffDays || [])
+                .map(day => dayNames[day])
+                .join(", ") || "None";
+
+            return `
+                <tr>
+                    <td>${escapeHtml(calendar.code)}</td>
+                    <td>${escapeHtml(calendar.name)}</td>
+                    <td>${escapeHtml(calendar.country || "—")}</td>
+                    <td>${escapeHtml(offDays)}</td>
+                    <td>${calendar.isActive ? "Active" : "Inactive"}</td>
+                    <td>
+                        <div class="cm-actions">
+                            <button type="button" class="btn btn-outline-primary btn-sm"
+                                data-action="select-calendar" data-id="${escapeHtml(calendar.id)}">Open</button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                data-action="edit-calendar" data-id="${escapeHtml(calendar.id)}">Edit</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                data-action="delete-calendar" data-id="${escapeHtml(calendar.id)}">Delete</button>
+                        </div>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    function renderDefinitions() {
+        const body = $("cmDefinitionRows");
+
+        if (!definitions.length) {
+            body.innerHTML = '<tr><td colspan="8">No definitions saved yet.</td></tr>';
+            return;
+        }
+
+        body.innerHTML = definitions.map(definition => {
+            const calendar = calendars.find(c => c.id === definition.calendarId);
+            const details = definition.type === "Holiday"
+                ? (definition.holidayName || "Holiday")
+                : (definition.weekdays || []).map(d => dayNames[d]).join(", ");
+
+            return `
+                <tr>
+                    <td>${escapeHtml(definition.docNo)}</td>
+                    <td>${escapeHtml(calendar ? calendar.name : definition.calendarId)}</td>
+                    <td>${escapeHtml(definition.date)}</td>
+                    <td>${escapeHtml(definition.type)}</td>
+                    <td>${escapeHtml(definition.fromDate)}</td>
+                    <td>${escapeHtml(definition.toDate)}</td>
+                    <td>${escapeHtml(details)}</td>
+                    <td>
+                        <div class="cm-actions">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                data-action="edit-definition" data-id="${escapeHtml(definition.id)}">Edit</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                data-action="delete-definition" data-id="${escapeHtml(definition.id)}">Delete</button>
+                        </div>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    function resetCalendarForm() {
+        editingCalendarId = null;
+        $("cmCalendarForm").reset();
+        $("cmCalendarStatus").value = "true";
+        $("cmSaveCalendar").textContent = "Save Calendar";
+        renderWeekdayChecks("cmCalendarWeekdayChecks", []);
+        message("cmCalendarMessage", "");
+    }
+
+    function editCalendar(id) {
+        const calendar = calendars.find(item => item.id === id);
+        if (!calendar) return;
+
+        editingCalendarId = id;
+        $("cmCalendarName").value = calendar.name;
+        $("cmCalendarCode").value = calendar.code;
+        $("cmCountry").value = calendar.country || "";
+        $("cmCalendarStatus").value = String(calendar.isActive !== false);
+
+        renderWeekdayChecks(
+            "cmCalendarWeekdayChecks",
+            calendar.weeklyOffDays || []
+        );
+
+        $("cmSaveCalendar").textContent = "Update Calendar";
+        selectedCalendarId = id;
+        renderAll();
+        setTab("cmIndexPanel");
+        toggleCreateCalendar(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function saveCalendar(event) {
+        event.preventDefault();
+
+        const name = $("cmCalendarName").value.trim();
+        const code = $("cmCalendarCode").value.trim();
+        const country = $("cmCountry").value.trim();
+        const weeklyOffDays = selectedDays("cmCalendarWeekdayChecks");
+
+        if (!name || !code) {
+            message("cmCalendarMessage", "Calendar name and code are required.", true);
+            return;
+        }
+
+        const duplicate = calendars.find(calendar =>
+            calendar.id !== editingCalendarId &&
+            (calendar.code || "").toLowerCase() === code.toLowerCase()
+        );
+
+        if (duplicate) {
+            message("cmCalendarMessage", "That calendar code is already in use.", true);
+            return;
+        }
+
+        const previous = calendars.slice();
+        const calendar = {
+            id: editingCalendarId || makeId("CAL"),
+            name,
+            code,
+            country,
+            weeklyOffDays,
+            isActive: $("cmCalendarStatus").value === "true"
+        };
+
+        if (editingCalendarId) {
+            calendars = calendars.map(item =>
+                item.id === editingCalendarId ? calendar : item
+            );
+        } else {
+            calendars.push(calendar);
+        }
+
+        try {
+            await postJson(api.calendars, calendars);
+            selectedCalendarId = calendar.id;
+            editingCalendarId = null;
+            renderAll();
+            $("cmCalendarForm").reset();
+            $("cmCalendarStatus").value = "true";
+            renderWeekdayChecks("cmCalendarWeekdayChecks", []);
+            $("cmSaveCalendar").textContent = "Save Calendar";
+            message("cmCalendarMessage", "Calendar saved successfully.");
+            toggleCreateCalendar(false);
+        } catch (error) {
+            calendars = previous;
+            renderAll();
+            message("cmCalendarMessage", error.message, true);
+        }
+    }
+
+    async function deleteCalendar(id) {
+        const calendar = calendars.find(item => item.id === id);
+        if (!calendar) return;
+
+        const hasDefinitions = definitions.some(d => d.calendarId === id);
+        const hasEvents = events.some(e => e.calendarId === id);
+
+        if (hasDefinitions || hasEvents) {
+            alert("This calendar has definitions or events. Remove those records first.");
+            return;
+        }
+
+        if (!confirm(`Delete calendar "${calendar.name}"?`)) return;
+
+        const previous = calendars.slice();
+        calendars = calendars.filter(item => item.id !== id);
+
+        try {
+            await postJson(api.calendars, calendars);
+            if (selectedCalendarId === id) {
+                selectedCalendarId = calendars.length ? calendars[0].id : null;
+            }
+            renderAll();
+        } catch (error) {
+            calendars = previous;
+            renderAll();
+            alert(error.message);
+        }
+    }
+
+    function clearDefinitionForm() {
+        editingDefinitionId = null;
+        $("cmDefinitionForm").reset();
+        $("cmDefinitionType").value = "Holiday";
+        $("cmDocDate").value = iso(today);
+        $("cmFromDate").value = iso(today);
+        $("cmToDate").value = iso(today);
+        $("cmSaveDefinition").textContent = "Save Definition";
+        renderWeekdayChecks("cmDefinitionWeekdayChecks", []);
+        updateDefinitionType();
+        message("cmDefinitionMessage", "");
+    }
+
+    function updateDefinitionType() {
+        const isWeeklyOff = $("cmDefinitionType").value === "WeeklyOff";
+        $("cmDefinitionWeekdaysField").style.display = isWeeklyOff ? "" : "none";
+        $("cmHolidayNameField").style.display = isWeeklyOff ? "none" : "";
+        $("cmHolidayName").required = !isWeeklyOff;
+    }
+
+    function editDefinition(id) {
+        const definition = definitions.find(item => item.id === id);
+        if (!definition) return;
+
+        editingDefinitionId = id;
+        $("cmDefinitionCalendar").value = definition.calendarId;
+        $("cmDocNo").value = definition.docNo;
+        $("cmDocDate").value = definition.date;
+        $("cmDefinitionType").value = definition.type;
+        $("cmHolidayName").value = definition.holidayName || "";
+        $("cmFromDate").value = definition.fromDate;
+        $("cmToDate").value = definition.toDate;
+
+        renderWeekdayChecks(
+            "cmDefinitionWeekdayChecks",
+            definition.weekdays || []
+        );
+
+        $("cmSaveDefinition").textContent = "Update Definition";
+        updateDefinitionType();
+        setTab("cmDefinitionPanel");
+    }
+
+    async function saveDefinition(event) {
+        event.preventDefault();
+
+        if (!calendars.length) {
+            message("cmDefinitionMessage", "Create a calendar first.", true);
+            return;
+        }
+
+        const type = $("cmDefinitionType").value;
+        const weekdays = type === "WeeklyOff"
+            ? selectedDays("cmDefinitionWeekdayChecks")
+            : [];
+
+        const definition = {
+            id: editingDefinitionId || makeId("DEF"),
+            calendarId: $("cmDefinitionCalendar").value,
+            docNo: $("cmDocNo").value.trim(),
+            date: $("cmDocDate").value,
+            type,
+            fromDate: $("cmFromDate").value,
+            toDate: $("cmToDate").value,
+            weekdays,
+            holidayName: type === "Holiday"
+                ? $("cmHolidayName").value.trim()
+                : ""
+        };
+
+        if (!definition.calendarId || !definition.docNo ||
+            !definition.date || !definition.fromDate || !definition.toDate) {
+            message("cmDefinitionMessage", "Complete all required fields.", true);
+            return;
+        }
+
+        if (definition.toDate < definition.fromDate) {
+            message("cmDefinitionMessage", "To Date cannot be earlier than From Date.", true);
+            return;
+        }
+
+        if (type === "WeeklyOff" && !weekdays.length) {
+            message("cmDefinitionMessage", "Select at least one weekly-off day.", true);
+            return;
+        }
+
+        if (type === "Holiday" && !definition.holidayName) {
+            message("cmDefinitionMessage", "Enter a holiday name.", true);
+            return;
+        }
+
+        const previous = definitions.slice();
+
+        if (editingDefinitionId) {
+            definitions = definitions.map(item =>
+                item.id === editingDefinitionId ? definition : item
+            );
+        } else {
+            definitions.push(definition);
+        }
+
+        try {
+            await postJson(api.definitions, definitions);
+            selectedCalendarId = definition.calendarId;
+            clearDefinitionForm();
+            renderAll();
+            message("cmDefinitionMessage", "Definition saved successfully.");
+        } catch (error) {
+            definitions = previous;
+            renderAll();
+            message("cmDefinitionMessage", error.message, true);
+        }
+    }
+
+    async function deleteDefinition(id) {
+        const definition = definitions.find(item => item.id === id);
+        if (!definition || !confirm(`Delete definition "${definition.docNo}"?`)) return;
+
+        const previous = definitions.slice();
+        definitions = definitions.filter(item => item.id !== id);
+
+        try {
+            await postJson(api.definitions, definitions);
+            renderAll();
+        } catch (error) {
+            definitions = previous;
+            renderAll();
+            alert(error.message);
+        }
+    }
+
+    function isWeeklyOff(dateString) {
+        const calendar = selectedCalendar();
+        if (!calendar) return false;
+
+        const weekday = dateFromIso(dateString).getDay();
+
+        const defaultOff = (calendar.weeklyOffDays || []).includes(weekday);
+
+        const definedOff = definitions.some(definition =>
+            definition.calendarId === calendar.id &&
+            definition.type === "WeeklyOff" &&
+            definition.fromDate <= dateString &&
+            definition.toDate >= dateString &&
+            (definition.weekdays || []).includes(weekday)
+        );
+
+        return defaultOff || definedOff;
+    }
+
+    function holidaysForDate(dateString) {
+        const calendar = selectedCalendar();
+        if (!calendar) return [];
+
+        return definitions.filter(definition =>
+            definition.calendarId === calendar.id &&
+            definition.type === "Holiday" &&
+            definition.fromDate <= dateString &&
+            definition.toDate >= dateString
+        );
+    }
+
+    function getEventsForDate(dateString) {
+        return events.filter(item =>
+            item.calendarId === selectedCalendarId &&
+            item.start <= dateString &&
+            item.end >= dateString
+        );
+    }
+
+    function renderCalendar() {
+        const calendar = selectedCalendar();
+        const headings = $("cmWeekdayHeadings");
+        const daysContainer = $("cmCalendarDays");
+
+        headings.innerHTML = "";
+        daysContainer.innerHTML = "";
+
+        dayNames.forEach((name, index) => {
+            const heading = document.createElement("div");
+            heading.className = "cm-day-heading";
+
+            if (calendar && (calendar.weeklyOffDays || []).includes(index)) {
+                heading.classList.add("weekend-heading");
+            }
+
+            heading.textContent = name.substring(0, 3);
+            headings.appendChild(heading);
+        });
+
+        if (!calendar) {
+    $("cmPreviewName").textContent = "No calendar selected";
+    $("cmPreviewCode").textContent = "";
+    $("cmSelectedCalendarName").textContent = "No calendar selected";
+    $("cmSelectedCalendarCode").textContent = "—";
+    $("cmMonthTitle").textContent = "Calendar Preview";
+    $("cmCalendarFooter").textContent = "Create a calendar to preview it.";
+    return;
+}
+
+        $("cmPreviewName").textContent = calendar.name;
+        $("cmPreviewCode").textContent =
+            `${calendar.code} · ${calendar.country || "No country specified"}`;
+        // Keep the Selected Calendar panel synchronized with the calendar below.
+$("cmSelectedCalendarName").textContent = calendar.name;
+$("cmSelectedCalendarCode").textContent = calendar.code || "—";
+
+        $("cmMonthTitle").textContent =
+            displayedMonth.toLocaleDateString("en", {
+                month: "long",
+                year: "numeric"
+            });
+
+        const year = displayedMonth.getFullYear();
+        const month = displayedMonth.getMonth();
+        const firstWeekday = new Date(year, month, 1).getDay();
+
+        for (let i = 0; i < 42; i++) {
+            const date = new Date(year, month, 1 - firstWeekday + i);
+            const dateString = iso(date);
+            const isCurrentMonth = date.getMonth() === month;
+            const weekend = isWeeklyOff(dateString);
+            const dayEvents = getEventsForDate(dateString);
+            const holidays = holidaysForDate(dateString);
+            const hasLeave = dayEvents.some(item => item.type === "leave");
+            const hasHoliday = holidays.length > 0 ||
+                dayEvents.some(item => item.type === "holiday");
+
+            const cell = document.createElement("div");
+            cell.className = "cm-day";
+            cell.dataset.date = dateString;
+
+            if (!isCurrentMonth) cell.classList.add("outside");
+            if (weekend) cell.classList.add("weekend");
+            if (iso(today) === dateString) cell.classList.add("today");
+            if (hasLeave) cell.classList.add("has-leave");
+            if (hasHoliday) cell.classList.add("has-holiday");
+
+            const dayNumber = document.createElement("span");
+            dayNumber.className = "cm-day-num";
+            dayNumber.textContent = date.getDate();
+            cell.appendChild(dayNumber);
+
+            if (weekend && isCurrentMonth) {
+                const label = document.createElement("span");
+                label.className = "cm-day-label";
+                label.textContent = "Weekly Off";
+                cell.appendChild(label);
+            }
+
+            holidays.slice(0, 2).forEach(holiday => {
+                const chip = document.createElement("button");
+                chip.type = "button";
+                chip.className = "cm-event-chip holiday";
+                chip.textContent = holiday.holidayName || "Holiday";
+                chip.title = `${holiday.holidayName || "Holiday"} (${holiday.fromDate} to ${holiday.toDate})`;
+                chip.addEventListener("click", event => {
+    event.stopPropagation();
+    openEvent(item.id);
+});
+
+cell.appendChild(chip);
+
+if (item.type === "leave") {
+    const editButton = document.createElement("button");
+    editButton.type = "button";
+    editButton.className = "cm-edit-leave";
+    editButton.innerHTML = '<i class="fas fa-edit"></i> Edit';
+    editButton.title = "Edit this employee leave";
+
+    editButton.addEventListener("click", event => {
+        event.stopPropagation();
+        openEvent(item.id);
+    });
+
+    cell.appendChild(editButton);
+}
+            });
+
+            dayEvents.slice(0, 3).forEach(item => {
+                const chip = document.createElement("button");
+                chip.type = "button";
+                chip.className = "cm-event-chip " +
+                    (item.type === "holiday" ? "holiday" : "leave");
+
+                if (item.status === "Rejected") chip.classList.add("rejected");
+
+                chip.textContent = item.type === "holiday"
+                    ? `Holiday: ${item.title}`
+                    : `${item.employee || "Leave"}: ${item.title}`;
+
+                chip.title = `${item.title} (${item.status || "Pending"})`;
+                chip.addEventListener("click", event => {
+                    event.stopPropagation();
+                    openEvent(item.id);
+                });
+                cell.appendChild(chip);
+            });
+
+            cell.addEventListener("click", () => {
+                if (!rangeAnchor) {
+                    rangeAnchor = dateString;
+                    selectedStart = dateString;
+                    selectedEnd = dateString;
+                } else {
+                    selectedStart = rangeAnchor < dateString ? rangeAnchor : dateString;
+                    selectedEnd = rangeAnchor > dateString ? rangeAnchor : dateString;
+                    rangeAnchor = null;
+                }
+
+                renderCalendar();
+            });
+
+            daysContainer.appendChild(cell);
+        }
+
+        const offDays = (calendar.weeklyOffDays || [])
+            .map(day => dayNames[day])
+            .join(", ") || "None";
+
+        $("cmCalendarFooter").textContent =
+            `${calendar.code} · Weekly off: ${offDays} · ` +
+            `${events.filter(e => e.calendarId === calendar.id).length} event(s)`;
+    }
+
+    function renderAll() {
+        renderCalendarSelect();
+        renderMainCalendarSelect();
+        renderCalendarIndex();
+        renderDefinitions();
+        renderCalendar();
+    }
+
+    async function loadAll() {
+        try {
+            [calendars, definitions, events] = await Promise.all([
+                getJson(api.calendars),
+                getJson(api.definitions),
+                getJson(api.events)
+            ]);
+
+            calendars = Array.isArray(calendars) ? calendars : [];
+            definitions = Array.isArray(definitions) ? definitions : [];
+            events = Array.isArray(events) ? events : [];
+
+            // Attach older event records to the first calendar if they have no calendarId.
+            if (calendars.length) {
+                events.forEach(item => {
+                    if (!item.calendarId) item.calendarId = calendars[0].id;
+                });
+            }
+
+            if (!calendars.some(c => c.id === selectedCalendarId)) {
+                selectedCalendarId = calendars.length ? calendars[0].id : null;
+            }
+
+            renderWeekdayChecks("cmCalendarWeekdayChecks", []);
+            renderWeekdayChecks("cmDefinitionWeekdayChecks", []);
+            renderAll();
+        } catch (error) {
+            console.error(error);
+            $("cmCalendarFooter").textContent =
+                "Could not load calendar data. Check the Calendar API and JSON files.";
+            message("cmCalendarMessage", error.message, true);
+        }
+    }
+
+    function openEventModal(id = null) {
+        if (!selectedCalendarId) {
+            alert("Create or select a calendar first.");
+            return;
+        }
+
+        editingEventId = id;
+        $("cmEventForm").reset();
+        message("cmEventMessage", "");
+
+        const item = id
+            ? events.find(event => event.id === id)
+            : null;
+
+        $("cmEventModalTitle").textContent = item ? "Edit Event" : "New Event";
+        $("cmEventSave").textContent = item ? "Save Changes" : "Save Event";
+        $("cmEventDelete").style.display = item ? "" : "none";
+
+        $("cmEventTitle").value = item?.title || "";
+        $("cmEventType").value = item?.type || "leave";
+        $("cmEventEmployee").value = item?.employee || "";
+        $("cmEventStart").value = item?.start || selectedStart;
+        $("cmEventEnd").value = item?.end || selectedEnd;
+        $("cmEventStatus").value = item?.status || "Pending";
+        $("cmEventReason").value = item?.reason || "";
+
+        updateEventType();
+        $("cmEventBackdrop").classList.add("open");
+    }
+
+    function closeEventModal() {
+        $("cmEventBackdrop").classList.remove("open");
+        editingEventId = null;
+    }
+
+    function updateEventType() {
+        const isLeave = $("cmEventType").value === "leave";
+        $("cmEventEmployeeField").style.display = isLeave ? "" : "none";
+        $("cmEventEmployee").required = isLeave;
+    }
+
+    async function saveEvent(event) {
+        event.preventDefault();
+
+        const title = $("cmEventTitle").value.trim();
+        const type = $("cmEventType").value;
+        const employee = $("cmEventEmployee").value.trim();
+        const start = $("cmEventStart").value;
+        const end = $("cmEventEnd").value;
+
+        if (!title || !start || !end) {
+            message("cmEventMessage", "Complete all required fields.", true);
+            return;
+        }
+
+        if (end < start) {
+            message("cmEventMessage", "To Date cannot be earlier than From Date.", true);
+            return;
+        }
+
+        if (type === "leave" && !employee) {
+            message("cmEventMessage", "Enter an employee name for leave.", true);
+            return;
+        }
+
+        const overlap = events.find(item =>
+            item.id !== editingEventId &&
+            item.calendarId === selectedCalendarId &&
+            item.type === "leave" &&
+            type === "leave" &&
+            (item.employee || "").toLowerCase() === employee.toLowerCase() &&
+            item.start <= end &&
+            item.end >= start
+        );
+
+        if (overlap && !confirm(
+            `This employee has overlapping leave "${overlap.title}". Save anyway?`
+        )) return;
+
+        const record = {
+            id: editingEventId || makeId("EVT"),
+            calendarId: selectedCalendarId,
+            title,
+            type,
+            employee: type === "leave" ? employee : "",
+            start,
+            end,
+            status: $("cmEventStatus").value,
+            reason: $("cmEventReason").value.trim()
+        };
+
+        const previous = events.slice();
+
+        if (editingEventId) {
+            events = events.map(item => item.id === editingEventId ? record : item);
+        } else {
+            events.push(record);
+        }
+
+        $("cmEventSave").disabled = true;
+
+        try {
+            await postJson(api.events, events);
+            selectedStart = start;
+            selectedEnd = end;
+            displayedMonth = new Date(
+                dateFromIso(start).getFullYear(),
+                dateFromIso(start).getMonth(),
+                1
+            );
+            closeEventModal();
+            renderCalendar();
+        } catch (error) {
+            events = previous;
+            message("cmEventMessage", error.message, true);
+        } finally {
+            $("cmEventSave").disabled = false;
+        }
+    }
+
+    async function deleteEvent() {
+        if (!editingEventId) return;
+
+        const item = events.find(event => event.id === editingEventId);
+        if (!item || !confirm(`Delete "${item.title}"?`)) return;
+
+        const previous = events.slice();
+        events = events.filter(event => event.id !== editingEventId);
+
+        try {
+            await postJson(api.events, events);
+            closeEventModal();
+            renderCalendar();
+        } catch (error) {
+            events = previous;
+            message("cmEventMessage", error.message, true);
+        }
+    }
+
+    $("cmCalendarForm").addEventListener("submit", saveCalendar);
+$("cmClearCalendar").addEventListener("click", resetCalendarForm);
+
+function toggleCreateCalendar(open) {
+    const container = $("cmCreateCalendar");
+    const button = $("cmToggleCreateCalendar");
+
+    container.classList.toggle("open", open);
+    button.classList.toggle("open", open);
+    button.setAttribute("aria-expanded", String(open));
+
+    button.innerHTML = open
+        ? '<i class="fas fa-minus mr-1"></i> Close Form <i class="fas fa-chevron-down ml-2"></i>'
+        : '<i class="fas fa-plus mr-1"></i> New Calendar <i class="fas fa-chevron-down ml-2"></i>';
+}
+
+$("cmToggleCreateCalendar").addEventListener("click", () => {
+    toggleCreateCalendar(
+        !$("cmCreateCalendar").classList.contains("open")
+    );
+});
+
+$("cmNewCalendar").addEventListener("click", () => {
+    setTab("cmIndexPanel");
+    resetCalendarForm();
+    toggleCreateCalendar(true);
+});
+
+$("cmReloadCalendars").addEventListener("click", loadAll);
+    $("cmReloadCalendars").addEventListener("click", loadAll);
+
+    $("cmPreviewCalendar").addEventListener("click", () => {
+        renderCalendar();
+        $("cmMonthTitle").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+
+    $("cmOpenDefinition").addEventListener("click", () => {
+        setTab("cmDefinitionPanel");
+    });
+
+    $("cmCalendarIndexRows").addEventListener("click", event => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const id = button.dataset.id;
+
+        if (button.dataset.action === "select-calendar") {
+            selectedCalendarId = id;
+            renderAll();
+            setTab("cmMainPanel");
+        } else if (button.dataset.action === "edit-calendar") {
+            editCalendar(id);
+        } else if (button.dataset.action === "delete-calendar") {
+            deleteCalendar(id);
+        }
+    });
+
+    $("cmDefinitionRows").addEventListener("click", event => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const id = button.dataset.id;
+
+        if (button.dataset.action === "edit-definition") {
+            editDefinition(id);
+        } else if (button.dataset.action === "delete-definition") {
+            deleteDefinition(id);
+        }
+    });
+
+    $("cmDefinitionForm").addEventListener("submit", saveDefinition);
+    $("cmDefinitionType").addEventListener("change", updateDefinitionType);
+    $("cmClearDefinition").addEventListener("click", clearDefinitionForm);
+
+    $("cmDefinitionCalendar").addEventListener("change", event => {
+        selectedCalendarId = event.target.value || null;
+        renderCalendar();
+    });
+
+    $("cmPrevMonth").addEventListener("click", () => {
+        displayedMonth = new Date(
+            displayedMonth.getFullYear(),
+            displayedMonth.getMonth() - 1,
+            1
+        );
+        renderCalendar();
+    });
+
+    $("cmNextMonth").addEventListener("click", () => {
+        displayedMonth = new Date(
+            displayedMonth.getFullYear(),
+            displayedMonth.getMonth() + 1,
+            1
+        );
+        renderCalendar();
+    });
+
+    $("cmToday").addEventListener("click", () => {
+        displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        selectedStart = iso(today);
+        selectedEnd = iso(today);
+        rangeAnchor = null;
+        renderCalendar();
+    });
+
+    $("cmNewEvent").addEventListener("click", () => openEventModal());
+    $("cmEventClose").addEventListener("click", closeEventModal);
+    $("cmEventCancel").addEventListener("click", closeEventModal);
+    $("cmEventType").addEventListener("change", updateEventType);
+    $("cmEventForm").addEventListener("submit", saveEvent);
+    $("cmEventDelete").addEventListener("click", deleteEvent);
+
+    $("cmEventBackdrop").addEventListener("click", event => {
+        if (event.target === $("cmEventBackdrop")) closeEventModal();
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") closeEventModal();
+    });
+
+    renderWeekdayChecks("cmCalendarWeekdayChecks", []);
+    renderWeekdayChecks("cmDefinitionWeekdayChecks", []);
+    $("cmDocDate").value = iso(today);
+    $("cmFromDate").value = iso(today);
+    $("cmToDate").value = iso(today);
+    updateDefinitionType();
+    updateEventType();
+    loadAll();
+})();
+</script>

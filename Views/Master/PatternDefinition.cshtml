@@ -1,0 +1,917 @@
+
+@{
+    ViewData["Title"] = "Pattern Definition";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .pd-page {
+        width: 100%;
+        padding: 0 15px 24px;
+        color: #5a5c69;
+        box-sizing: border-box;
+    }
+
+    .pd-page *,
+    .pd-page *::before,
+    .pd-page *::after {
+        box-sizing: border-box;
+    }
+
+    .pd-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 18px;
+        margin-bottom: 16px;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1rem rgba(58,59,69,.12);
+    }
+
+    .pd-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .pd-title i {
+        color: #4e73df;
+    }
+
+    .pd-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pd-toolbar .btn {
+        white-space: nowrap;
+    }
+
+    .pd-card {
+        margin-bottom: 16px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1rem rgba(58,59,69,.10);
+    }
+
+    .pd-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #fff;
+        border-bottom: 1px solid #e3e6f0;
+        font-weight: 700;
+    }
+
+    .pd-card-body {
+        padding: 20px;
+    }
+
+    .pd-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .pd-field label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #5a5c69;
+    }
+
+    .pd-field .form-control {
+        width: 100%;
+        min-width: 0;
+        height: 38px;
+        border: 1px solid #d1d3e2;
+        border-radius: .25rem;
+        color: #5a5c69;
+        background: #fff;
+    }
+
+    .pd-field .form-control:focus {
+        border-color: #bac8f5;
+        box-shadow: 0 0 0 .15rem rgba(78,115,223,.15);
+    }
+
+    .pd-readonly {
+        display: flex;
+        align-items: center;
+        min-height: 38px;
+        padding: 8px 12px;
+        background: #f8f9fc;
+        border: 1px solid #e3e6f0;
+        border-radius: .25rem;
+        font-weight: 600;
+    }
+
+    .pd-help {
+        margin-top: 6px;
+        color: #858796;
+        font-size: 12px;
+    }
+
+    .pd-grid-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+    .pd-grid {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .pd-day {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        min-height: 112px;
+        padding: 12px 8px;
+        border: 1px solid #4caf50;
+        border-radius: 7px;
+        background: #d8f3dc;
+        color: #237a3b;
+        cursor: pointer;
+        transition: background .15s ease, transform .15s ease;
+    }
+
+    .pd-day:hover {
+        transform: translateY(-2px);
+    }
+
+    .pd-day.is-off {
+        background: #f2edfa;
+        border-color: #c8b7e6;
+        color: #7257a8;
+    }
+
+    .pd-day-number {
+        font-size: 12px;
+        font-weight: 700;
+        opacity: .8;
+    }
+
+    .pd-day-status {
+        margin-top: 8px;
+        font-size: 19px;
+        font-weight: 800;
+    }
+
+    .pd-day-caption {
+        margin-top: 5px;
+        font-size: 11px;
+        opacity: .85;
+    }
+
+    .pd-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 18px;
+        color: #6e707e;
+        font-size: 12px;
+    }
+
+    .pd-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pd-legend-box {
+        width: 13px;
+        height: 13px;
+        border-radius: 3px;
+        border: 1px solid #4caf50;
+        background: #d8f3dc;
+    }
+
+    .pd-legend-box.off {
+        border-color: #c8b7e6;
+        background: #f2edfa;
+    }
+
+    .pd-table-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .pd-table {
+        width: 100%;
+        margin: 0;
+        border-collapse: collapse;
+    }
+
+    .pd-table th {
+        padding: 11px 12px;
+        background: #4e73df;
+        border: 1px solid #e3e6f0;
+        color: #fff;
+        text-align: left;
+        font-size: 11px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .pd-table td {
+        padding: 10px 12px;
+        border: 1px solid #e3e6f0;
+        vertical-align: middle;
+    }
+
+    .pd-table tbody tr:nth-child(even) {
+        background: #f8f9fc;
+    }
+
+    .pd-message {
+        display: none;
+        margin-top: 14px;
+        font-size: 13px;
+    }
+
+    .pd-message.success {
+        display: block;
+        color: #1cc88a;
+    }
+
+    .pd-message.error {
+        display: block;
+        color: #e74a3b;
+    }
+
+    .pd-empty {
+        padding: 25px;
+        color: #858796;
+        text-align: center;
+    }
+
+    .pd-small-muted {
+        color: #858796;
+        font-size: 12px;
+        font-weight: 400;
+    }
+
+    @@media (max-width: 1000px) {
+        .pd-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 700px) {
+        .pd-form-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .pd-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .pd-card-body {
+            padding: 14px;
+        }
+
+        .pd-toolbar {
+            justify-content: flex-start;
+        }
+    }
+
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #pdGridCard,
+        #pdGridCard * {
+            visibility: visible;
+        }
+
+        #pdGridCard {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+        }
+
+        .pd-toolbar,
+        .pd-no-print {
+            display: none !important;
+        }
+
+        .pd-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+
+        .pd-day {
+            break-inside: avoid;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+    }
+</style>
+
+<div class="pd-page">
+
+    <!-- Master header -->
+    <div class="pd-header">
+        <h5 class="pd-title">
+            <i class="fas fa-project-diagram"></i>
+            Pattern Definition Master
+        </h5>
+
+        <div class="pd-toolbar">
+            <button type="button" class="btn btn-success btn-sm shadow-sm" id="pdNew">
+                <i class="fas fa-plus mr-1"></i> New
+            </button>
+
+            <button type="button" class="btn btn-primary btn-sm shadow-sm" id="pdEdit">
+                <i class="fas fa-edit mr-1"></i> Edit
+            </button>
+
+            <button type="button" class="btn btn-primary btn-sm shadow-sm" id="pdSave">
+                <i class="fas fa-save mr-1"></i> Save
+            </button>
+
+            <button type="button" class="btn btn-secondary btn-sm shadow-sm" id="pdPrint">
+                <i class="fas fa-print mr-1"></i> Print
+            </button>
+
+            <button type="button" class="btn btn-danger btn-sm shadow-sm" id="pdDelete">
+                <i class="fas fa-trash mr-1"></i> Delete
+            </button>
+
+            <button type="button" class="btn btn-info btn-sm shadow-sm" id="pdClose">
+                <i class="fas fa-times-circle mr-1"></i> Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Pattern details -->
+    <div class="pd-card">
+        <div class="pd-card-header">
+            <span><i class="fas fa-info-circle text-primary mr-2"></i>Pattern Details</span>
+            <span class="pd-small-muted" id="pdMode">New Pattern</span>
+        </div>
+
+        <div class="pd-card-body">
+            <div class="pd-form-grid">
+
+                <div class="pd-field">
+                    <label for="pdNameNo">Name No. (Auto-generated)</label>
+                    <div class="pd-readonly" id="pdNameNo">Assigned when saved</div>
+                </div>
+
+                <div class="pd-field">
+                    <label for="pdSavedSelect">Saved Patterns</label>
+                    <select id="pdSavedSelect" class="form-control">
+                        <option value="">-- New Pattern --</option>
+                    </select>
+                    <div class="pd-help">Select a saved pattern and click Load.</div>
+                </div>
+
+                <div class="pd-field">
+                    <label for="pdName">Pattern Name <span class="text-danger">*</span></label>
+                    <input id="pdName" class="form-control" type="text"
+                           maxlength="120" placeholder="e.g. Day Shift Pattern">
+                </div>
+
+                <div class="pd-field">
+                    <label for="pdCode">Pattern Code <span class="text-danger">*</span></label>
+                    <input id="pdCode" class="form-control" type="text"
+                           maxlength="50" placeholder="e.g. DSP-001">
+                </div>
+
+                <div class="pd-field">
+                    <label for="pdCycle">Days in Cycle <span class="text-danger">*</span></label>
+                    <input id="pdCycle" class="form-control" type="number"
+                           min="1" max="1000" step="1" value="6">
+                    <div class="pd-help">Enter a positive integer up to 1000 days.</div>
+                </div>
+
+                <div class="pd-field">
+                    <label>Pattern Actions</label>
+                    <div class="d-flex flex-wrap" style="gap:8px">
+                        <button type="button" class="btn btn-primary btn-sm" id="pdLoad">
+                            <i class="fas fa-download mr-1"></i> Load
+                        </button>
+
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="pdClear">
+                            <i class="fas fa-eraser mr-1"></i> Clear Grid
+                        </button>
+                    </div>
+                    <div class="pd-help">
+                        For a new pattern, Load generates DD cells. For a selected pattern, it loads saved data.
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="pdMessage" class="pd-message" role="status" aria-live="polite"></div>
+        </div>
+    </div>
+
+    <!-- Dynamic cycle grid -->
+    <div class="pd-card" id="pdGridCard">
+        <div class="pd-card-header">
+            <span><i class="fas fa-th text-primary mr-2"></i>Pattern Grid</span>
+            <span class="pd-small-muted" id="pdGridSummary">6 days in cycle</span>
+        </div>
+
+        <div class="pd-card-body">
+            <div class="pd-grid-header">
+                <div>
+                    <strong>Duty / Off Day Configuration</strong>
+                    <div class="pd-help">
+                        Click any day to toggle between DD (Duty Day) and OFF.
+                    </div>
+                </div>
+                <span class="badge badge-primary" id="pdDayCount">6 Days</span>
+            </div>
+
+            <div id="pdGrid" class="pd-grid"></div>
+
+            <div class="pd-legend">
+                <div class="pd-legend-item">
+                    <span class="pd-legend-box"></span>
+                    DD — Duty Day
+                </div>
+                <div class="pd-legend-item">
+                    <span class="pd-legend-box off"></span>
+                    OFF — Off Day
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Saved pattern index -->
+    <div class="pd-card">
+        <div class="pd-card-header">
+            <span><i class="fas fa-list text-primary mr-2"></i>Saved Patterns</span>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="pdRefresh">
+                <i class="fas fa-sync-alt mr-1"></i> Refresh
+            </button>
+        </div>
+
+        <div class="pd-table-wrap">
+            <table class="pd-table">
+                <thead>
+                    <tr>
+                        <th>Name No.</th>
+                        <th>Pattern Name</th>
+                        <th>Code</th>
+                        <th>Days in Cycle</th>
+                        <th>Duty Days</th>
+                        <th>Off Days</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="pdRows">
+                    <tr>
+                        <td colspan="7" class="pd-empty">Loading patterns...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    const apiUrl = '@Url.Content("~/PatternDefinition/api/patterns")';
+    const $ = id => document.getElementById(id);
+
+    let patterns = [];
+    let currentId = null;
+    let days = [];
+    let isEditing = false;
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, ch => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[ch]);
+    }
+
+    async function responseJson(response) {
+        let data;
+
+        try {
+            data = await response.json();
+        } catch {
+            data = {};
+        }
+
+        if (!response.ok) {
+            throw new Error(data.message || `Request failed (${response.status}).`);
+        }
+
+        return data;
+    }
+
+    async function getPatterns() {
+        const response = await fetch(apiUrl, {
+            headers: { "Accept": "application/json" },
+            cache: "no-store"
+        });
+
+        return responseJson(response);
+    }
+
+    function showMessage(text, type = "success") {
+        const element = $("pdMessage");
+        element.textContent = text || "";
+        element.className = "pd-message" + (text ? " " + type : "");
+    }
+
+    function updateMode() {
+        $("pdMode").textContent = currentId
+            ? `Editing ${$("pdNameNo").textContent}`
+            : "New Pattern";
+    }
+
+    function renderGrid() {
+        const grid = $("pdGrid");
+        grid.innerHTML = "";
+
+        days.forEach((status, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "pd-day" + (status === "OFF" ? " is-off" : "");
+            button.setAttribute("aria-label", `Day ${index + 1}: ${status}`);
+            button.setAttribute("aria-pressed", String(status === "OFF"));
+
+            button.innerHTML = `
+                <span class="pd-day-number">DAY ${index + 1}</span>
+                <span class="pd-day-status">${status}</span>
+                <span class="pd-day-caption">
+                    ${status === "DD" ? "Duty Day" : "Off Day"}
+                </span>
+            `;
+
+            button.addEventListener("click", () => {
+                days[index] = days[index] === "DD" ? "OFF" : "DD";
+                renderGrid();
+            });
+
+            grid.appendChild(button);
+        });
+
+        const dutyCount = days.filter(day => day === "DD").length;
+        const offCount = days.filter(day => day === "OFF").length;
+
+        $("pdGridSummary").textContent = `${days.length} days in cycle`;
+        $("pdDayCount").textContent = `${days.length} Days`;
+        $("pdGridSummary").title =
+            `${dutyCount} duty days and ${offCount} off days`;
+    }
+
+    function generateGrid(count) {
+        if (!Number.isInteger(count) || count < 1 || count > 1000) {
+            throw new Error("Days in Cycle must be an integer between 1 and 1000.");
+        }
+
+        days = Array(count).fill("DD");
+        renderGrid();
+    }
+
+    function populateSavedSelect() {
+        const select = $("pdSavedSelect");
+        const previousValue = select.value;
+
+        select.innerHTML = '<option value="">-- New Pattern --</option>';
+
+        patterns.forEach(pattern => {
+            const option = document.createElement("option");
+            option.value = pattern.id;
+            option.textContent =
+                `${pattern.nameNo} — ${pattern.name} (${pattern.code})`;
+            select.appendChild(option);
+        });
+
+        if (patterns.some(pattern => pattern.id === previousValue)) {
+            select.value = previousValue;
+        }
+    }
+
+    function renderRows() {
+        const tbody = $("pdRows");
+
+        if (!patterns.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="pd-empty">
+                        No saved patterns yet. Create your first pattern above.
+                    </td>
+                </tr>`;
+            return;
+        }
+
+        tbody.innerHTML = patterns.map(pattern => {
+            const duty = (pattern.days || []).filter(day => day === "DD").length;
+            const off = (pattern.days || []).filter(day => day === "OFF").length;
+
+            return `
+                <tr>
+                    <td>${pattern.nameNo}</td>
+                    <td>${escapeHtml(pattern.name)}</td>
+                    <td>${escapeHtml(pattern.code)}</td>
+                    <td>${pattern.daysInCycle}</td>
+                    <td>${duty}</td>
+                    <td>${off}</td>
+                    <td>
+                        <div class="d-flex flex-wrap" style="gap:5px">
+                            <button type="button"
+                                    class="btn btn-outline-primary btn-sm"
+                                    data-action="load"
+                                    data-id="${escapeHtml(pattern.id)}">
+                                <i class="fas fa-folder-open"></i> Load
+                            </button>
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm"
+                                    data-action="delete"
+                                    data-id="${escapeHtml(pattern.id)}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+        }).join("");
+    }
+
+    async function refreshPatterns() {
+        try {
+            patterns = await getPatterns();
+            if (!Array.isArray(patterns)) patterns = [];
+
+            populateSavedSelect();
+            renderRows();
+        } catch (error) {
+            showMessage(error.message, "error");
+            $("pdRows").innerHTML = `
+                <tr><td colspan="7" class="pd-empty">
+                    Could not load patterns from the server.
+                </td></tr>`;
+        }
+    }
+
+    function startNewPattern() {
+        currentId = null;
+        isEditing = false;
+
+        $("pdNameNo").textContent = "Assigned when saved";
+        $("pdName").value = "";
+        $("pdCode").value = "";
+        $("pdCycle").value = "6";
+        $("pdSavedSelect").value = "";
+
+        generateGrid(6);
+        updateMode();
+        showMessage("");
+    }
+
+    function loadPattern(id) {
+        const pattern = patterns.find(item => item.id === id);
+
+        if (!pattern) {
+            showMessage("Select a saved pattern first.", "error");
+            return;
+        }
+
+        currentId = pattern.id;
+        isEditing = true;
+
+        $("pdNameNo").textContent = pattern.nameNo;
+        $("pdName").value = pattern.name;
+        $("pdCode").value = pattern.code;
+        $("pdCycle").value = pattern.daysInCycle;
+        $("pdSavedSelect").value = pattern.id;
+
+        days = Array.isArray(pattern.days) ? [...pattern.days] : [];
+        renderGrid();
+        updateMode();
+        showMessage(`Loaded pattern "${pattern.name}".`);
+    }
+
+    async function savePattern() {
+        const name = $("pdName").value.trim();
+        const code = $("pdCode").value.trim();
+        const cycle = Number($("pdCycle").value);
+
+        if (!name) {
+            showMessage("Enter a Pattern Name.", "error");
+            $("pdName").focus();
+            return;
+        }
+
+        if (!code) {
+            showMessage("Enter a Pattern Code.", "error");
+            $("pdCode").focus();
+            return;
+        }
+
+        if (!Number.isInteger(cycle) || cycle < 1 || cycle > 1000) {
+            showMessage("Days in Cycle must be an integer between 1 and 1000.", "error");
+            $("pdCycle").focus();
+            return;
+        }
+
+        if (days.length !== cycle) {
+            showMessage(
+                "The grid length does not match Days in Cycle. Click Load to generate the grid.",
+                "error"
+            );
+            return;
+        }
+
+        const record = {
+            id: currentId,
+            name: name,
+            code: code,
+            daysInCycle: cycle,
+            days: [...days]
+        };
+
+        const saveButton = $("pdSave");
+        saveButton.disabled = true;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(record)
+            });
+
+            const result = await responseJson(response);
+            const saved = result.pattern;
+
+            currentId = saved.id;
+            isEditing = true;
+
+            $("pdNameNo").textContent = saved.nameNo;
+            $("pdSavedSelect").value = saved.id;
+
+            updateMode();
+            await refreshPatterns();
+
+            $("pdSavedSelect").value = saved.id;
+            showMessage(result.message || "Pattern saved successfully.");
+        } catch (error) {
+            showMessage(error.message, "error");
+        } finally {
+            saveButton.disabled = false;
+        }
+    }
+
+    async function deletePattern(id) {
+        const pattern = patterns.find(item => item.id === id);
+        if (!pattern) return;
+
+        if (!confirm(`Delete pattern "${pattern.name}" (${pattern.code})?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${apiUrl}/${encodeURIComponent(id)}`,
+                { method: "DELETE", headers: { "Accept": "application/json" } }
+            );
+
+            const result = await responseJson(response);
+
+            if (currentId === id) {
+                startNewPattern();
+            }
+
+            await refreshPatterns();
+            showMessage(result.message || "Pattern deleted successfully.");
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    }
+
+    $("pdNew").addEventListener("click", startNewPattern);
+
+    $("pdLoad").addEventListener("click", () => {
+        const selectedId = $("pdSavedSelect").value;
+
+        if (selectedId) {
+            loadPattern(selectedId);
+            return;
+        }
+
+        try {
+            const count = Number($("pdCycle").value);
+            generateGrid(count);
+            currentId = null;
+            isEditing = false;
+            $("pdNameNo").textContent = "Assigned when saved";
+            updateMode();
+            showMessage(`Generated ${count} duty-day cells. Click cells to set off days.`);
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    });
+
+    $("pdEdit").addEventListener("click", () => {
+        const selectedId = $("pdSavedSelect").value || currentId;
+
+        if (!selectedId) {
+            showMessage("Select a saved pattern to edit.", "error");
+            return;
+        }
+
+        loadPattern(selectedId);
+    });
+
+    $("pdSave").addEventListener("click", savePattern);
+
+    $("pdClear").addEventListener("click", () => {
+        if (!days.length) return;
+
+        if (!confirm("Reset every day in the current grid to DD?")) return;
+
+        days = Array(days.length).fill("DD");
+        renderGrid();
+        showMessage("Grid reset to Duty Day. Click Save to persist the changes.");
+    });
+
+    $("pdDelete").addEventListener("click", () => {
+        const id = $("pdSavedSelect").value || currentId;
+
+        if (!id) {
+            showMessage("Select a saved pattern to delete.", "error");
+            return;
+        }
+
+        deletePattern(id);
+    });
+
+    $("pdRefresh").addEventListener("click", refreshPatterns);
+    $("pdPrint").addEventListener("click", () => window.print());
+
+    $("pdClose").addEventListener("click", () => {
+        window.location.href = '@Url.Content("~/")';
+    });
+
+    $("pdSavedSelect").addEventListener("change", () => {
+        showMessage("");
+    });
+
+    $("pdRows").addEventListener("click", event => {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const id = button.dataset.id;
+
+        if (button.dataset.action === "load") {
+            $("pdSavedSelect").value = id;
+            loadPattern(id);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (button.dataset.action === "delete") {
+            deletePattern(id);
+        }
+    });
+
+    refreshPatterns();
+    generateGrid(6);
+})();
+</script>

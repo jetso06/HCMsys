@@ -1,0 +1,45 @@
+[
+  {
+    "id": "CAL-OM-001",
+    "name": "Oman Office Calendar",
+    "code": "CAL-OM-001",
+    "country": "Oman",
+    "weeklyOffDays": [
+      5,
+      6
+    ],
+    "isActive": true
+  },
+  {
+    "id": "CAL-IN-001",
+    "name": "India Office Calendar",
+    "code": "CAL-IN-001",
+    "country": "India",
+    "weeklyOffDays": [
+      0
+    ],
+    "isActive": true
+  },
+  {
+    "id": "CAL-UK-001",
+    "name": "UK Office Calendar",
+    "code": "CAL-UK-001",
+    "country": "United Kingdom",
+    "weeklyOffDays": [
+      0,
+      6
+    ],
+    "isActive": true
+  },
+  {
+    "id": "CAL-7d318127-c631-412d-865a-d025a6d18bc8",
+    "name": "India",
+    "code": "IN",
+    "country": "INdia",
+    "weeklyOffDays": [
+      0,
+      6
+    ],
+    "isActive": true
+  }
+]

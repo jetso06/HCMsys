@@ -1,0 +1,32 @@
+[
+  {
+    "id": "PAT-0001",
+    "nameNo": 1,
+    "name": "COmmercial event",
+    "code": "COM123",
+    "daysInCycle": 6,
+    "days": [
+      "DD",
+      "OFF",
+      "DD",
+      "OFF",
+      "DD",
+      "DD"
+    ]
+  },
+  {
+    "id": "PAT-0002",
+    "nameNo": 2,
+    "name": "Party",
+    "code": "py",
+    "daysInCycle": 6,
+    "days": [
+      "DD",
+      "OFF",
+      "OFF",
+      "OFF",
+      "OFF",
+      "DD"
+    ]
+  }
+]
