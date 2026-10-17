@@ -474,36 +474,6 @@
         </div>
     </div>
 
-    <!-- Saved pattern index -->
-    <div class="pd-card">
-        <div class="pd-card-header">
-            <span><i class="fas fa-list text-primary mr-2"></i>Saved Patterns</span>
-            <button type="button" class="btn btn-outline-primary btn-sm" id="pdRefresh">
-                <i class="fas fa-sync-alt mr-1"></i> Refresh
-            </button>
-        </div>
-
-        <div class="pd-table-wrap">
-            <table class="pd-table">
-                <thead>
-                    <tr>
-                        <th>Name No.</th>
-                        <th>Pattern Name</th>
-                        <th>Code</th>
-                        <th>Days in Cycle</th>
-                        <th>Duty Days</th>
-                        <th>Off Days</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="pdRows">
-                    <tr>
-                        <td colspan="7" class="pd-empty">Loading patterns...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -630,6 +600,7 @@
     }
 
     function renderRows() {
+        if (!$("pdRows")) return;
         const tbody = $("pdRows");
 
         if (!patterns.length) {
@@ -675,20 +646,28 @@
     }
 
     async function refreshPatterns() {
-        try {
-            patterns = await getPatterns();
-            if (!Array.isArray(patterns)) patterns = [];
+    try {
+        patterns = await getPatterns();
 
-            populateSavedSelect();
-            renderRows();
-        } catch (error) {
-            showMessage(error.message, "error");
+        if (!Array.isArray(patterns)) {
+            patterns = [];
+        }
+
+        populateSavedSelect();
+        renderRows();
+    } catch (error) {
+        showMessage(error.message, "error");
+
+        if ($("pdRows")) {
             $("pdRows").innerHTML = `
-                <tr><td colspan="7" class="pd-empty">
-                    Could not load patterns from the server.
-                </td></tr>`;
+                <tr>
+                    <td colspan="7" class="pd-empty">
+                        Could not load patterns from the server.
+                    </td>
+                </tr>`;
         }
     }
+}
 
     function startNewPattern() {
         currentId = null;
@@ -793,7 +772,7 @@
             await refreshPatterns();
 
             $("pdSavedSelect").value = saved.id;
-            showMessage(result.message || "Pattern saved successfully.");
+            window.location.href = '@Url.Content("~/PatternDefinition")';
         } catch (error) {
             showMessage(error.message, "error");
         } finally {
@@ -828,7 +807,9 @@
         }
     }
 
-    $("pdNew").addEventListener("click", startNewPattern);
+    $("pdNew").addEventListener("click", () => {
+    window.location.href = '@Url.Content("~/PatternDefinition/PatternDefinition")';
+});
 
     $("pdLoad").addEventListener("click", () => {
         const selectedId = $("pdSavedSelect").value;
@@ -852,15 +833,17 @@
     });
 
     $("pdEdit").addEventListener("click", () => {
-        const selectedId = $("pdSavedSelect").value || currentId;
+    const selectedId = $("pdSavedSelect").value || currentId;
 
-        if (!selectedId) {
-            showMessage("Select a saved pattern to edit.", "error");
-            return;
-        }
+    if (!selectedId) {
+        showMessage("Select a saved pattern first.", "error");
+        return;
+    }
 
-        loadPattern(selectedId);
-    });
+    window.location.href =
+        '@Url.Content("~/PatternDefinition/PatternDefinition")'
+        + '?id=' + encodeURIComponent(selectedId);
+});
 
     $("pdSave").addEventListener("click", savePattern);
 
@@ -885,33 +868,27 @@
         deletePattern(id);
     });
 
-    $("pdRefresh").addEventListener("click", refreshPatterns);
+    
     $("pdPrint").addEventListener("click", () => window.print());
 
     $("pdClose").addEventListener("click", () => {
-        window.location.href = '@Url.Content("~/")';
-    });
+    window.location.href = '@Url.Content("~/PatternDefinition")';
+});
 
     $("pdSavedSelect").addEventListener("change", () => {
         showMessage("");
     });
 
-    $("pdRows").addEventListener("click", event => {
-        const button = event.target.closest("button[data-action]");
-        if (!button) return;
 
-        const id = button.dataset.id;
-
-        if (button.dataset.action === "load") {
-            $("pdSavedSelect").value = id;
-            loadPattern(id);
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        } else if (button.dataset.action === "delete") {
-            deletePattern(id);
-        }
-    });
-
-    refreshPatterns();
     generateGrid(6);
+
+const params = new URLSearchParams(window.location.search);
+const editId = params.get("id");
+
+refreshPatterns().then(() => {
+    if (editId) {
+        loadPattern(editId);
+    }
+});
 })();
 </script>

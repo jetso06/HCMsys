@@ -109,6 +109,10 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult PatternDefinitionIndex()
+        {
+            return View();
+        }
         public ActionResult PatternDefinition()
         {
             return View();

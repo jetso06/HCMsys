@@ -34,7 +34,14 @@ namespace HCMSys.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            return View();
+            return View("~/Views/Master/PatternDefinitionIndex.cshtml");
+        }
+
+        [HttpGet("PatternDefinition")]
+        public IActionResult PatternDefinition(string? id)
+        {
+            ViewBag.PatternId = id;
+            return View("~/Views/Master/PatternDefinition.cshtml");
         }
 
         [HttpGet("api/patterns")]
