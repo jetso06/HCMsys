@@ -117,5 +117,14 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult PatternAssignmentIndex()
+        {
+            return View();
+        }
+        public ActionResult PatternAssignment(string? id = null)
+        {
+            ViewBag.AssignmentId = id ?? "";
+            return View();
+        }
     }
 }

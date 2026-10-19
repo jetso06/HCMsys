@@ -1,0 +1,840 @@
+
+@{
+    ViewData["Title"] = "Pattern Assignment Master";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+    .pai-page {
+        font-family: Nunito, sans-serif;
+        color: #5a5c69;
+        font-size: 14px;
+    }
+
+    .pai-card {
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .12);
+        margin-bottom: 1rem;
+    }
+
+    .pai-header {
+        padding: 1rem 1.25rem;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .pai-title {
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .pai-title i {
+        color: #4e73df;
+    }
+
+    .pai-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .pai-stat-primary { border-left: .25rem solid #4e73df !important; }
+    .pai-stat-success { border-left: .25rem solid #1cc88a !important; }
+    .pai-stat-info { border-left: .25rem solid #36b9cc !important; }
+    .pai-stat-warning { border-left: .25rem solid #f6c23e !important; }
+
+    .pai-stat-label {
+        font-size: .68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: .25rem;
+    }
+
+    .pai-stat-value {
+        color: #5a5c69;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .pai-stat-icon {
+        color: #dddfeb;
+        font-size: 2rem;
+    }
+
+    .pai-section-title {
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .pai-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+    }
+
+    .pai-table thead th {
+        background: #4e73df;
+        color: #fff;
+        padding: 11px 9px;
+        font-size: .7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .025em;
+        border: 1px solid #3d5cbe;
+        white-space: nowrap;
+    }
+
+    .pai-table tbody td {
+        padding: 10px 9px;
+        border: 1px solid #e3e6f0;
+        color: #5a5c69;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    .pai-table tbody tr:nth-child(odd) {
+        background: #f8f9fc;
+    }
+
+    .pai-table tbody tr:hover {
+        background: #edf1ff;
+    }
+
+    .pai-control {
+        width: 100%;
+        min-height: 36px;
+        padding: .4rem .65rem;
+        border: 1px solid #d1d3e2;
+        border-radius: .3rem;
+        background: #fff;
+        color: #6e707e;
+        font-size: .82rem;
+    }
+
+    .pai-control:focus {
+        outline: none;
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .15rem rgba(78, 115, 223, .15);
+    }
+
+    .pai-label {
+        font-size: .8rem;
+        color: #5a5c69;
+        font-weight: 700;
+        margin-bottom: .35rem;
+    }
+
+    .pai-muted {
+        color: #858796;
+        font-size: .78rem;
+    }
+
+    .pai-message {
+        display: none;
+        padding: .75rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: .25rem;
+        font-size: .85rem;
+    }
+
+    .pai-message.show { display: block; }
+
+    .pai-message.error {
+        color: #721c24;
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+    }
+
+    .pai-message.success {
+        color: #155724;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+    }
+
+    .pai-message.info {
+        color: #004085;
+        background: #cce5ff;
+        border: 1px solid #b8daff;
+    }
+
+    .pai-row-actions {
+        display: flex;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .pai-icon-button {
+        border: 0;
+        background: transparent;
+        padding: 3px 5px;
+        cursor: pointer;
+        font-size: .9rem;
+    }
+
+    .pai-icon-edit { color: #4e73df; }
+    .pai-icon-delete { color: #e74a3b; }
+
+    .pai-icon-button:hover { opacity: .7; }
+
+    .pai-pagination {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .pai-pagination button:disabled {
+        cursor: not-allowed;
+        opacity: .45;
+    }
+
+    .pai-page-number {
+        min-width: 32px;
+    }
+
+    .pai-empty {
+        text-align: center;
+        padding: 28px 12px !important;
+        color: #858796 !important;
+    }
+
+    .pai-record-badge {
+        background: #4e73df;
+        color: white;
+        border-radius: .25rem;
+        padding: .25rem .45rem;
+        font-size: .7rem;
+        font-weight: 700;
+    }
+
+    @@media (max-width: 768px) {
+        .pai-header { align-items: flex-start; }
+        .pai-actions { width: 100%; }
+        .pai-table { min-width: 1050px; }
+    }
+
+    @@media print {
+        .pai-actions,
+        .pai-table-tools,
+        .pai-pagination,
+        .pai-row-actions,
+        #paiMessage {
+            display: none !important;
+        }
+
+        .pai-card {
+            box-shadow: none;
+        }
+    }
+</style>
+
+<div class="container-fluid py-3 pai-page">
+
+    <div id="paiMessage" class="pai-message" role="status"></div>
+
+    <!-- PAGE HEADER -->
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <div class="pai-header" style="padding:0;border:0;background:transparent;">
+
+                <h6 class="pai-title">
+                    <i class="fas fa-project-diagram"></i>
+                    Pattern Assignment Master
+                </h6>
+
+                <div class="pai-actions">
+                    <a href="@Url.Action("PatternAssignment", "Master")"
+                       class="btn btn-success btn-sm shadow-sm">
+                        <i class="fas fa-plus fa-sm mr-1"></i> New
+                    </a>
+
+                    <button type="button"
+                            id="paiEditSelected"
+                            class="btn btn-primary btn-sm shadow-sm">
+                        <i class="fas fa-edit fa-sm mr-1"></i> Edit
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary btn-sm shadow-sm"
+                            onclick="window.print()">
+                        <i class="fas fa-print fa-sm mr-1"></i> Print
+                    </button>
+
+                    <button type="button"
+                            id="paiDeleteSelected"
+                            class="btn btn-danger btn-sm shadow-sm">
+                        <i class="fas fa-trash fa-sm mr-1"></i> Delete
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-info btn-sm shadow-sm"
+                            onclick="history.back()">
+                        <i class="fas fa-times-circle fa-sm mr-1"></i> Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row mb-2">
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card pai-stat-primary shadow h-100 py-2">
+                <div class="card-body py-2">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="pai-stat-label text-primary">
+                                Total Assignments
+                            </div>
+                            <p class="pai-stat-value" id="paiTotalAssignments">0</p>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-layer-group pai-stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card pai-stat-success shadow h-100 py-2">
+                <div class="card-body py-2">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="pai-stat-label text-success">
+                                Employees Assigned
+                            </div>
+                            <p class="pai-stat-value" id="paiTotalEmployees">0</p>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users pai-stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card pai-stat-info shadow h-100 py-2">
+                <div class="card-body py-2">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="pai-stat-label text-info">
+                                Patterns Used
+                            </div>
+                            <p class="pai-stat-value" id="paiTotalPatterns">0</p>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check pai-stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card pai-stat-warning shadow h-100 py-2">
+                <div class="card-body py-2">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="pai-stat-label text-warning">Module</div>
+                            <p class="pai-stat-value">Pattern Assignment</p>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-sitemap pai-stat-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SAVED ASSIGNMENTS GRID -->
+    <div class="pai-card">
+
+        <div class="pai-header">
+            <h6 class="pai-section-title">
+                <i class="fas fa-table"></i>
+                Saved Assignments
+            </h6>
+
+            <div class="d-flex align-items-center" style="gap:8px;">
+                <button type="button"
+                        id="paiRefresh"
+                        class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-sync-alt mr-1"></i> Refresh
+                </button>
+
+                <span class="pai-record-badge" id="paiRecordBadge">0 Records</span>
+            </div>
+        </div>
+
+        <div class="p-3">
+
+            <div class="row align-items-center mb-3 pai-table-tools">
+                <div class="col-sm-6 col-md-4 mb-2 mb-md-0">
+                    <label class="pai-label" for="paiPageSize">Show entries</label>
+                    <select id="paiPageSize" class="pai-control" style="max-width:100px;">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-6 col-md-5 ml-md-auto">
+                    <label class="pai-label" for="paiSearch">Search assignments</label>
+                    <input type="search"
+                           id="paiSearch"
+                           class="pai-control"
+                           placeholder="Search document, pattern, employee or comments...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="pai-table">
+                    <thead>
+                        <tr>
+                            <th style="min-width:85px;">Action</th>
+                            <th>Document No.</th>
+                            <th>Date</th>
+                            <th>Pattern</th>
+                            <th>Pattern Code</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="paiRows">
+                        <tr>
+                            <td colspan="8" class="pai-empty">
+                                Loading assignments...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap mt-3"
+                 style="gap:10px;">
+                <div class="pai-muted" id="paiShowing">
+                    Loading assignments...
+                </div>
+
+                <div class="pai-pagination">
+                    <button type="button"
+                            id="paiPrevious"
+                            class="btn btn-outline-secondary btn-sm">
+                        Previous
+                    </button>
+
+                    <span id="paiPageInfo" class="pai-muted">1 / 1</span>
+
+                    <button type="button"
+                            id="paiNext"
+                            class="btn btn-outline-secondary btn-sm">
+                        Next
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    const jsonUrl = '@Url.Content("~/data/PatternAssignment/patternassignment.json")';
+    const formUrl = '@Url.Action("PatternAssignment", "Master")';
+
+    const $ = id => document.getElementById(id);
+
+    let assignments = [];
+    let selectedAssignmentId = null;
+    let currentPage = 1;
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, ch => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[ch]);
+    }
+
+    function getValue(obj, camel, pascal) {
+        return obj?.[camel] ?? obj?.[pascal] ?? "";
+    }
+
+    function getId(item) {
+        return String(getValue(item, "id", "Id") ?? "");
+    }
+
+    function getDocumentNo(item) {
+        return getValue(item, "documentNo", "DocumentNo") || "";
+    }
+
+    function getEmployeeCount(item) {
+        const count = getValue(item, "employeeCount", "EmployeeCount");
+        if (count !== "" && count !== null && count !== undefined) {
+            return Number(count) || 0;
+        }
+
+        const ids = getValue(item, "employeeIds", "EmployeeIds");
+        return Array.isArray(ids) ? ids.length : 0;
+    }
+
+    function formatDate(value) {
+        if (!value) return "—";
+
+        const text = String(value);
+        const match = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (match) {
+            return `${match[3]}-${match[2]}-${match[1]}`;
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return text;
+
+        return new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }).format(date);
+    }
+
+    function showMessage(message, type = "info") {
+        const element = $("paiMessage");
+        element.textContent = message || "";
+        element.className = message
+            ? `pai-message show ${type}`
+            : "pai-message";
+    }
+
+    function filteredAssignments() {
+        const query = $("paiSearch").value.trim().toLowerCase();
+
+        if (!query) return assignments;
+
+        return assignments.filter(item => {
+            const searchable = [
+                getDocumentNo(item),
+                getValue(item, "date", "Date"),
+                getValue(item, "patternName", "PatternName"),
+                getValue(item, "patternCode", "PatternCode"),
+                getValue(item, "startDate", "StartDate"),
+                getValue(item, "endDate", "EndDate"),
+                getValue(item, "comments", "Comments"),
+                getValue(item, "employeeNames", "EmployeeNames"),
+                getEmployeeCount(item)
+            ].join(" ").toLowerCase();
+
+            return searchable.includes(query);
+        });
+    }
+
+    function updateStatistics() {
+        $("paiTotalAssignments").textContent = assignments.length;
+
+        const employeeTotal = assignments.reduce(
+            (sum, item) => sum + getEmployeeCount(item), 0
+        );
+
+        const patternIds = new Set(
+            assignments
+                .map(item => String(getValue(item, "patternId", "PatternId") || ""))
+                .filter(Boolean)
+        );
+
+        // If older records have no PatternId, count distinct pattern names instead.
+        if (patternIds.size === 0) {
+            assignments.forEach(item => {
+                const name = getValue(item, "patternName", "PatternName");
+                if (name) patternIds.add(String(name));
+            });
+        }
+
+        $("paiTotalEmployees").textContent = employeeTotal;
+        $("paiTotalPatterns").textContent = patternIds.size;
+        $("paiRecordBadge").textContent =
+            `${assignments.length} ${assignments.length === 1 ? "Record" : "Records"}`;
+    }
+
+    function renderAssignments() {
+        const filtered = filteredAssignments();
+        const pageSize = Number($("paiPageSize").value) || 10;
+        const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        const startIndex = (currentPage - 1) * pageSize;
+        const visible = filtered.slice(startIndex, startIndex + pageSize);
+
+        if (visible.length === 0) {
+            $("paiRows").innerHTML = `
+                <tr>
+                    <td colspan="8" class="pai-empty">
+                        ${assignments.length === 0
+                            ? "No saved assignments found. Click New to create an assignment."
+                            : "No assignments match your search."}
+                    </td>
+                </tr>`;
+        } else {
+            $("paiRows").innerHTML = visible.map(item => {
+                const id = getId(item);
+                const documentNo = getDocumentNo(item);
+                const date = formatDate(getValue(item, "date", "Date"));
+                const pattern = getValue(item, "patternName", "PatternName") || "—";
+                const code = getValue(item, "patternCode", "PatternCode") || "—";
+                const startDate = formatDate(getValue(item, "startDate", "StartDate"));
+                const endDate = formatDate(getValue(item, "endDate", "EndDate"));
+                const comments = getValue(item, "comments", "Comments") || "—";
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="pai-row-actions">
+                                <button type="button"
+                                        class="pai-icon-button pai-icon-edit"
+                                        data-action="edit"
+                                        data-id="${escapeHtml(id)}"
+                                        title="Edit assignment"
+                                        aria-label="Edit assignment">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <button type="button"
+                                        class="pai-icon-button pai-icon-delete"
+                                        data-action="delete"
+                                        data-id="${escapeHtml(id)}"
+                                        title="Delete assignment"
+                                        aria-label="Delete assignment">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td>${escapeHtml(documentNo || "—")}</td>
+                        <td>${escapeHtml(date)}</td>
+                        <td>${escapeHtml(pattern)}</td>
+                        <td>${escapeHtml(code)}</td>
+                        <td>${escapeHtml(startDate)}</td>
+                        <td>${escapeHtml(endDate)}</td>
+                        <td>${escapeHtml(comments)}</td>
+                    </tr>`;
+            }).join("");
+        }
+
+        const first = filtered.length === 0 ? 0 : startIndex + 1;
+        const last = Math.min(startIndex + pageSize, filtered.length);
+
+        $("paiShowing").textContent =
+            `Showing ${first} to ${last} of ${filtered.length} assignments`;
+
+        $("paiPageInfo").textContent = `${currentPage} / ${totalPages}`;
+        $("paiPrevious").disabled = currentPage <= 1;
+        $("paiNext").disabled = currentPage >= totalPages;
+    }
+
+    
+async function loadAssignments() {
+    $("paiRows").innerHTML = `
+        <tr>
+            <td colspan="8" class="pai-empty">Loading assignments...</td>
+        </tr>`;
+
+    try {
+        const response = await fetch(jsonUrl, {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `Could not load patternassignment.json (HTTP ${response.status}).`
+            );
+        }
+
+        const result = await response.json();
+
+        assignments = Array.isArray(result) ? result : [];
+
+        selectedAssignmentId = null;
+        currentPage = 1;
+
+        updateStatistics();
+        renderAssignments();
+        showMessage("", "info");
+
+    } catch (error) {
+        assignments = [];
+        updateStatistics();
+
+        $("paiRows").innerHTML = `
+            <tr>
+                <td colspan="8" class="pai-empty">
+                    ${escapeHtml(error.message)}
+                </td>
+            </tr>`;
+
+        $("paiShowing").textContent = "Assignments could not be loaded.";
+        $("paiPageInfo").textContent = "1 / 1";
+        $("paiPrevious").disabled = true;
+        $("paiNext").disabled = true;
+
+        showMessage(error.message, "error");
+        console.error("Loading assignments failed:", error);
+    }
+}
+
+
+    function openEdit(id) {
+        if (!id) {
+            showMessage("The selected assignment has no ID.", "error");
+            return;
+        }
+
+        // The form must support loading an existing assignment by its ID.
+        window.location.href = `${formUrl}?id=${encodeURIComponent(id)}`;
+    }
+
+    async function deleteAssignment(id) {
+        const item = assignments.find(a => getId(a) === String(id));
+
+        if (!item) {
+            showMessage("Please select a saved assignment first.", "error");
+            return;
+        }
+
+        const documentNo = getDocumentNo(item) || "this assignment";
+
+        if (!confirm(`Delete ${documentNo}? This action cannot be undone.`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${apiUrl}/${encodeURIComponent(id)}`,
+                {
+                    method: "DELETE",
+                    headers: { "Accept": "application/json" }
+                }
+            );
+
+            if (!response.ok) {
+                const detail = await response.text();
+                throw new Error(
+                    detail || `Delete failed (HTTP ${response.status}).`
+                );
+            }
+
+            selectedAssignmentId = null;
+            showMessage(`${documentNo} was deleted.`, "success");
+            await loadAssignments();
+        } catch (error) {
+            showMessage(
+                `Could not delete the assignment: ${error.message}`,
+                "error"
+            );
+        }
+    }
+
+    $("paiRows").addEventListener("click", function (event) {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+
+        const id = button.dataset.id;
+        selectedAssignmentId = id;
+
+        if (button.dataset.action === "edit") {
+            openEdit(id);
+        } else if (button.dataset.action === "delete") {
+            deleteAssignment(id);
+        }
+    });
+
+    $("paiEditSelected").addEventListener("click", function () {
+        if (!selectedAssignmentId) {
+            showMessage(
+                "Use the edit icon beside an assignment to open it.",
+                "info"
+            );
+            return;
+        }
+
+        openEdit(selectedAssignmentId);
+    });
+
+    $("paiDeleteSelected").addEventListener("click", function () {
+        if (!selectedAssignmentId) {
+            showMessage(
+                "Use the delete icon beside an assignment to select one.",
+                "info"
+            );
+            return;
+        }
+
+        deleteAssignment(selectedAssignmentId);
+    });
+
+    $("paiSearch").addEventListener("input", function () {
+        currentPage = 1;
+        renderAssignments();
+    });
+
+    $("paiPageSize").addEventListener("change", function () {
+        currentPage = 1;
+        renderAssignments();
+    });
+
+    $("paiPrevious").addEventListener("click", function () {
+        if (currentPage > 1) {
+            currentPage--;
+            renderAssignments();
+        }
+    });
+
+    $("paiNext").addEventListener("click", function () {
+        currentPage++;
+        renderAssignments();
+    });
+
+    $("paiRefresh").addEventListener("click", loadAssignments);
+
+    loadAssignments();
+})();
+</script>

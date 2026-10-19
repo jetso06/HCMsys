@@ -1,0 +1,931 @@
+@{
+    ViewData["Title"] = "Employee Assignment Grid";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .eg-card {
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .12);
+        margin-bottom: 1rem;
+    }
+
+    .eg-heading {
+        padding: 1rem 1.25rem;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .eg-title {
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 700;
+    }
+
+    .eg-body {
+        padding: 1.1rem;
+    }
+
+    .eg-label {
+        display: block;
+        color: #5a5c69;
+        font-size: .8rem;
+        font-weight: 700;
+        margin-bottom: .4rem;
+    }
+
+    .eg-control {
+        width: 100%;
+        min-height: 38px;
+        padding: .4rem .7rem;
+        border: 1px solid #d1d3e2;
+        border-radius: .3rem;
+        background: #fff;
+        color: #6e707e;
+        font-size: .85rem;
+    }
+
+        .eg-control:focus {
+            outline: none;
+            border-color: #bac8f3;
+            box-shadow: 0 0 0 .15rem rgba(78, 115, 223, .15);
+        }
+
+    .eg-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 0;
+    }
+
+        .eg-table thead th {
+            background: #4e73df;
+            color: #fff;
+            padding: 11px 9px;
+            font-size: .72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            border: 1px solid #3d5cbe;
+            white-space: nowrap;
+        }
+
+        .eg-table tbody td {
+            padding: 10px 9px;
+            border: 1px solid #e3e6f0;
+            color: #5a5c69;
+            font-size: .82rem;
+            vertical-align: middle;
+        }
+
+        .eg-table tbody tr:nth-child(odd) {
+            background: #f8f9fc;
+        }
+
+        .eg-table tbody tr:hover {
+            background: #edf1ff;
+        }
+
+        .eg-table input[type="checkbox"],
+        #egSelectAll {
+            width: 16px;
+            height: 16px;
+            accent-color: #4e73df;
+            cursor: pointer;
+        }
+
+    .eg-count {
+        color: #4e73df;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .eg-help {
+        color: #858796;
+        font-size: .78rem;
+        margin-top: .85rem;
+    }
+
+    .eg-message {
+        display: none;
+        padding: .75rem 1rem;
+        margin-bottom: 1rem;
+        border-radius: .25rem;
+        font-size: .85rem;
+    }
+
+        .eg-message.show {
+            display: block;
+        }
+
+        .eg-message.error {
+            color: #721c24;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .eg-message.success {
+            color: #155724;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .eg-message.info {
+            color: #004085;
+            background: #cce5ff;
+            border: 1px solid #b8daff;
+        }
+
+    @@media(max-width: 768px) {
+        .eg-body {
+            padding: .8rem;
+        }
+
+        .eg-table {
+            min-width: 750px;
+        }
+    }
+
+    .eg-multiselect {
+        position: relative;
+        width: 100%;
+    }
+
+    .eg-multiselect-button {
+        width: 100%;
+        min-height: 38px;
+        padding: .4rem .7rem;
+        border: 1px solid #d1d3e2;
+        border-radius: .3rem;
+        background: #fff;
+        color: #6e707e;
+        font-size: .85rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        text-align: left;
+    }
+
+    .eg-multiselect-menu {
+        display: none;
+        position: absolute;
+        top: calc(100% + 3px);
+        left: 0;
+        right: 0;
+        max-height: 220px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid #d1d3e2;
+        border-radius: .3rem;
+        box-shadow: 0 .3rem .8rem rgba(58,59,69,.15);
+        z-index: 1100;
+    }
+
+    .eg-multiselect.open .eg-multiselect-menu {
+        display: block;
+    }
+
+    .eg-multiselect-option {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 9px 12px;
+        margin: 0;
+        font-size: .84rem;
+        font-weight: 400;
+        color: #5a5c69;
+        cursor: pointer;
+    }
+
+        .eg-multiselect-option:hover {
+            background: #edf1ff;
+        }
+
+        .eg-multiselect-option input {
+            width: 15px;
+            height: 15px;
+            accent-color: #4e73df;
+        }
+    /* Pattern Assignment Master header */
+    .pa-page-title-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pa-page-title-text {
+        font-size: .85rem;
+        font-weight: 800;
+        color: #5a5c69;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .pa-page-title-text i {
+            color: #4e73df;
+        }
+
+    .pa-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    /* Summary cards — same as ApprovalIndex */
+    .pa-border-left-primary {
+        border-left: .25rem solid #4e73df !important;
+    }
+
+    .pa-border-left-success {
+        border-left: .25rem solid #1cc88a !important;
+    }
+
+    .pa-border-left-info {
+        border-left: .25rem solid #36b9cc !important;
+    }
+
+    .pa-border-left-warning {
+        border-left: .25rem solid #f6c23e !important;
+    }
+
+    .pa-stat-label {
+        font-size: .68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: .25rem;
+    }
+
+    .pa-stat-value {
+        color: #5a5c69;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .pa-stat-icon {
+        color: #dddfeb;
+        font-size: 2rem;
+    }
+
+    @@media print {
+        .pa-header-actions,
+        #egRefresh {
+            display: none !important;
+        }
+    }
+</style>
+
+<div class="container-fluid py-3">
+
+    <!-- PATTERN ASSIGNMENT MASTER HEADER -->
+    <div class="card shadow mb-3">
+        <div class="card-header py-3">
+            <div class="pa-page-title-bar">
+
+                <div class="pa-page-title-text">
+                    <i class="fas fa-project-diagram fa-sm"></i>
+                    Pattern Assignment Master
+                </div>
+
+                <div class="pa-header-actions">
+
+                    <a href="/Master/PatternAssignment"
+                       class="btn btn-success btn-sm shadow-sm">
+                        <i class="fas fa-plus fa-sm text-white-50 mr-1"></i>
+                        New
+                    </a>
+
+                    <button type="button"
+                            class="btn btn-primary btn-sm shadow-sm"
+                            id="paEditButton"
+                            title="Open the assignment form">
+                        <i class="fas fa-edit fa-sm text-white-50 mr-1"></i>
+                        Edit
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-secondary btn-sm shadow-sm"
+                            onclick="window.print()">
+                        <i class="fas fa-print fa-sm text-white-50 mr-1"></i>
+                        Print
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger btn-sm shadow-sm"
+                            id="paDeleteButton"
+                            title="Delete requires a selected saved assignment">
+                        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+                        Delete
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-info btn-sm shadow-sm"
+                            onclick="history.back()">
+                        <i class="fas fa-times-circle fa-sm text-white-50 mr-1"></i>
+                        Close
+                    </button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ASSIGNMENT DETAILS -->
+    <div class="eg-card">
+        <div class="eg-heading">
+            <h6 class="eg-title">
+                <i class="fas fa-file-alt mr-2"></i>
+                Assignment Details
+            </h6>
+            <span class="text-muted small" id="paDocumentLabel">New Assignment</span>
+        </div>
+
+        <div class="eg-body">
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label class="eg-label" for="paDocumentNo">Document No.</label>
+                    <input id="paDocumentNo" class="eg-control"
+                           value="Generated when saved" readonly>
+                    <div class="eg-help">
+                        Format: year-number, for example 2026-001.
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="eg-label" for="paDate">
+                        Date <span class="text-danger">*</span>
+                    </label>
+                    <input id="paDate" type="date" class="eg-control" required>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <label class="eg-label" for="paComments">Comments</label>
+                    <input id="paComments" type="text" maxlength="500"
+                           class="eg-control"
+                           placeholder="Enter comments (optional)">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="eg-label" for="paStartDate">
+                        Start Date <span class="text-danger">*</span>
+                    </label>
+                    <input id="paStartDate" type="date" class="eg-control" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label class="eg-label" for="paEndDate">
+                        End Date <span class="text-danger">*</span>
+                    </label>
+                    <input id="paEndDate" type="date" class="eg-control" required>
+                </div>
+
+                <div class="col-md-8 mb-3">
+                    <label class="eg-label" for="paPattern">
+                        Pattern <span class="text-danger">*</span>
+                    </label>
+                    <select id="paPattern" class="eg-control" required>
+                        <option value="">Loading patterns...</option>
+                    </select>
+                    <div class="eg-help" id="paPatternInfo">
+                        Select a saved Pattern Definition.
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-3 d-flex align-items-end">
+                    <button type="button" id="paLoad" class="btn btn-primary btn-sm">
+                        <i class="fas fa-download mr-1"></i>
+                        Load Employees
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div id="egMessage" class="eg-message" role="status"></div>
+
+    <div class="eg-card">
+
+        <div class="eg-heading">
+            <h6 class="eg-title">
+                <i class="fas fa-table mr-2"></i>
+                Employee Assignment Grid
+            </h6>
+
+            <span class="eg-count" id="egEligibleCount">
+                Loading employees...
+            </span>
+        </div>
+
+        <div class="eg-body">
+
+            <!-- Filters -->
+            <div class="row mb-3">
+
+                <div class="col-md-4 mb-2">
+                    <label class="eg-label">Company</label>
+
+                    <div class="eg-multiselect" id="egCompany">
+                        <button type="button"
+                                class="eg-multiselect-button"
+                                aria-expanded="false">
+                            <span>All Companies</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="eg-multiselect-menu"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <label class="eg-label">Department</label>
+
+                    <div class="eg-multiselect" id="egDepartment">
+                        <button type="button"
+                                class="eg-multiselect-button"
+                                aria-expanded="false">
+                            <span>All Departments</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="eg-multiselect-menu"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-2">
+                    <label class="eg-label" for="egSearch">
+                        Search Employees
+                    </label>
+
+                    <input id="egSearch"
+                           type="search"
+                           class="eg-control"
+                           placeholder="Search ID, code or name...">
+                </div>
+
+            </div>
+
+            <!-- Select all and selected count -->
+            <div class="d-flex align-items-center flex-wrap mb-3"
+                 style="gap:12px;">
+
+                <label class="mb-0 d-flex align-items-center"
+                       style="gap:7px;font-size:.82rem;">
+
+                    <input type="checkbox" id="egSelectAll">
+
+                    Select all visible employees
+                </label>
+
+                <span class="text-muted small" id="egSelectedCount">
+                    0 selected
+                </span>
+
+                <div class="ml-auto">
+                    <button type="button"
+                            id="egRefresh"
+                            class="btn btn-outline-primary btn-sm">
+
+                        <i class="fas fa-sync-alt mr-1"></i>
+                        Refresh
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Employee table -->
+            <div class="table-responsive">
+                <table class="eg-table">
+
+                    <thead>
+                        <tr>
+                            <th style="width:75px;text-align:center;">
+                                Select
+                            </th>
+                            <th>Employee ID</th>
+                            <th>Employee Code</th>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Company</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="egRows">
+                        <tr>
+                            <td colspan="6" class="text-center p-4">
+                                Loading employees...
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div class="eg-help">
+                Only active employees are displayed. Use the filters and
+                checkboxes to select employees for an assignment.
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        "use strict";
+
+        // Static JSON file under wwwroot/data/PatternAssignment/
+        const employeesUrl =
+            '@Url.Content("~/data/PatternAssignment/employees.json")';
+
+        const $ = id => document.getElementById(id);
+
+        let employees = [];
+        const selectedIds = new Set();
+
+        function escapeHtml(value) {
+            return String(value ?? "").replace(/[&<>"']/g, ch => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[ch]);
+        }
+
+        function showMessage(text, type = "info") {
+            const el = $("egMessage");
+            el.textContent = text || "";
+            el.className = text
+                ? `eg-message show ${type}`
+                : "eg-message";
+        }
+
+        async function loadEmployees() {
+            $("egRows").innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center p-4">
+                        Loading employees...
+                    </td>
+                </tr>`;
+
+            try {
+                const response = await fetch(employeesUrl, {
+                    cache: "no-store",
+                    headers: { "Accept": "application/json" }
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Could not load employees.json (${response.status}).`
+                    );
+                }
+
+                const data = await response.json();
+
+                if (!Array.isArray(data)) {
+                    throw new Error("employees.json must contain a JSON array.");
+                }
+
+                // Display active employees only.
+                employees = data.filter(e =>
+                    e.active === true || e.Active === true
+                );
+
+                // Remove selected IDs that no longer exist or are inactive.
+                const activeIds = new Set(employees.map(e => String(e.id ?? e.Id)));
+
+                for (const id of selectedIds) {
+                    if (!activeIds.has(id)) {
+                        selectedIds.delete(id);
+                    }
+                }
+
+                populateFilters();
+                renderEmployees();
+
+                showMessage(
+                    `${employees.length} active employees loaded from employees.json.`,
+                    "success"
+                );
+
+            } catch (error) {
+                employees = [];
+
+                $("egEligibleCount").textContent = "0 employees";
+                $("egSelectedCount").textContent = "0 selected";
+                $("egSelectAll").checked = false;
+
+                $("egRows").innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center p-4 text-danger">
+                            ${escapeHtml(error.message)}
+                        </td>
+                    </tr>`;
+
+                showMessage(error.message, "error");
+            }
+        }
+
+        function populateFilters() {
+        const companies = [...new Set(
+            employees.map(e => e.company ?? e.Company ?? "")
+                .filter(Boolean)
+        )].sort();
+
+        const departments = [...new Set(
+            employees.map(e => e.department ?? e.Department ?? "")
+                .filter(Boolean)
+        )].sort();
+
+        populateMultiSelect(
+            $("egCompany"),
+            companies,
+            "All Companies"
+        );
+
+        populateMultiSelect(
+            $("egDepartment"),
+            departments,
+            "All Departments"
+        );
+    }
+
+    function populateMultiSelect(container, values, placeholder) {
+        const menu = container.querySelector(".eg-multiselect-menu");
+        const button = container.querySelector(".eg-multiselect-button");
+
+        const previouslySelected = new Set(getSelectedValues(container));
+
+        menu.innerHTML = "";
+
+        values.forEach(value => {
+            const label = document.createElement("label");
+            label.className = "eg-multiselect-option";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.value = value;
+            checkbox.checked = previouslySelected.has(value);
+
+            const text = document.createElement("span");
+            text.textContent = value;
+
+            label.appendChild(checkbox);
+            label.appendChild(text);
+            menu.appendChild(label);
+        });
+
+        updateMultiSelectLabel(container, placeholder);
+
+        button.onclick = function (event) {
+            event.stopPropagation();
+
+            document.querySelectorAll(".eg-multiselect.open").forEach(other => {
+                if (other !== container) {
+                    other.classList.remove("open");
+                    other.querySelector("button")
+                        .setAttribute("aria-expanded", "false");
+                }
+            });
+
+            const open = container.classList.toggle("open");
+            button.setAttribute("aria-expanded", String(open));
+        };
+
+        menu.onchange = function () {
+            updateMultiSelectLabel(container, placeholder);
+            renderEmployees();
+        };
+    }
+
+    function getSelectedValues(container) {
+        return Array.from(
+            container.querySelectorAll(
+                ".eg-multiselect-menu input[type='checkbox']:checked"
+            )
+        ).map(input => input.value);
+    }
+
+    function updateMultiSelectLabel(container, placeholder) {
+        const selected = getSelectedValues(container);
+        const label = container.querySelector(".eg-multiselect-button span");
+
+        if (selected.length === 0) {
+            label.textContent = placeholder;
+        } else if (selected.length === 1) {
+            label.textContent = selected[0];
+        } else {
+            label.textContent = `${selected.length} selected`;
+        }
+    }
+
+        function filteredEmployees() {
+        const companies = getSelectedValues($("egCompany"));
+        const departments = getSelectedValues($("egDepartment"));
+        const query = $("egSearch").value.trim().toLowerCase();
+
+        return employees.filter(e => {
+            const id = String(e.id ?? e.Id ?? "");
+            const code = String(e.code ?? e.Code ?? "");
+            const name = String(e.name ?? e.Name ?? "");
+            const dept = String(e.department ?? e.Department ?? "");
+            const company = String(e.company ?? e.Company ?? "");
+
+            const matchesCompany =
+                companies.length === 0 || companies.includes(company);
+
+            const matchesDepartment =
+                departments.length === 0 || departments.includes(dept);
+
+            const searchableText =
+                `${id} ${code} ${name} ${dept} ${company}`.toLowerCase();
+
+            return matchesCompany &&
+                   matchesDepartment &&
+                   searchableText.includes(query);
+        });
+    }
+
+        function renderEmployees() {
+            const visible = filteredEmployees();
+
+            $("egEligibleCount").textContent =
+                `${employees.length} active employees`;
+
+            $("egSelectedCount").textContent =
+                `${selectedIds.size} selected`;
+
+            $("egSelectAll").checked =
+                visible.length > 0 &&
+                visible.every(e =>
+                    selectedIds.has(String(e.id ?? e.Id))
+                );
+
+            $("egSelectAll").indeterminate =
+                visible.some(e =>
+                    selectedIds.has(String(e.id ?? e.Id))
+                ) && !$("egSelectAll").checked;
+
+            if (visible.length === 0) {
+                $("egRows").innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center p-4">
+                            No employees match the selected filters.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            $("egRows").innerHTML = visible.map(e => {
+                const id = String(e.id ?? e.Id ?? "");
+                const code = e.code ?? e.Code ?? "";
+                const name = e.name ?? e.Name ?? "";
+                const dept = e.department ?? e.Department ?? "";
+                const company = e.company ?? e.Company ?? "";
+
+                return `
+                    <tr>
+                        <td class="text-center">
+                            <input type="checkbox"
+                                   class="eg-employee-check"
+                                   data-id="${escapeHtml(id)}"
+                                   ${selectedIds.has(id) ? "checked" : ""}
+                                   aria-label="Select ${escapeHtml(name)}">
+                        </td>
+                        <td>${escapeHtml(id)}</td>
+                        <td>${escapeHtml(code)}</td>
+                        <td>${escapeHtml(name)}</td>
+                        <td>${escapeHtml(dept)}</td>
+                        <td>${escapeHtml(company)}</td>
+                    </tr>`;
+            }).join("");
+        }
+
+        $("egSearch").addEventListener("input", renderEmployees);
+        $("egRefresh").addEventListener("click", loadEmployees);
+
+        $("egSelectAll").addEventListener("change", function () {
+            filteredEmployees().forEach(e => {
+                const id = String(e.id ?? e.Id ?? "");
+
+                if (this.checked) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                }
+            });
+
+            renderEmployees();
+        });
+
+        $("egRows").addEventListener("change", function (event) {
+            const checkbox = event.target.closest(".eg-employee-check");
+            if (!checkbox) return;
+
+            if (checkbox.checked) {
+                selectedIds.add(checkbox.dataset.id);
+            } else {
+                selectedIds.delete(checkbox.dataset.id);
+            }
+
+            renderEmployees();
+        });
+        document.addEventListener("click", function (event) {
+        document.querySelectorAll(".eg-multiselect.open").forEach(container => {
+            if (!container.contains(event.target)) {
+                container.classList.remove("open");
+                container.querySelector("button")
+                    .setAttribute("aria-expanded", "false");
+            }
+        });
+    });
+        // Keep selections available to the separate assignment form.
+        // The form can read this key when it needs the selected employee IDs.
+        window.getSelectedPatternAssignmentEmployeeIds = function () {
+            return Array.from(selectedIds);
+        };
+
+        window.addEventListener("beforeunload", function () {
+            sessionStorage.setItem(
+                "paSelectedEmployeeIds",
+                JSON.stringify(Array.from(selectedIds))
+            );
+        });
+
+        // Restore previously selected employee IDs when returning to this page.
+        try {
+            const saved = JSON.parse(
+                sessionStorage.getItem("paSelectedEmployeeIds") || "[]"
+            );
+
+            if (Array.isArray(saved)) {
+                saved.forEach(id => selectedIds.add(String(id)));
+            }
+        } catch (_) {
+            sessionStorage.removeItem("paSelectedEmployeeIds");
+        }
+        async function loadAssignmentStats() {
+        try {
+            const response = await fetch(
+                '@Url.Content("~/PatternAssignment/api/assignments")',
+                { cache: "no-store" }
+            );
+
+            if (!response.ok) {
+                throw new Error("Could not load assignment statistics.");
+            }
+
+            const result = await response.json();
+
+            const assignments = Array.isArray(result)
+                ? result
+                : (result.records ?? result.assignments ?? []);
+
+            const employeeCount = assignments.reduce((total, assignment) => {
+                return total + Number(
+                    assignment.employeeCount ??
+                    assignment.EmployeeCount ??
+                    (assignment.employeeIds ?? assignment.EmployeeIds ?? []).length
+                );
+            }, 0);
+
+            const patterns = new Set(
+                assignments
+                    .map(a => a.patternId ?? a.PatternId)
+                    .filter(id => id !== undefined && id !== null && id !== "")
+                    .map(String)
+            );
+
+            $("paStatAssignments").textContent = assignments.length;
+            $("paStatEmployees").textContent = employeeCount;
+            $("paStatPatterns").textContent = patterns.size;
+
+        } catch (error) {
+            console.error("Assignment statistics could not be loaded:", error);
+        }
+    }
+
+    loadAssignmentStats();
+        loadEmployees();
+    })();
+</script>

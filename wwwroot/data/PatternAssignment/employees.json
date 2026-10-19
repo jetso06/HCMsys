@@ -1,0 +1,82 @@
+[
+  {
+    "id": "EMP001",
+    "code": "E1001",
+    "name": "Arun Kumar",
+    "department": "IT",
+    "company": "Oman Office",
+    "active": true
+  },
+  {
+    "id": "EMP002",
+    "code": "E1002",
+    "name": "Rahul Nair",
+    "department": "HR",
+    "company": "Oman Office",
+    "active": true
+  },
+  {
+    "id": "EMP003",
+    "code": "E1003",
+    "name": "Anjali Menon",
+    "department": "Finance",
+    "company": "Oman Office",
+    "active": true
+  },
+  {
+    "id": "EMP004",
+    "code": "E1004",
+    "name": "Meera Thomas",
+    "department": "IT",
+    "company": "India Office",
+    "active": true
+  },
+  {
+    "id": "EMP005",
+    "code": "E1005",
+    "name": "Vishnu Raj",
+    "department": "Operations",
+    "company": "India Office",
+    "active": true
+  },
+  {
+    "id": "EMP006",
+    "code": "E1006",
+    "name": "Nikhil Das",
+    "department": "HR",
+    "company": "Oman Office",
+    "active": true
+  },
+  {
+    "id": "EMP007",
+    "code": "E1007",
+    "name": "Sneha Paul",
+    "department": "Finance",
+    "company": "India Office",
+    "active": true
+  },
+  {
+    "id": "EMP008",
+    "code": "E1008",
+    "name": "Adarsh Mohan",
+    "department": "Operations",
+    "company": "India Office",
+    "active": true
+  },
+  {
+    "id": "EMP009",
+    "code": "E1009",
+    "name": "Divya Suresh",
+    "department": "IT",
+    "company": "Oman Office",
+    "active": true
+  },
+  {
+    "id": "EMP010",
+    "code": "E1010",
+    "name": "Joel Mathew",
+    "department": "Administration",
+    "company": "India Office",
+    "active": true
+  }
+]
