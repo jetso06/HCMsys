@@ -4,6 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<link href="~/dist/css/sb-admin-2.min.css" rel="stylesheet" />
+<link href="~/dist/fontawesome-free/css/all.min.css" rel="stylesheet" />
+<link href="~/lib/datatables/css/jquery.dataTables.css" rel="stylesheet" />
+
 <style>
     html {
         font-size: 14px;
@@ -477,6 +481,7 @@
 (function () {
     "use strict";
 
+    const apiUrl = '@Url.Content("~/PatternAssignment/api/assignments")';
     const jsonUrl = '@Url.Content("~/data/PatternAssignment/patternassignment.json")';
     const formUrl = '@Url.Action("PatternAssignment", "Master")';
 
