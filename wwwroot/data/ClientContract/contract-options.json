@@ -1,0 +1,70 @@
+{
+  "clients": [
+    "ABC Trading LLC",
+    "Al Noor Services",
+    "Gulf Technologies",
+    "Muscat Engineering",
+    "Other Client"
+  ],
+  "currencies": [
+    {
+      "code": "OMR",
+      "name": "Omani Rial"
+    },
+    {
+      "code": "USD",
+      "name": "US Dollar"
+    },
+    {
+      "code": "AED",
+      "name": "UAE Dirham"
+    },
+    {
+      "code": "INR",
+      "name": "Indian Rupee"
+    },
+    {
+      "code": "EUR",
+      "name": "Euro"
+    },
+    {
+      "code": "GBP",
+      "name": "British Pound"
+    }
+  ],
+  "paymentTerms": [
+    "Advance Payment",
+    "Net 15 Days",
+    "Net 30 Days",
+    "Net 45 Days",
+    "Net 60 Days",
+    "Monthly",
+    "Milestone Based"
+  ],
+  "employees": [
+    "Admin",
+    "Jerin Davis",
+    "Project Manager",
+    "Finance Manager"
+  ],
+  "banks": [
+    "Bank Muscat",
+    "Sohar International",
+    "National Bank of Oman",
+    "Oman Arab Bank"
+  ],
+  "projects": [
+    "PRJ-001",
+    "PRJ-002",
+    "PRJ-003",
+    "PRJ-004"
+  ],
+  "attachmentTypes": [
+    "Contract",
+    "Agreement",
+    "Invoice",
+    "Purchase Order",
+    "Supporting Document",
+    "Other"
+  ]
+}

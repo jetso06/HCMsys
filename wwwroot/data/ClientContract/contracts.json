@@ -1,0 +1,75 @@
+{
+  "columns": [
+    {
+      "key": "documentNo",
+      "label": "Document No.",
+      "sortable": true
+    },
+    {
+      "key": "date",
+      "label": "Date",
+      "sortable": true
+    },
+    {
+      "key": "client",
+      "label": "Client",
+      "sortable": true
+    },
+    {
+      "key": "reference",
+      "label": "Contract Reference",
+      "sortable": true
+    },
+    {
+      "key": "startDate",
+      "label": "Start Date",
+      "sortable": true
+    },
+    {
+      "key": "endDate",
+      "label": "End Date",
+      "sortable": true
+    },
+    {
+      "key": "currency",
+      "label": "Currency",
+      "sortable": true
+    },
+    {
+      "key": "value",
+      "label": "Contract Value",
+      "sortable": true
+    },
+    {
+      "key": "project",
+      "label": "Project No.",
+      "sortable": true
+    }
+  ],
+  "contracts": [
+    {
+      "id": 1,
+      "documentNo": "CC-2026-001",
+      "date": "2026-10-01",
+      "client": "ABC Trading LLC",
+      "reference": "CON-001",
+      "startDate": "2026-10-01",
+      "endDate": "2027-09-30",
+      "currency": "OMR",
+      "value": 25000,
+      "project": "PRJ-001"
+    },
+    {
+      "id": 2,
+      "documentNo": "CC-2026-002",
+      "date": "2026-10-05",
+      "client": "Global Services LLC",
+      "reference": "CON-002",
+      "startDate": "2026-10-05",
+      "endDate": "2027-10-04",
+      "currency": "OMR",
+      "value": 50500,
+      "project": "PRJ-002"
+    }
+  ]
+}

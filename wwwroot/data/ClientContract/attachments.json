@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "contractId": 1,
+    "show": true,
+    "attachmentType": "Contract",
+    "remarks": "Signed client contract",
+    "fileName": "client-contract.pdf",
+    "trackExpiry": true,
+    "refNo": "REF-001",
+    "issueDateEnabled": true,
+    "issueDate": "2026-10-01",
+    "expiryDateEnabled": true,
+    "expiryDate": "2027-09-30"
+  },
+  {
+    "id": 2,
+    "contractId": 1,
+    "show": true,
+    "attachmentType": "Agreement",
+    "remarks": "Supporting agreement",
+    "fileName": "agreement.pdf",
+    "trackExpiry": false,
+    "refNo": "REF-002",
+    "issueDateEnabled": true,
+    "issueDate": "2026-10-01",
+    "expiryDateEnabled": false,
+    "expiryDate": ""
+  },
+  {
+    "id": 3,
+    "contractId": 2,
+    "show": true,
+    "attachmentType": "Purchase Order",
+    "remarks": "Purchase order copy",
+    "fileName": "purchase-order.pdf",
+    "trackExpiry": true,
+    "refNo": "PO-2026-003",
+    "issueDateEnabled": true,
+    "issueDate": "2026-11-01",
+    "expiryDateEnabled": true,
+    "expiryDate": "2027-10-31"
+  }
+]

@@ -1,0 +1,637 @@
+@{
+    ViewData["Title"] = "Client Contract";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid contract-index"
+     id="clientContractPage"
+     data-json-url="@Url.Content("~/data/ClientContract/contracts.json")">
+
+    <div class="card shadow mb-3">
+        <div class="card-header ci-header">
+            <h6 class="ci-title"><i class="fas fa-file-contract mr-2"></i>CLIENT CONTRACT MASTER</h6>
+            <div class="ci-actions">
+                <button type="button"
+        class="btn btn-success btn-sm"
+        id="ciNew"
+        onclick="window.location.href='@Url.Action("ClientContract", "Master")'">
+    <i class="fas fa-plus fa-sm mr-1"></i> New
+</button>
+                <button class="btn btn-primary btn-sm" id="ciEdit"><i class="fas fa-edit"></i> Edit</button>
+                <button class="btn btn-secondary btn-sm" id="ciPrint"><i class="fas fa-print"></i> Print</button>
+                <button class="btn btn-danger btn-sm" id="ciDelete"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-info btn-sm" id="ciClose"><i class="fas fa-times-circle"></i> Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ciMessage" class="alert" style="display:none"></div>
+
+    <div class="row mb-3">
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Contracts</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="ciTotal">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Contract Value</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="ciValue">0.000</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Active Contracts</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800" id="ciActive">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Module</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">Client Contract</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-table mr-2"></i>Contract Records</h6>
+            <span class="badge badge-primary" id="ciRecordCount">0 Records</span>
+        </div>
+        <div class="card-body">
+            <div class="ci-table-tools mb-3">
+                <div class="d-flex align-items-center" style="gap:8px">
+                    <span>Show</span>
+                    <select id="ciPageSize" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>entries</span>
+                </div>
+                <div class="ci-search">
+                    <label for="ciSearch">Search contracts</label>
+                    <input id="ciSearch" type="search" class="form-control form-control-sm"
+                           placeholder="Search document, client, project...">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="ciTable">
+                    <thead><tr id="ciTableHead"></tr></thead>
+                    <tbody id="ciTableBody">
+                        <tr><td class="ci-empty">Loading contracts...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="ci-table-footer">
+                <div id="ciShowing">Loading contracts...</div>
+                <div class="ci-pagination">
+                    <button class="btn btn-light btn-sm" id="ciPrevious">Previous</button>
+                    <span id="ciPageInfo">1 / 1</span>
+                    <button class="btn btn-light btn-sm" id="ciNext">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    html { font-size: 14px; }
+    
+<style>
+    .contract-index {
+        padding: 18px 16px;
+        color: #5a5c69;
+        font-family: 'Nunito', sans-serif;
+        font-size: 14px;
+    }
+
+    .contract-index .card {
+        border: 1px solid #e3e6f0;
+        border-radius: 5px;
+        background: #fff;
+    }
+
+    .contract-index .shadow {
+        box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .10) !important;
+    }
+
+    /* Page header */
+    .contract-index .ci-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 18px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .contract-index .ci-title {
+        margin: 0;
+        color: #5a5c69;
+        font-size: .88rem;
+        font-weight: 800;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+    }
+
+    .contract-index .ci-title i {
+        color: #4e73df;
+    }
+
+    .contract-index .ci-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .contract-index .ci-actions .btn {
+        padding: .38rem .65rem;
+        border-radius: 4px;
+        font-family: 'Nunito', sans-serif;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .08);
+    }
+
+    /* Summary cards */
+    .contract-index .row.mb-3 {
+        margin-bottom: .85rem !important;
+    }
+
+    .contract-index .row.mb-3 > div {
+        margin-bottom: .85rem !important;
+    }
+
+    .contract-index .card-body {
+        padding: 1rem 1.1rem;
+    }
+
+    .contract-index .text-xs {
+        font-size: .7rem;
+        font-weight: 800;
+        letter-spacing: .035em;
+    }
+
+    .contract-index .h5 {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #5a5c69;
+    }
+
+    .contract-index .border-left-primary {
+        border-left: .25rem solid #4e73df !important;
+    }
+
+    .contract-index .border-left-success {
+        border-left: .25rem solid #1cc88a !important;
+    }
+
+    .contract-index .border-left-info {
+        border-left: .25rem solid #36b9cc !important;
+    }
+
+    .contract-index .border-left-warning {
+        border-left: .25rem solid #f6c23e !important;
+    }
+
+    /* Records card heading */
+    .contract-index .card-header {
+        padding: .85rem 1.1rem;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .contract-index .card-header h6 {
+        margin: 0;
+        color: #4e73df !important;
+        font-size: .9rem;
+        font-weight: 800 !important;
+    }
+
+    .contract-index .badge-primary {
+        background-color: #4e73df;
+        font-size: .7rem;
+        font-weight: 700;
+        padding: .35em .6em;
+    }
+
+    .contract-index .card-body {
+        color: #5a5c69;
+    }
+
+    /* Search and page-size controls */
+    .contract-index .ci-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-bottom: 12px !important;
+        font-size: .82rem;
+    }
+
+    .contract-index .ci-search {
+        width: min(100%, 340px);
+    }
+
+    .contract-index .ci-search label {
+        display: block;
+        margin-bottom: 4px;
+        color: #5a5c69;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    .contract-index .ci-search input,
+    .contract-index #ciPageSize {
+        height: 30px;
+        border: 1px solid #d1d3e2;
+        border-radius: 4px;
+        color: #6e707e;
+        font-family: 'Nunito', sans-serif;
+        font-size: .8rem;
+    }
+
+    .contract-index #ciPageSize {
+        width: 78px;
+    }
+
+    /* Table */
+    .contract-index #ciTable {
+        width: 100%;
+        margin-bottom: 0;
+        border-collapse: collapse;
+        border: 1px solid #d1d3e2;
+    }
+
+    .contract-index #ciTable thead th {
+        padding: 10px 9px;
+        background: #4e73df;
+        color: #fff;
+        border: 1px solid #3d5cbe;
+        font-size: .74rem;
+        font-weight: 800;
+        letter-spacing: .025em;
+        text-transform: uppercase;
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .contract-index #ciTable thead th[data-sort] {
+        cursor: pointer;
+    }
+
+    .contract-index #ciTable tbody td {
+        padding: 9px;
+        color: #5a5c69;
+        border: 1px solid #d1d3e2;
+        font-size: .82rem;
+        vertical-align: middle;
+    }
+
+    .contract-index #ciTable tbody tr:nth-child(odd) {
+        background: #f5f5f5;
+    }
+
+    .contract-index #ciTable tbody tr:hover {
+        background: #eef2ff;
+    }
+
+    .contract-index #ciTable tbody tr.ci-selected {
+        background: #dbe5ff !important;
+    }
+
+    .contract-index .ci-sort {
+        float: right;
+        margin-left: 7px;
+        opacity: .8;
+    }
+
+    .contract-index .ci-action-column {
+        min-width: 85px;
+        text-align: center;
+    }
+
+    .contract-index .ci-row-actions {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .contract-index .ci-row-actions .btn {
+        padding: .2rem .4rem;
+        font-size: .78rem;
+    }
+
+    .contract-index .ci-row-actions .fa-edit {
+        color: #4e73df;
+    }
+
+    .contract-index .ci-row-actions .fa-trash-alt {
+        color: #e74a3b;
+    }
+
+    /* Table footer and pagination */
+    .contract-index .ci-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .82rem;
+    }
+
+    .contract-index .ci-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .contract-index .ci-pagination button {
+        padding: .35rem .6rem;
+        border: 1px solid #d1d3e2;
+        border-radius: 4px;
+        background: #f8f9fc;
+        color: #5a5c69;
+        font-family: 'Nunito', sans-serif;
+        font-size: .8rem;
+    }
+
+    .contract-index .ci-pagination button:hover:not(:disabled) {
+        background: #eaecf4;
+    }
+
+    .contract-index .ci-pagination button:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    .contract-index .ci-empty {
+        padding: 24px !important;
+        color: #858796 !important;
+        text-align: center;
+    }
+
+    .contract-index .alert {
+        font-size: .85rem;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .contract-index {
+            padding: 12px 8px;
+        }
+
+        .contract-index .ci-header {
+            align-items: flex-start;
+        }
+
+        .contract-index .ci-actions {
+            width: 100%;
+        }
+
+        .contract-index #ciTable {
+            min-width: 1100px;
+        }
+
+        .contract-index .ci-search {
+            width: 100%;
+        }
+    }
+
+    /* Print */
+    @@media print {
+        .contract-index .ci-actions,
+        .contract-index .ci-table-tools,
+        .contract-index .ci-table-footer,
+        .contract-index .ci-row-actions {
+            display: none !important;
+        }
+
+        .contract-index .card {
+            box-shadow: none !important;
+        }
+    }
+    
+/* Compact spacing to match Approval Index */
+.contract-index {
+    padding: 12px 12px;
+    font-size: 13px;
+}
+
+.contract-index > .card:first-child {
+    margin-bottom: 12px !important;
+}
+
+.contract-index .ci-header {
+    padding: 9px 14px;
+    min-height: 48px;
+}
+
+.contract-index .ci-actions {
+    gap: 5px;
+}
+
+.contract-index .ci-actions .btn {
+    padding: 5px 9px;
+    line-height: 1.3;
+}
+
+.contract-index .row.mb-3 {
+    margin-bottom: 8px !important;
+}
+
+.contract-index .row.mb-3 > div {
+    margin-bottom: 8px !important;
+}
+
+.contract-index .border-left-primary,
+.contract-index .border-left-success,
+.contract-index .border-left-info,
+.contract-index .border-left-warning {
+    min-height: 0;
+}
+
+.contract-index .row.mb-3 .card-body {
+    padding: 10px 14px !important;
+}
+
+.contract-index .card-header {
+    padding: 10px 14px !important;
+}
+
+.contract-index .card-body {
+    padding: 14px !important;
+}
+
+.contract-index #ciTable thead th {
+    padding: 8px 8px;
+    font-size: 11px;
+}
+
+.contract-index #ciTable tbody td {
+    padding: 7px 8px;
+    font-size: 12px;
+}
+
+.contract-index .ci-table-tools {
+    margin-bottom: 10px !important;
+}
+
+.contract-index .ci-table-footer {
+    padding-top: 10px;
+}
+
+</style>
+
+
+<script>
+(() => {
+    const jsonUrl = '@Url.Content("~/data/ClientContract/contracts.json")';
+
+    async function loadContracts() {
+        const body = document.getElementById("ciTableBody");
+        const head = document.getElementById("ciTableHead");
+
+        try {
+            const response = await fetch(jsonUrl, { cache: "no-store" });
+
+            if (!response.ok) {
+                throw new Error(`Could not load JSON: HTTP ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (!Array.isArray(data.columns) || !Array.isArray(data.contracts)) {
+                throw new Error("JSON must contain columns and contracts arrays.");
+            }
+
+            // Build grid headers from JSON
+            head.replaceChildren();
+
+            const actionHeader = document.createElement("th");
+            actionHeader.textContent = "Action";
+            head.appendChild(actionHeader);
+
+            data.columns.forEach(column => {
+                const th = document.createElement("th");
+                th.textContent = column.label;
+                head.appendChild(th);
+            });
+
+            // Build grid rows from JSON
+            body.replaceChildren();
+
+            data.contracts.forEach(contract => {
+                const row = document.createElement("tr");
+
+                const actionCell = document.createElement("td");
+actionCell.className = "ci-action-column";
+
+const actionButtons = document.createElement("div");
+actionButtons.className = "ci-row-actions";
+
+const editButton = document.createElement("a");
+editButton.href = "#";
+editButton.className = "ci-edit-row";
+editButton.title = "Edit";
+editButton.setAttribute("aria-label", "Edit contract");
+editButton.innerHTML = '<i class="fas fa-edit fa-sm"></i>';
+
+const deleteButton = document.createElement("a");
+deleteButton.href = "#";
+deleteButton.className = "ci-delete-row";
+deleteButton.title = "Delete";
+deleteButton.setAttribute("aria-label", "Delete contract");
+deleteButton.innerHTML = '<i class="fas fa-trash-alt fa-sm"></i>';
+
+actionButtons.append(editButton, deleteButton);
+actionCell.appendChild(actionButtons);
+row.appendChild(actionCell);
+
+                data.columns.forEach(column => {
+                    const cell = document.createElement("td");
+                    let value = contract[column.key] ?? "";
+
+                    if (["date", "startDate", "endDate"].includes(column.key) && value) {
+                        const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+                        if (match) value = `${match[3]}-${match[2]}-${match[1]}`;
+                    }
+
+                    if (column.key === "value" && value !== "") {
+                        value = Number(value).toLocaleString("en-US", {
+                            minimumFractionDigits: 3,
+                            maximumFractionDigits: 3
+                        });
+                    }
+
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            });
+
+            // Update summary cards using JSON data
+            document.getElementById("ciTotal").textContent = data.contracts.length;
+
+            const totalValue = data.contracts.reduce(
+                (sum, contract) => sum + (Number(contract.value) || 0), 0
+            );
+
+            document.getElementById("ciValue").textContent =
+                totalValue.toLocaleString("en-US", {
+                    minimumFractionDigits: 3,
+                    maximumFractionDigits: 3
+                });
+
+            document.getElementById("ciRecordCount").textContent =
+                `${data.contracts.length} Records`;
+
+            document.getElementById("ciShowing").textContent =
+                `Showing 1 to ${data.contracts.length} of ${data.contracts.length} contracts`;
+
+            document.getElementById("ciPageInfo").textContent = "1 / 1";
+            document.getElementById("ciPrevious").disabled = true;
+            document.getElementById("ciNext").disabled = true;
+
+        } catch (error) {
+            console.error("Client Contract JSON error:", error);
+            body.replaceChildren();
+
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 10;
+            cell.className = "ci-empty";
+            cell.textContent = error.message;
+            row.appendChild(cell);
+            body.appendChild(row);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadContracts);
+    } else {
+        loadContracts();
+    }
+})();
+</script>

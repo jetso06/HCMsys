@@ -1,0 +1,625 @@
+@{
+    ViewData["Title"] = "Client Contract";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid cc-page">
+
+    <!-- Page Header -->
+    <div class="card shadow mb-3">
+        <div class="card-header py-3 cc-header">
+            <h6 class="m-0 font-weight-bold text-uppercase cc-title">
+                <i class="fas fa-file-contract mr-2"></i>
+                Client Contract
+            </h6>
+
+            <div class="cc-actions">
+                <button type="button" class="btn btn-success btn-sm" onclick="newContract()">
+                    <i class="fas fa-plus mr-1"></i> New
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveDemo()">
+                    <i class="fas fa-save mr-1"></i> Save
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.print()">
+                    <i class="fas fa-print mr-1"></i> Print
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteDemo()">
+                    <i class="fas fa-trash mr-1"></i> Delete
+                </button>
+                <button type="button" class="btn btn-info btn-sm" onclick="window.history.back()">
+                    <i class="fas fa-times-circle mr-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="ccMessage" class="alert alert-success" style="display:none;"></div>
+
+    <!-- Contract Details -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-file-alt mr-2"></i> Contract Details
+            </h6>
+            <span class="text-muted small" id="ccFormStatus">New Contract</span>
+        </div>
+
+        <div class="card-body">
+            <form id="clientContractForm" onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="ccDocumentNo">Document No.</label>
+                        <input id="ccDocumentNo" class="form-control" value="500" readonly>
+                        <small class="form-text text-muted">Document number preview.</small>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="ccDate">Date <span class="text-danger">*</span></label>
+                        <input id="ccDate" type="date" class="form-control" required>
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label for="ccPostDate">PostDate <span class="text-danger">*</span></label>
+                        <input id="ccPostDate" type="datetime-local" class="form-control" required>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccClient">Client <span class="text-danger">*</span></label>
+                        <select id="ccClient" class="form-control" required>
+                            <option value="">-- Select Client --</option>
+                            <option>ABC Trading LLC</option>
+                            <option>Al Noor Services</option>
+                            <option>Gulf Technologies</option>
+                            <option>Muscat Engineering</option>
+                            <option>Other Client</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccReference">Contract Reference</label>
+                        <input id="ccReference" maxlength="60" class="form-control"
+                               placeholder="Enter contract reference">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccStartDate">Start Date <span class="text-danger">*</span></label>
+                        <input id="ccStartDate" type="date" class="form-control" required>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccEndDate">End Date <span class="text-danger">*</span></label>
+                        <input id="ccEndDate" type="date" class="form-control" required>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccCurrency">Currency <span class="text-danger">*</span></label>
+                        <select id="ccCurrency" class="form-control" required>
+                            <option value="">-- Select Currency --</option>
+                            <option value="OMR">OMR - Omani Rial</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="AED">AED - UAE Dirham</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccValue">Contract Value <span class="text-danger">*</span></label>
+                        <input id="ccValue" type="number" min="0" step="0.001"
+                               class="form-control" placeholder="0.000" required>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccPaymentTerms">Payment Terms</label>
+                        <select id="ccPaymentTerms" class="form-control">
+                            <option value="">-- Select Payment Terms --</option>
+                            <option>Advance Payment</option>
+                            <option>Net 15 Days</option>
+                            <option>Net 30 Days</option>
+                            <option>Net 45 Days</option>
+                            <option>Net 60 Days</option>
+                            <option>Monthly</option>
+                            <option>Milestone Based</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccContactPerson">Contact Person (Client Side)</label>
+                        <input id="ccContactPerson" maxlength="100" class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="ccFinanceContact">Finance Contact (Client Side)</label>
+                        <input id="ccFinanceContact" maxlength="100" class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccOwner">Contract Owner</label>
+                        <select id="ccOwner" class="form-control">
+                            <option value="">-- Select Employee --</option>
+                            <option>Admin</option>
+                            <option>Jerin Davis</option>
+                            <option>Project Manager</option>
+                            <option>Finance Manager</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccBank">Payment Bank</label>
+                        <select id="ccBank" class="form-control">
+                            <option value="">-- Select Bank --</option>
+                            <option>Bank Muscat</option>
+                            <option>Sohar International</option>
+                            <option>National Bank of Oman</option>
+                            <option>Oman Arab Bank</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <label for="ccProject">Project No.</label>
+                        <select id="ccProject" class="form-control">
+                            <option value="">-- Select Project --</option>
+                            <option>PRJ-001</option>
+                            <option>PRJ-002</option>
+                            <option>PRJ-003</option>
+                            <option>PRJ-004</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-align-left mr-2"></i> Narration / Terms &amp; Conditions
+            </h6>
+        </div>
+        <div class="card-body">
+            <div class="cc-toolbar mb-2">
+                <button type="button" class="btn btn-light btn-sm" onclick="formatTerms('bold')" title="Bold">
+                    <i class="fas fa-bold"></i>
+                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="formatTerms('italic')" title="Italic">
+                    <i class="fas fa-italic"></i>
+                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="formatTerms('underline')" title="Underline">
+                    <i class="fas fa-underline"></i>
+                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="formatTerms('insertUnorderedList')" title="Bulleted list">
+                    <i class="fas fa-list-ul"></i>
+                </button>
+                <button type="button" class="btn btn-light btn-sm" onclick="formatTerms('insertOrderedList')" title="Numbered list">
+                    <i class="fas fa-list-ol"></i>
+                </button>
+            </div>
+
+            <div id="ccTerms" contenteditable="true" class="cc-editor"
+                 data-placeholder="Enter narration, terms and conditions..."></div>
+        </div>
+    </div>
+
+    <!-- Attachments Grid -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center flex-wrap">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-paperclip mr-2"></i> Attachments
+            </h6>
+            <button type="button" class="btn btn-primary btn-sm" onclick="addAttachmentRow()">
+                <i class="fas fa-plus mr-1"></i> Add Attachment
+            </button>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover cc-attachment-table">
+                    <thead>
+                        <tr>
+                            <th>Show</th>
+                            <th>Attachment Type</th>
+                            <th>Remarks</th>
+                            <th>Attachment</th>
+                            <th>TrackExpiry</th>
+                            <th>Ref No</th>
+                            <th>Issue Date</th>
+                            <th>Expiry Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ccAttachmentsBody"></tbody>
+                </table>
+            </div>
+
+            <div class="text-muted small">
+                Use Add Attachment to insert more rows. Issue and expiry dates are optional.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    html { font-size: 14px; }
+    .cc-page {
+        padding: 24px 20px;
+        color: #5a5c69;
+        font-family: 'Nunito', sans-serif;
+        font-size: 14px;
+    }
+
+    .cc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .cc-title {
+        color: #5a5c69;
+        letter-spacing: .08em;
+        font-size: .85rem;
+    }
+
+    .cc-actions, .cc-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cc-page .card {
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        margin-bottom: 1rem;
+    }
+
+    .cc-page .card-header {
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .cc-page .form-control {
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        color: #6e707e;
+        font-size: .85rem;
+        min-height: 38px;
+    }
+
+    .cc-page label {
+        font-weight: 700;
+        font-size: .8rem;
+        color: #5a5c69;
+    }
+
+    .cc-page .btn {
+        font-size: .8rem;
+        font-weight: 600;
+    }
+
+    .cc-attachment-table {
+        min-width: 1250px;
+        margin-bottom: 0;
+    }
+
+    .cc-attachment-table thead th {
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        text-transform: uppercase;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    .cc-attachment-table tbody td {
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    .cc-attachment-table .form-control {
+        min-width: 120px;
+        font-size: .8rem;
+    }
+
+    .cc-attachment-table input[type="file"] {
+        min-width: 190px;
+        max-width: 220px;
+        font-size: .75rem;
+    }
+
+    .cc-attachment-table input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .cc-date-cell {
+        min-width: 180px;
+    }
+
+    .cc-date-control {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .cc-date-control input[type="date"] {
+        min-width: 130px;
+    }
+
+    .cc-editor {
+        min-height: 180px;
+        padding: 12px;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        background: #fff;
+        color: #5a5c69;
+        overflow-wrap: anywhere;
+    }
+
+    .cc-editor:focus {
+        outline: none;
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .15);
+    }
+
+    .cc-editor:empty::before {
+        content: attr(data-placeholder);
+        color: #858796;
+        pointer-events: none;
+    }
+
+    .cc-row-actions {
+        display: flex;
+        gap: 5px;
+    }
+
+    @@media (max-width: 768px) {
+        .cc-page {
+            padding: 12px 8px;
+        }
+
+        .cc-header {
+            align-items: flex-start;
+        }
+
+        .cc-actions {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .cc-actions,
+        .cc-toolbar,
+        .cc-attachment-table .cc-remove,
+        .cc-attachment-table input[type="file"] {
+            display: none !important;
+        }
+
+        .cc-page .card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<script>
+    let ccAttachmentCounter = 0;
+    let ccDemoDocumentNumber = 500;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const now = new Date();
+        const localDate = toLocalDate(now);
+
+        document.getElementById('ccDate').value = localDate;
+        document.getElementById('ccPostDate').value =
+            localDate + 'T' + String(now.getHours()).padStart(2, '0') +
+            ':' + String(now.getMinutes()).padStart(2, '0');
+
+        document.getElementById('ccStartDate').value = localDate;
+        document.getElementById('ccEndDate').value = localDate;
+
+        addAttachmentRow();
+    });
+
+    function toLocalDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function addAttachmentRow() {
+        const index = ccAttachmentCounter++;
+        const row = document.createElement('tr');
+
+        row.dataset.rowId = index;
+
+        row.innerHTML = `
+            <td>
+                <button type="button" class="btn btn-info btn-sm"
+                        onclick="showAttachment(this)">
+                    <i class="fas fa-eye"></i> Show
+                </button>
+            </td>
+            <td>
+                <select class="form-control" aria-label="Attachment Type">
+                    <option value="">-- Select --</option>
+                    <option>Contract</option>
+                    <option>Agreement</option>
+                    <option>Invoice</option>
+                    <option>Purchase Order</option>
+                    <option>Supporting Document</option>
+                    <option>Other</option>
+                </select>
+            </td>
+            <td>
+                <input type="text" maxlength="80" class="form-control"
+                       placeholder="Optional" aria-label="Remarks">
+            </td>
+            <td>
+                <input type="file" class="cc-file-input"
+                       aria-label="Attachment file"
+                       accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg">
+                <div class="cc-file-name small text-muted mt-1"></div>
+            </td>
+            <td class="text-center">
+                <input type="checkbox" aria-label="Track expiry"
+                       onchange="toggleExpiry(this)">
+            </td>
+            <td>
+                <input type="text" maxlength="80" class="form-control"
+                       placeholder="Optional" aria-label="Reference number">
+            </td>
+            <td class="cc-date-cell">
+                <div class="cc-date-control">
+                    <input type="checkbox" aria-label="Enable issue date"
+                           onchange="toggleDate(this)">
+                    <input type="date" class="form-control" disabled
+                           aria-label="Issue date">
+                </div>
+            </td>
+            <td class="cc-date-cell">
+                <div class="cc-date-control">
+                    <input type="checkbox" aria-label="Enable expiry date"
+                           onchange="toggleDate(this)">
+                    <input type="date" class="form-control" disabled
+                           aria-label="Expiry date">
+                </div>
+            </td>
+            <td>
+                <div class="cc-row-actions">
+                    <button type="button" class="btn btn-danger btn-sm cc-remove"
+                            onclick="removeAttachmentRow(this)" title="Remove row">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </td>`;
+
+        const fileInput = row.querySelector('.cc-file-input');
+        fileInput.addEventListener('change', function () {
+            const fileName = row.querySelector('.cc-file-name');
+            fileName.textContent = this.files.length ? this.files[0].name : '';
+        });
+
+        document.getElementById('ccAttachmentsBody').appendChild(row);
+    }
+
+    function toggleDate(checkbox) {
+        const dateInput = checkbox.parentElement.querySelector('input[type="date"]');
+        dateInput.disabled = !checkbox.checked;
+
+        if (!checkbox.checked) {
+            dateInput.value = '';
+        }
+    }
+
+    function toggleExpiry(checkbox) {
+        const row = checkbox.closest('tr');
+        const expiryCheckbox = row.querySelectorAll('.cc-date-control input[type="checkbox"]')[1];
+        const expiryDate = row.querySelectorAll('.cc-date-control input[type="date"]')[1];
+
+        if (expiryCheckbox && expiryDate) {
+            expiryCheckbox.disabled = !checkbox.checked;
+
+            if (!checkbox.checked) {
+                expiryCheckbox.checked = false;
+                expiryDate.disabled = true;
+                expiryDate.value = '';
+            }
+        }
+    }
+
+    function removeAttachmentRow(button) {
+        const rows = document.querySelectorAll('#ccAttachmentsBody tr');
+
+        if (rows.length <= 1) {
+            alert('Keep at least one attachment row. You can leave it empty.');
+            return;
+        }
+
+        button.closest('tr').remove();
+    }
+
+    function showAttachment(button) {
+        const input = button.closest('tr').querySelector('.cc-file-input');
+
+        if (!input.files.length) {
+            alert('Choose a file in this row first.');
+            return;
+        }
+
+        const file = input.files[0];
+        const url = URL.createObjectURL(file);
+        window.open(url, '_blank');
+
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    function formatTerms(command) {
+        document.getElementById('ccTerms').focus();
+        document.execCommand(command, false, null);
+    }
+
+    function saveDemo() {
+        const form = document.getElementById('clientContractForm');
+
+        if (!form.reportValidity()) {
+            return;
+        }
+
+        const startDate = document.getElementById('ccStartDate').value;
+        const endDate = document.getElementById('ccEndDate').value;
+
+        if (endDate < startDate) {
+            alert('End Date cannot be earlier than Start Date.');
+            return;
+        }
+
+        const message = document.getElementById('ccMessage');
+        message.textContent =
+            'Frontend demo: form validated. No data was saved to a server.';
+        message.style.display = 'block';
+
+        document.getElementById('ccFormStatus').textContent = 'Preview';
+    }
+
+    function newContract() {
+        if (!confirm('Clear the form and start a new contract?')) {
+            return;
+        }
+
+        document.getElementById('clientContractForm').reset();
+        document.getElementById('ccTerms').innerHTML = '';
+        document.getElementById('ccDocumentNo').value = ++ccDemoDocumentNumber;
+        document.getElementById('ccFormStatus').textContent = 'New Contract';
+        document.getElementById('ccMessage').style.display = 'none';
+
+        document.getElementById('ccAttachmentsBody').innerHTML = '';
+        ccAttachmentCounter = 0;
+        addAttachmentRow();
+
+        const now = new Date();
+        const localDate = toLocalDate(now);
+
+        document.getElementById('ccDate').value = localDate;
+        document.getElementById('ccPostDate').value =
+            localDate + 'T' + String(now.getHours()).padStart(2, '0') +
+            ':' + String(now.getMinutes()).padStart(2, '0');
+
+        document.getElementById('ccStartDate').value = localDate;
+        document.getElementById('ccEndDate').value = localDate;
+    }
+
+    function deleteDemo() {
+        if (confirm('Clear this contract form? This demo does not delete server data.')) {
+            newContract();
+        }
+    }
+</script>

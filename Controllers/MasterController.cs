@@ -126,5 +126,13 @@ namespace HCMSys.Controllers
             ViewBag.AssignmentId = id ?? "";
             return View();
         }
+        public ActionResult ClientContractIndex()
+        {
+            return View();
+        }
+        public ActionResult ClientContract()
+        {
+            return View();
+        }
     }
 }
