@@ -291,6 +291,153 @@
             display: none !important;
         }
     }
+    .save-modal {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .25);
+    }
+
+    .save-modal-header {
+        background: #20c997;
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .save-success-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #e8fff5;
+        color: #20c997;
+        font-size: 32px;
+        animation: savePulse 1.5s infinite;
+    }
+
+    .save-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #343a40;
+        margin-bottom: 8px;
+    }
+
+    .save-message {
+        font-size: .85rem;
+        color: #5a5c69;
+        margin-bottom: 0;
+    }
+
+    .save-modal .modal-footer {
+        border-top: 1px solid #e3e6f0;
+        padding: 14px;
+    }
+
+    .save-modal .btn {
+        min-width: 100px;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    @@keyframes savePulse {
+
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(32, 201, 151, .35);
+        }
+
+        50% {
+            transform: scale(1.06);
+            box-shadow: 0 0 0 10px rgba(32, 201, 151, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(32, 201, 151, 0);
+        }
+    }
+    /* =========================
+       DELETE CONFIRMATION MODAL
+       ========================= */
+
+    .delete-modal {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .25);
+    }
+
+    .delete-modal-header {
+        background: #e74a3b;
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .delete-warning-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #fdecea;
+        color: #e74a3b;
+        font-size: 30px;
+        animation: deletePulse 1.5s infinite;
+    }
+
+    .delete-title {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #343a40;
+        margin-bottom: 8px;
+    }
+
+    .delete-message {
+        font-size: .85rem;
+        color: #5a5c69;
+        margin-bottom: 4px;
+    }
+
+    .delete-submessage {
+        font-size: .72rem;
+        color: #858796;
+        margin-bottom: 0;
+    }
+
+    .delete-modal .modal-footer {
+        border-top: 1px solid #e3e6f0;
+        padding: 14px;
+        gap: 8px;
+    }
+
+    .delete-modal .btn {
+        min-width: 100px;
+        font-size: .78rem;
+        font-weight: 700;
+    }
+
+    @@keyframes deletePulse {
+
+        0% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, .35);
+        }
+
+        50% {
+            transform: scale(1.06);
+            box-shadow: 0 0 0 10px rgba(231, 74, 59, 0);
+        }
+
+        100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(231, 74, 59, 0);
+        }
+    }
 </style>
 
 <div class="container-fluid py-3">
@@ -319,29 +466,79 @@
                             title="Open the assignment form">
                         <i class="fas fa-edit fa-sm text-white-50 mr-1"></i>
                         Edit
-                    </button>
+                    </button>                   
 
-                    <button type="button"
-                            class="btn btn-secondary btn-sm shadow-sm"
-                            onclick="window.print()">
-                        <i class="fas fa-print fa-sm text-white-50 mr-1"></i>
-                        Print
-                    </button>
+    <!-- Save -->
+    <button type="button"
+            class="btn btn-primary btn-sm shadow-sm"
+            id="btnSave">
+        <i class="fas fa-save fa-sm text-white-50 mr-1"></i>
+        Save
+    </button>
 
-                    <button type="button"
-                            class="btn btn-danger btn-sm shadow-sm"
-                            id="paDeleteButton"
-                            title="Delete requires a selected saved assignment">
-                        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
-                        Delete
-                    </button>
+    <!-- Clone -->
+    <button type="button"
+            class="btn btn-info btn-sm shadow-sm"
+            id="btnClone">
+        <i class="fas fa-copy fa-sm text-white-50 mr-1"></i>
+        Clone
+    </button>
 
-                    <button type="button"
-                            class="btn btn-info btn-sm shadow-sm"
-                            onclick="history.back()">
-                        <i class="fas fa-times-circle fa-sm text-white-50 mr-1"></i>
-                        Close
-                    </button>
+    <!-- UnPost -->
+    <button type="button"
+            class="btn btn-warning btn-sm shadow-sm"
+            id="btnUnPost">
+        <i class="fas fa-undo fa-sm text-white-50 mr-1"></i>
+        UnPost
+    </button>
+
+    <!-- Print -->
+    <button type="button"
+            class="btn btn-secondary btn-sm shadow-sm"
+            onclick="window.print()">
+        <i class="fas fa-print fa-sm text-white-50 mr-1"></i>
+        Print
+    </button>
+
+    <button type="button"
+            class="btn btn-danger btn-sm shadow-sm"
+            id="paDeleteButton"
+            title="Delete requires a selected saved assignment">
+        <i class="fas fa-trash fa-sm text-white-50 mr-1"></i>
+        Delete
+    </button>
+
+    <!-- Approve -->
+    <button type="button"
+            class="btn btn-success btn-sm shadow-sm"
+            id="btnApprove">
+        <i class="fas fa-check fa-sm text-white-50 mr-1"></i>
+        Approve
+    </button>
+
+    <!-- Reject -->
+    <button type="button"
+            class="btn btn-danger btn-sm shadow-sm"
+            id="btnReject">
+        <i class="fas fa-times fa-sm text-white-50 mr-1"></i>
+        Reject
+    </button>
+
+    <!-- Auth Tracker -->
+    <button type="button"
+            class="btn btn-info btn-sm shadow-sm"
+            id="btnAuthTracker">
+        <i class="fas fa-route fa-sm text-white-50 mr-1"></i>
+        Auth Tracker
+    </button>
+
+    <!-- Close -->
+    <button type="button"
+            class="btn btn-secondary btn-sm shadow-sm"
+            id="btnClose">
+        <i class="fas fa-times-circle fa-sm text-white-50 mr-1"></i>
+        Close
+    </button>
 
                 </div>
             </div>
@@ -548,6 +745,148 @@
         </div>
     </div>
 </div>
+
+ <!-- SAVE SUCCESS MODAL -->
+    <div class="modal fade"
+         id="accountSuccessModal"
+         tabindex="-1"
+         role="dialog"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered"
+             role="document">
+
+            <div class="modal-content save-modal">
+
+                <div class="modal-header save-modal-header">
+
+                    <h5 class="modal-title">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Success
+                    </h5>
+
+                    <button type="button"
+                            class="close text-white"
+                            data-dismiss="modal"
+                            aria-label="Close">
+
+                        <span aria-hidden="true">&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center py-4">
+
+                    <div class="save-success-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+
+                    <h5 class="save-title">
+                        Saved Successfully!
+                    </h5>
+
+                    <p class="save-message">
+                        Master/Document saved successfully.
+                    </p>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button"
+                            class="btn btn-success"
+                            data-dismiss="modal">
+
+                        <i class="fas fa-check mr-1"></i>
+                        OK
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- DELETE CONFIRMATION MODAL -->
+    <div class="modal fade"
+         id="accountDeleteModal"
+         tabindex="-1"
+         role="dialog"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-dialog-centered"
+             role="document">
+
+            <div class="modal-content delete-modal">
+
+                <div class="modal-header delete-modal-header">
+
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Confirm Delete
+                    </h5>
+
+                    <button type="button"
+                            class="close text-white"
+                            data-dismiss="modal"
+                            aria-label="Close">
+
+                        <span aria-hidden="true">&times;</span>
+
+                    </button>
+
+                </div>
+
+                <div class="modal-body text-center py-4">
+
+                    <div class="delete-warning-icon">
+                        <i class="fas fa-trash-alt"></i>
+                    </div>
+
+                    <h5 class="delete-title">
+                        Are you sure?
+                    </h5>
+
+                    <p class="delete-message">
+                        Are you sure you want to delete this record?
+                    </p>
+
+                    <p class="delete-submessage">
+                        This action cannot be undone.
+                    </p>
+
+                </div>
+
+                <div class="modal-footer justify-content-center">
+
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-dismiss="modal">
+
+                        <i class="fas fa-times mr-1"></i>
+                        No
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-danger"
+                            id="btnConfirmDelete">
+
+                        <i class="fas fa-trash-alt mr-1"></i>
+                        Yes
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 <script>
     (function () {
