@@ -1,0 +1,518 @@
+@model HCMSys.Controllers.GrievancesController.GrievanceViewModel
+
+@{
+    ViewData["Title"] = "Grievances";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid grievance-page">
+
+    <!-- Page Header and Toolbar -->
+    <div class="card shadow mb-3">
+        <div class="card-header grievance-header">
+            <h6 class="grievance-title">
+                <i class="fas fa-comment-dots mr-2"></i>
+                GRIEVANCES
+            </h6>
+
+            <div class="grievance-actions">
+                <button type="button" class="btn btn-success btn-sm" id="btnNew">
+                    <i class="fas fa-plus mr-1"></i> New
+                </button>
+
+                <button type="button" class="btn btn-primary btn-sm" id="btnEdit">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+
+                <button type="submit" form="grievanceForm"
+                        class="btn btn-primary btn-sm" id="btnSave">
+                    <i class="fas fa-save mr-1"></i> Save
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="btnClone">
+                    <i class="fas fa-copy mr-1"></i> Clone
+                </button>
+
+                <button type="button" class="btn btn-warning btn-sm"
+                        id="btnUnPost" disabled title="Posting workflow is not configured">
+                    <i class="fas fa-undo mr-1"></i> UnPost
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="btnPrint">
+                    <i class="fas fa-print mr-1"></i> Print
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="btnDelete"
+                        disabled title="Delete workflow is not configured">
+                    <i class="fas fa-trash mr-1"></i> Delete
+                </button>
+
+                <button type="button" class="btn btn-success btn-sm"
+                        id="btnApprove" disabled title="Approval workflow is not configured">
+                    <i class="fas fa-check mr-1"></i> Approve
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm"
+                        id="btnReject" disabled title="Approval workflow is not configured">
+                    <i class="fas fa-times mr-1"></i> Reject
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm"
+                        id="btnAuthTracker" disabled title="Authorization tracking is not configured">
+                    <i class="fas fa-route mr-1"></i> Auth Tracker
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="btnClose">
+                    <i class="fas fa-times-circle mr-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+
+    <div class="alert alert-danger grievance-hidden" id="clientValidationMessage"></div>
+
+    <!-- Grievance Details -->
+    <div class="card shadow mb-3">
+        <div class="card-header grievance-section-header">
+            <h6>
+                <i class="fas fa-file-alt mr-2"></i> Grievance Details
+            </h6>
+            <span id="formStatus">New Grievance</span>
+        </div>
+
+        <div class="card-body">
+            <form id="grievanceForm"
+                  action="@Url.Content("~/Master/Grievances/Save")"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger small mb-3"></div>
+
+                <div class="form-row">
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.DocumentNo">
+                            Document No. <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Form.DocumentNo"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.DocumentNoMaxLength"
+                               autocomplete="off" />
+                        <span asp-validation-for="Form.DocumentNo"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.Date">
+                            Date <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Form.Date" type="date" class="form-control" />
+                        <span asp-validation-for="Form.Date"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.EmployeeId">
+                            Employee <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Form.EmployeeId"
+                                id="employeeSelect"
+                                class="form-control">
+                            <option value="">-- Select Employee --</option>
+                            @foreach (var employee in Model.Employees)
+                            {
+                                <option value="@employee.Id"
+                                        data-department="@employee.Department">
+                                    @employee.Name (@employee.Code)
+                                </option>
+                            }
+                        </select>
+                        <span asp-validation-for="Form.EmployeeId"
+                              class="text-danger small"></span>
+                    </div>
+
+                    
+<div class="form-group col-xl-4 col-md-6">
+    <label asp-for="Form.Designation">Designation</label>
+    <input asp-for="Form.Designation"
+           class="form-control"
+           maxlength="@Model.Config.Validation.DesignationMaxLength"
+           readonly />
+    <span asp-validation-for="Form.Designation"
+          class="text-danger small"></span>
+</div>
+
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label for="departmentDisplay">Department</label>
+                        <input id="departmentDisplay"
+                               class="form-control"
+                               readonly />
+                    </div>
+
+                    
+<div class="form-group col-xl-4 col-md-6">
+    <label asp-for="Form.ReportingManager">Reporting Manager</label>
+    <input asp-for="Form.ReportingManager"
+           class="form-control"
+           maxlength="@Model.Config.Validation.ReportingManagerMaxLength"
+           readonly />
+    <span asp-validation-for="Form.ReportingManager"
+          class="text-danger small"></span>
+</div>
+
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.Against">
+                            Against <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Form.Against" class="form-control">
+                            <option value="">-- Select Category --</option>
+                            @foreach (var option in Model.Config.Options.Against)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Form.Against"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.HrStatus">
+                            HR Status <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Form.HrStatus"
+                                id="hrStatusSelect"
+                                class="form-control">
+                            @foreach (var option in Model.Config.Options.HrStatus)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Form.HrStatus"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label asp-for="Form.Comments">Comments</label>
+                        <textarea asp-for="Form.Comments"
+                                  class="form-control grievance-textarea"
+                                  maxlength="@Model.Config.Validation.CommentsMaxLength"></textarea>
+                        <span asp-validation-for="Form.Comments"
+                              class="text-danger small"></span>
+                    </div>
+                                       
+                    <div class="form-group col-12 grievance-hidden"
+                         id="closingCommentsSection">
+                        <label asp-for="Form.ClosingComments">
+                            Closing Comments <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Form.ClosingComments"
+                                  class="form-control grievance-textarea"
+                                  maxlength="@Model.Config.Validation.ClosingCommentsMaxLength"></textarea>
+                        <span asp-validation-for="Form.ClosingComments"
+                              class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.EmpStatus">Employee Status</label>
+                        <select asp-for="Form.EmpStatus" class="form-control">
+                        <option value="">-- Select Status --</option>
+                         @foreach (var option in Model.Config.Options.EmpStatus)
+                        {
+                            <option value="@option">@option</option>
+                        }
+                        </select>
+                        <span asp-validation-for="Form.EmpStatus"
+                            class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-group col-12">
+                        <label asp-for="Form.EmployeeClosingComments">
+                            Employee Closing Comments
+                        </label>
+                        <textarea asp-for="Form.EmployeeClosingComments"
+                                  class="form-control grievance-textarea"
+                                  maxlength="@Model.Config.Validation.EmployeeClosingCommentsMaxLength"></textarea>
+                        <span asp-validation-for="Form.EmployeeClosingComments"
+                              class="text-danger small"></span>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .grievance-page {
+        width: 100%;
+        max-width: none;
+        padding: 12px 12px;
+        color: #5a5c69;
+        font-family: 'Nunito', sans-serif;
+        font-size: 13px;
+    }
+
+        .grievance-page .card {
+            border: 1px solid #e3e6f0;
+            border-radius: 5px;
+            background: #fff;
+            margin-bottom: 12px;
+        }
+
+        .grievance-page .shadow {
+            box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .10) !important;
+        }
+
+    .grievance-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 9px 14px;
+        min-height: 48px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .grievance-title {
+        margin: 0;
+        color: #5a5c69;
+        font-size: .88rem;
+        font-weight: 800;
+        letter-spacing: .07em;
+    }
+
+        .grievance-title i {
+            color: #4e73df;
+        }
+
+    .grievance-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+        .grievance-actions .btn {
+            padding: 5px 9px;
+            line-height: 1.3;
+            border-radius: 4px;
+            font-family: 'Nunito', sans-serif;
+            font-size: .8rem;
+            font-weight: 700;
+            box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .08);
+        }
+
+            .grievance-actions .btn:disabled {
+                opacity: .45;
+                cursor: not-allowed;
+            }
+
+    .grievance-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+        .grievance-section-header h6 {
+            margin: 0;
+            color: #4e73df;
+            font-size: .9rem;
+            font-weight: 800;
+        }
+
+        .grievance-section-header span {
+            color: #858796;
+            font-size: .78rem;
+        }
+
+    .grievance-page .card-body {
+        padding: 14px;
+    }
+
+    .grievance-page .form-group {
+        margin-bottom: 15px;
+    }
+
+    .grievance-page label {
+        display: block;
+        margin-bottom: 5px;
+        color: #5a5c69;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .grievance-page .form-control {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        color: #6e707e;
+        font-family: 'Nunito', sans-serif;
+        font-size: .85rem;
+    }
+
+    .grievance-page textarea.form-control {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .grievance-page .form-control:focus {
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .15);
+    }
+
+    .grievance-page input[readonly] {
+        background: #f8f9fc;
+    }
+
+    .grievance-hidden {
+        display: none !important;
+    }
+
+    @@media (max-width: 768px) {
+        .grievance-page {
+            padding: 12px 8px;
+        }
+
+        .grievance-header {
+            align-items: flex-start;
+        }
+
+        .grievance-actions {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .grievance-actions {
+            display: none !important;
+        }
+
+        .grievance-page {
+            padding: 0;
+        }
+
+            .grievance-page .card {
+                box-shadow: none !important;
+            }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("grievanceForm");
+            const employeeSelect = document.getElementById("employeeSelect");
+            const departmentDisplay = document.getElementById("departmentDisplay");
+            const hrStatusSelect = document.getElementById("hrStatusSelect");
+            const closingSection = document.getElementById("closingCommentsSection");
+            const closingComments = document.getElementById("Form_ClosingComments");
+            const validationMessage = document.getElementById("clientValidationMessage");
+            const formStatus = document.getElementById("formStatus");
+
+            const requiredStatus =
+                @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                        Model.Config.Validation.ClosingCommentsRequiredWhenHrStatus));
+
+            function updateDepartment() {
+                const selected = employeeSelect.options[employeeSelect.selectedIndex];
+                departmentDisplay.value = selected?.dataset.department || "";
+            }
+
+            function updateClosingComments() {
+                const closed = hrStatusSelect.value === requiredStatus;
+
+                closingSection.classList.toggle("grievance-hidden", !closed);
+                closingComments.required = closed;
+
+                if (!closed) {
+                    closingComments.value = "";
+                }
+            }
+
+            function resetForm() {
+                form.reset();
+                validationMessage.classList.add("grievance-hidden");
+                formStatus.textContent = "New Grievance";
+                updateDepartment();
+                updateClosingComments();
+            }
+
+            employeeSelect.addEventListener("change", updateDepartment);
+            hrStatusSelect.addEventListener("change", updateClosingComments);
+
+            document.getElementById("btnNew").addEventListener("click", function () {
+                if (confirm("Clear the current form and start a new grievance?")) {
+                    resetForm();
+                }
+            });
+
+            document.getElementById("btnEdit").addEventListener("click", function () {
+                form.querySelectorAll("input, select, textarea").forEach(function (field) {
+                    if (field.name && field.name !== "__RequestVerificationToken") {
+                        field.disabled = false;
+                    }
+                });
+
+                formStatus.textContent = "Editing";
+            });
+
+            document.getElementById("btnClone").addEventListener("click", function () {
+                const documentNo = form.querySelector('[name="Form.DocumentNo"]');
+
+                if (confirm("Start a new grievance using the current form values?")) {
+                    documentNo.value = "";
+                    formStatus.textContent = "New Grievance (Clone)";
+                }
+            });
+
+            document.getElementById("btnPrint").addEventListener("click", function () {
+                window.print();
+            });
+
+            document.getElementById("btnClose").addEventListener("click", function () {
+                window.location.href = '@Url.Action("GrievancesIndex", "Master")';
+            });
+
+            form.addEventListener("submit", function (event) {
+                validationMessage.classList.add("grievance-hidden");
+
+                if (hrStatusSelect.value === requiredStatus &&
+                    !closingComments.value.trim()) {
+                    event.preventDefault();
+                    closingComments.setCustomValidity(
+                        "Closing Comments are required when HR Status is Closed."
+                    );
+                    closingComments.reportValidity();
+                }
+            });
+
+            closingComments.addEventListener("input", function () {
+                closingComments.setCustomValidity("");
+            });
+
+            updateDepartment();
+            updateClosingComments();
+        });
+    </script>
+}

@@ -1,0 +1,1066 @@
+
+@model List<HCMSys.Controllers.GrievancesController.GrievanceRecord>
+
+@{
+    ViewData["Title"] = "Grievances Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var totalGrievances = Model?.Count ?? 0;
+    var openGrievances = Model?.Count(r =>
+        string.Equals(r.HrStatus, "Open", StringComparison.OrdinalIgnoreCase)) ?? 0;
+    var closedGrievances = Model?.Count(r =>
+        string.Equals(r.HrStatus, "Closed", StringComparison.OrdinalIgnoreCase)) ?? 0;
+}
+
+<div class="container-fluid grievance-index">
+
+    <!-- TOP TOOLBAR -->
+    <div class="card shadow mb-3">
+        <div class="card-header gi-header">
+            <h6 class="gi-title">
+                <i class="fas fa-file-alt mr-2"></i>
+                GRIEVANCES MASTER
+            </h6>
+
+            <div class="gi-actions">
+                <a href="@Url.Action("Grievances", "Master")"
+                   class="btn btn-success btn-sm">
+                    <i class="fas fa-plus fa-sm mr-1"></i> New
+                </a>
+
+                <button type="button" class="btn btn-primary btn-sm" id="giEdit">
+                    <i class="fas fa-edit fa-sm mr-1"></i> Edit
+                </button>
+
+                <button type="button" class="btn btn-primary btn-sm" id="giSave">
+                    <i class="fas fa-save fa-sm mr-1"></i> Save
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="giClone">
+                    <i class="fas fa-copy fa-sm mr-1"></i> Clone
+                </button>
+
+                <button type="button" class="btn btn-warning btn-sm" id="giUnPost">
+                    <i class="fas fa-undo fa-sm mr-1"></i> UnPost
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="giPrint">
+                    <i class="fas fa-print fa-sm mr-1"></i> Print
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="giDelete">
+                    <i class="fas fa-trash fa-sm mr-1"></i> Delete
+                </button>
+
+                <button type="button" class="btn btn-success btn-sm" id="giApprove">
+                    <i class="fas fa-check fa-sm mr-1"></i> Approve
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="giReject">
+                    <i class="fas fa-times fa-sm mr-1"></i> Reject
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="giAuthTracker">
+                    <i class="fas fa-route fa-sm mr-1"></i> Auth Tracker
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="giClose">
+                    <i class="fas fa-times-circle fa-sm mr-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+<!-- SUMMARY CARDS — MATCH USER MASTER -->
+<div class="row mb-3 gi-summary">
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body py-2">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Grievances
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="giTotal">
+                            @totalGrievances
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-layer-group fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body py-2">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Closed Grievances
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="giClosed">
+                            @closedGrievances
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body py-2">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Open Grievances
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="giOpen">
+                            @openGrievances
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-3">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body py-2">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Module
+                        </div>
+                        <div class="h6 mb-0 font-weight-bold text-gray-800">
+                            Grievances
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+    <!-- RECORDS GRID -->
+    <div class="card shadow mb-4 gi-records-card">
+
+        <div class="card-header gi-records-header">
+            <h6>
+                <i class="fas fa-table mr-2"></i>
+                Grievance Records
+            </h6>
+
+            <span class="badge badge-primary" id="giRecordCount">
+                @totalGrievances Records
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <!-- SHOW ENTRIES AND SEARCH -->
+            <div class="gi-table-tools">
+
+                <div class="gi-page-size">
+                    <span>Show</span>
+
+                    <select id="giPageSize" class="form-control form-control-sm">
+                        <option value="10" selected>10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                    <span>entries</span>
+                </div>
+
+                <div class="gi-search">
+                    <label for="giSearch">Search grievances</label>
+                    <input type="search"
+                           id="giSearch"
+                           class="form-control form-control-sm"
+                           placeholder="Search document, employee, department..." />
+                </div>
+
+            </div>
+
+            <!-- FILTERS -->
+            <div class="row gi-filters">
+
+                <div class="col-lg-4 col-md-6 form-group">
+                    <label for="giStatusFilter">HR Status</label>
+                    <select id="giStatusFilter" class="form-control form-control-sm">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in (Model ?? new List<HCMSys.Controllers.GrievancesController.GrievanceRecord>())
+                            .Select(r => r.HrStatus)
+                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                            .Distinct()
+                            .OrderBy(s => s))
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-lg-3 col-md-6 form-group">
+                    <label for="giDateFrom">From Date</label>
+                    <input type="date" id="giDateFrom"
+                           class="form-control form-control-sm" />
+                </div>
+
+                <div class="col-lg-3 col-md-6 form-group">
+                    <label for="giDateTo">To Date</label>
+                    <input type="date" id="giDateTo"
+                           class="form-control form-control-sm" />
+                </div>
+
+                <div class="col-lg-2 col-md-6 form-group gi-clear-filter">
+                    <button type="button" class="btn btn-light btn-sm border"
+                            id="giClearFilters">
+                        <i class="fas fa-eraser mr-1"></i> Clear
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover"
+                       id="giTable">
+
+                    <thead>
+                        <tr>
+                            <th class="gi-select-column">
+                                <input type="checkbox" id="giSelectAll"
+                                       aria-label="Select all visible grievances" />
+                            </th>
+                            <th>#</th>
+                            <th>Document No.</th>
+                            <th>Date</th>
+                            <th>Employee Code</th>
+                            <th>Employee Name</th>
+                            <th>Department</th>
+                            <th>Against</th>
+                            <th>HR Status</th>
+                            <th>Employee Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="giTableBody">
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @for (int i = 0; i < Model.Count; i++)
+                            {
+                                var record = Model[i];
+
+                                <tr data-document="@record.DocumentNo"
+                                    data-date="@record.Date.ToString("yyyy-MM-dd")"
+                                    data-employee="@record.EmployeeName"
+                                    data-code="@record.EmployeeCode"
+                                    data-department="@record.Department"
+                                    data-against="@record.Against"
+                                    data-status="@record.HrStatus"
+                                    data-emp-status="@record.EmpStatus">
+
+                                    <td class="text-center">
+                                        <input type="checkbox" class="gi-row-select"
+                                               aria-label="Select grievance @record.DocumentNo" />
+                                    </td>
+
+                                    <td class="gi-serial">@(i + 1)</td>
+                                    <td>@record.DocumentNo</td>
+                                    <td>@record.Date.ToString("dd-MM-yyyy")</td>
+                                    <td>@record.EmployeeCode</td>
+                                    <td>@record.EmployeeName</td>
+                                    <td>@record.Department</td>
+                                    <td>@record.Against</td>
+
+                                    <td>
+                                        <span class="gi-status-badge"
+                                              data-status="@record.HrStatus">
+                                            @record.HrStatus
+                                        </span>
+                                    </td>
+
+                                    <td>@record.EmpStatus</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            <div id="giEmptyMessage" class="gi-empty" style="display:none">
+                <i class="fas fa-inbox fa-2x mb-2"></i>
+                <p>No grievances match your search or filters.</p>
+            </div>
+
+            <!-- TABLE FOOTER -->
+            <div class="gi-table-footer">
+                <div id="giShowing">Showing 0 records</div>
+
+                <div class="gi-pagination">
+                    <button type="button" class="btn btn-light btn-sm"
+                            id="giPrevious">Previous</button>
+
+                    <span id="giPageInfo">1 / 1</span>
+
+                    <button type="button" class="btn btn-light btn-sm"
+                            id="giNext">Next</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SAVE SUCCESS MODAL -->
+<div class="modal fade" id="giSaveSuccessModal" tabindex="-1"
+     role="dialog" aria-labelledby="giSaveSuccessTitle" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="giSaveSuccessTitle">
+                    <i class="fas fa-check-circle mr-2"></i>Success
+                </h5>
+
+                <button type="button" class="close text-white"
+                        data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                Grievance information has been saved successfully.
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm"
+                        data-dismiss="modal">OK</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="giDeleteConfirmModal" tabindex="-1"
+     role="dialog" aria-labelledby="giDeleteConfirmTitle" aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="giDeleteConfirmTitle">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Confirm Delete
+                </h5>
+
+                <button type="button" class="close text-white"
+                        data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete the selected grievance?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm"
+                        data-dismiss="modal">Cancel</button>
+
+                <button type="button" class="btn btn-danger btn-sm"
+                        id="giConfirmDelete">
+                    <i class="fas fa-trash mr-1"></i> Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    
+html {
+    font-size: 14px;
+}
+
+.grievance-index {
+    padding: 12px;
+    color: #5a5c69;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+}
+
+.grievance-index .card {
+    background: #fff;
+    border: 1px solid #e3e6f0;
+    border-radius: 5px;
+}
+
+.grievance-index .shadow {
+    box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .10) !important;
+}
+
+/* Header toolbar */
+.grievance-index .gi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.grievance-index .gi-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: #5a5c69;
+    font-size: .85rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.grievance-index .gi-title i {
+    color: #4e73df;
+}
+
+.grievance-index .gi-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.grievance-index .gi-actions .btn {
+    padding: .38rem .65rem;
+    border-radius: 4px;
+    font-size: .8rem;
+    font-weight: 700;
+    box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .08);
+}
+
+/* Match User Master summary-card spacing */
+.grievance-index .gi-summary {
+    margin-bottom: .85rem !important;
+}
+
+.grievance-index .gi-summary > div {
+    margin-bottom: .85rem !important;
+}
+
+.grievance-index .gi-summary .card-body {
+    padding: .5rem 1rem !important;
+}
+
+.grievance-index .gi-summary .text-xs {
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .035em;
+}
+
+.grievance-index .gi-summary .h5 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #5a5c69 !important;
+}
+
+.grievance-index .gi-summary .h6 {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #5a5c69 !important;
+}
+
+.grievance-index .text-gray-800 {
+    color: #5a5c69 !important;
+}
+
+.grievance-index .text-gray-300 {
+    color: #dddfeb !important;
+}
+
+.grievance-index .border-left-primary {
+    border-left: .25rem solid #4e73df !important;
+}
+
+.grievance-index .border-left-success {
+    border-left: .25rem solid #1cc88a !important;
+}
+
+.grievance-index .border-left-info {
+    border-left: .25rem solid #36b9cc !important;
+}
+
+.grievance-index .border-left-warning {
+    border-left: .25rem solid #f6c23e !important;
+}
+
+/* Records card heading */
+.grievance-index .gi-records-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .85rem 1.1rem;
+    background: #fff;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.grievance-index .gi-records-header h6 {
+    margin: 0;
+    color: #4e73df;
+    font-size: .9rem;
+    font-weight: 800;
+}
+
+.grievance-index .badge-primary {
+    background-color: #4e73df;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .35em .6em;
+}
+
+.grievance-index .gi-records-card > .card-body {
+    padding: 14px;
+}
+
+/* Entries selector and search */
+.grievance-index .gi-table-tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 12px;
+    font-size: .82rem;
+}
+
+.grievance-index .gi-page-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grievance-index #giPageSize {
+    width: 50px;
+    height: 30px;
+}
+
+.grievance-index .gi-search {
+    width: min(100%, 340px);
+}
+
+.grievance-index .gi-search label,
+.grievance-index .gi-filters label {
+    display: block;
+    margin-bottom: 4px;
+    color: #5a5c69;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.grievance-index .form-control {
+    border-color: #d1d3e2;
+    color: #6e707e;
+    border-radius: .35rem;
+    font-size: .85rem;
+}
+
+.grievance-index .form-control:focus {
+    border-color: #bac8f3;
+    box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .2);
+}
+
+.grievance-index .gi-search .form-control {
+    height: 30px;
+}
+
+.grievance-index .gi-filters {
+    margin-bottom: 5px;
+}
+
+.grievance-index .gi-clear-filter {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Table */
+.grievance-index #giTable {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: collapse;
+    border: 1px solid #d1d3e2;
+    white-space: nowrap;
+}
+
+.grievance-index #giTable thead th {
+    padding: 8px;
+    background-color: #4e73df;
+    color: #fff;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-color: #3d5cbe;
+    vertical-align: middle;
+}
+
+.grievance-index #giTable tbody td {
+    padding: 7px 8px;
+    color: #5a5c69;
+    font-size: .82rem;
+    vertical-align: middle;
+    border-color: #d1d3e2;
+}
+
+.grievance-index #giTable tbody tr:hover {
+    background-color: #f0f3ff;
+}
+
+.grievance-index #giTable tbody tr.gi-selected {
+    background-color: #e0e7ff !important;
+}
+
+.grievance-index .gi-select-column {
+    width: 36px;
+    text-align: center;
+}
+
+/* Status badges */
+.grievance-index .gi-status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: #eaecf4;
+    color: #5a5c69;
+    font-weight: 700;
+}
+
+.grievance-index .gi-status-badge[data-status="New"] {
+    background: #e8f0fe;
+    color: #2855a6;
+}
+
+.grievance-index .gi-status-badge[data-status="Open"] {
+    background: #fff1d6;
+    color: #8a5a00;
+}
+
+.grievance-index .gi-status-badge[data-status="Closed"] {
+    background: #d7f4e2;
+    color: #176c3a;
+}
+
+/* Footer and pagination */
+.grievance-index .gi-table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 10px;
+    color: #858796;
+    font-size: .82rem;
+}
+
+.grievance-index .gi-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grievance-index .gi-pagination button {
+    padding: .35rem .6rem;
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    background: #f8f9fc;
+    color: #5a5c69;
+    font-size: .8rem;
+}
+
+.grievance-index .gi-pagination button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.grievance-index .gi-empty {
+    padding: 24px;
+    color: #858796;
+    text-align: center;
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .grievance-index .gi-header {
+        align-items: flex-start;
+    }
+
+    .grievance-index .gi-actions {
+        width: 100%;
+    }
+
+    .grievance-index #giTable {
+        min-width: 1100px;
+    }
+
+    .grievance-index .gi-search {
+        width: 100%;
+    }
+}
+
+/* Print */
+@@media print {
+    .grievance-index .gi-header,
+    .grievance-index .gi-table-tools,
+    .grievance-index .gi-filters,
+    .grievance-index .gi-table-footer,
+    .grievance-index .gi-select-column,
+    .grievance-index .gi-row-select {
+        display: none !important;
+    }
+
+    .grievance-index {
+        padding: 0;
+    }
+
+    .grievance-index .card {
+        box-shadow: none !important;
+    }
+
+    .grievance-index #giTable thead th {
+        background: #4e73df !important;
+        color: #fff !important;
+        print-color-adjust: exact;
+    }
+}
+
+</style>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tbody = document.getElementById("giTableBody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+
+            const searchInput = document.getElementById("giSearch");
+            const pageSizeSelect = document.getElementById("giPageSize");
+            const statusFilter = document.getElementById("giStatusFilter");
+            const dateFrom = document.getElementById("giDateFrom");
+            const dateTo = document.getElementById("giDateTo");
+            const selectAll = document.getElementById("giSelectAll");
+
+            const pageInfo = document.getElementById("giPageInfo");
+            const showing = document.getElementById("giShowing");
+            const recordCount = document.getElementById("giRecordCount");
+            const emptyMessage = document.getElementById("giEmptyMessage");
+
+            let currentPage = 1;
+            let selectedRow = null;
+            let filteredRows = [];
+
+            function getSelectedRows() {
+                return rows.filter(row =>
+                    row.querySelector(".gi-row-select").checked
+                );
+            }
+
+            function updateSelection() {
+                const checkedRows = getSelectedRows();
+
+                rows.forEach(row => {
+                    row.classList.toggle(
+                        "gi-selected",
+                        row.querySelector(".gi-row-select").checked
+                    );
+                });
+
+                selectedRow = checkedRows.length === 1 ? checkedRows[0] : null;
+
+                const visibleRows = filteredRows.slice(
+                    (currentPage - 1) * Number(pageSizeSelect.value),
+                    currentPage * Number(pageSizeSelect.value)
+                );
+
+                selectAll.checked = visibleRows.length > 0 &&
+                    visibleRows.every(row =>
+                        row.querySelector(".gi-row-select").checked
+                    );
+            }
+
+            function getFilteredRows() {
+                const search = searchInput.value.trim().toLowerCase();
+                const status = statusFilter.value.toLowerCase();
+                const from = dateFrom.value;
+                const to = dateTo.value;
+
+                return rows.filter(row => {
+                    const searchable = [
+                        row.dataset.document,
+                        row.dataset.employee,
+                        row.dataset.code,
+                        row.dataset.department,
+                        row.dataset.against,
+                        row.dataset.status,
+                        row.dataset.empStatus
+                    ].join(" ").toLowerCase();
+
+                    const date = row.dataset.date || "";
+
+                    return (!search || searchable.includes(search)) &&
+                        (!status || (row.dataset.status || "").toLowerCase() === status) &&
+                        (!from || date >= from) &&
+                        (!to || date <= to);
+                });
+            }
+
+            function updateSummary() {
+                document.getElementById("giTotal").textContent = rows.length;
+
+                document.getElementById("giOpen").textContent =
+                    rows.filter(row =>
+                        (row.dataset.status || "").toLowerCase() === "open"
+                    ).length;
+
+                document.getElementById("giClosed").textContent =
+                    rows.filter(row =>
+                        (row.dataset.status || "").toLowerCase() === "closed"
+                    ).length;
+
+                recordCount.textContent =
+                    rows.length + (rows.length === 1 ? " Record" : " Records");
+            }
+
+            function renderTable() {
+                filteredRows = getFilteredRows();
+
+                const pageSize = Number(pageSizeSelect.value);
+                const totalPages = Math.max(
+                    1, Math.ceil(filteredRows.length / pageSize)
+                );
+
+                currentPage = Math.min(currentPage, totalPages);
+
+                rows.forEach(row => row.style.display = "none");
+
+                const start = (currentPage - 1) * pageSize;
+                const pageRows = filteredRows.slice(start, start + pageSize);
+
+                pageRows.forEach((row, index) => {
+                    row.style.display = "";
+                    row.querySelector(".gi-serial").textContent = start + index + 1;
+                });
+
+                if (filteredRows.length === 0) {
+                    showing.textContent = "Showing 0 records";
+                    pageInfo.textContent = "0 / 0";
+                    emptyMessage.style.display = "block";
+                } else {
+                    showing.textContent =
+                        "Showing " + (start + 1) + " to " +
+                        (start + pageRows.length) + " of " +
+                        filteredRows.length + " grievances";
+
+                    pageInfo.textContent = currentPage + " / " + totalPages;
+                    emptyMessage.style.display = "none";
+                }
+
+                document.getElementById("giPrevious").disabled = currentPage <= 1;
+                document.getElementById("giNext").disabled =
+                    currentPage >= totalPages;
+
+                updateSelection();
+            }
+
+            function requireOneSelected(actionName) {
+                const checked = getSelectedRows();
+
+                if (checked.length !== 1) {
+                    alert("Please select one grievance record to " + actionName + ".");
+                    return null;
+                }
+
+                return checked[0];
+            }
+
+            // Row selection and checkbox selection.
+            rows.forEach(row => {
+                row.addEventListener("click", function (event) {
+                    if (event.target.closest("input")) {
+                        updateSelection();
+                        return;
+                    }
+
+                    const checkbox = row.querySelector(".gi-row-select");
+                    checkbox.checked = !checkbox.checked;
+                    updateSelection();
+                });
+
+                row.querySelector(".gi-row-select").addEventListener(
+                    "change", updateSelection
+                );
+            });
+
+            selectAll.addEventListener("change", function () {
+                const pageSize = Number(pageSizeSelect.value);
+                const start = (currentPage - 1) * pageSize;
+                const visibleRows = filteredRows.slice(start, start + pageSize);
+
+                visibleRows.forEach(row => {
+                    row.querySelector(".gi-row-select").checked = selectAll.checked;
+                });
+
+                updateSelection();
+            });
+
+            // Search and filters.
+            [searchInput, statusFilter, dateFrom, dateTo].forEach(control => {
+                control.addEventListener("input", function () {
+                    currentPage = 1;
+                    renderTable();
+                });
+
+                control.addEventListener("change", function () {
+                    currentPage = 1;
+                    renderTable();
+                });
+            });
+
+            pageSizeSelect.addEventListener("change", function () {
+                currentPage = 1;
+                renderTable();
+            });
+
+            document.getElementById("giClearFilters").addEventListener("click", function () {
+                searchInput.value = "";
+                statusFilter.value = "";
+                dateFrom.value = "";
+                dateTo.value = "";
+                currentPage = 1;
+                renderTable();
+            });
+
+            document.getElementById("giPrevious").addEventListener("click", function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            document.getElementById("giNext").addEventListener("click", function () {
+                if (currentPage * Number(pageSizeSelect.value) < filteredRows.length) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+
+            // Toolbar buttons.
+            document.getElementById("giEdit").addEventListener("click", function () {
+                const row = requireOneSelected("edit");
+                if (!row) return;
+
+                const url = '@Url.Action("Grievances", "Master")'
+                    + '?documentNo=' + encodeURIComponent(row.dataset.document);
+
+                window.location.href = url;
+            });
+
+            document.getElementById("giClone").addEventListener("click", function () {
+                const row = requireOneSelected("clone");
+                if (!row) return;
+
+                const url = '@Url.Action("Grievances", "Master")'
+                    + '?cloneDocumentNo=' + encodeURIComponent(row.dataset.document);
+
+                window.location.href = url;
+            });
+
+            document.getElementById("giSave").addEventListener("click", function () {
+                // This index has no editable form to save.
+                // The actual grievance save belongs to the entry form.
+                alert("To save grievance information, open the New or Edit form first.");
+            });
+
+            document.getElementById("giDelete").addEventListener("click", function () {
+                const row = requireOneSelected("delete");
+                if (!row) return;
+
+                selectedRow = row;
+
+                if (window.jQuery && typeof window.jQuery.fn.modal === "function") {
+                    window.jQuery("#giDeleteConfirmModal").modal("show");
+                } else {
+                    alert("Bootstrap modal JavaScript is not available on this page.");
+                }
+            });
+
+            document.getElementById("giConfirmDelete").addEventListener("click", function () {
+                if (!selectedRow || !selectedRow.isConnected) return;
+
+                // This removes the row from the current display only.
+                // Persistent JSON deletion requires a controller POST action.
+                selectedRow.remove();
+                selectedRow = null;
+
+                const modal = window.jQuery("#giDeleteConfirmModal");
+                modal.modal("hide");
+
+                // Refresh row list and summary after display-only deletion.
+                window.location.reload();
+            });
+
+            document.getElementById("giPrint").addEventListener("click", function () {
+                window.print();
+            });
+
+            document.getElementById("giClose").addEventListener("click", function () {
+                window.location.href = '@Url.Action("Grievances", "Master")';
+            });
+
+            document.getElementById("giUnPost").addEventListener("click", function () {
+                requireOneSelected("unpost");
+                alert("UnPost is not implemented yet.");
+            });
+
+            document.getElementById("giApprove").addEventListener("click", function () {
+                requireOneSelected("approve");
+                alert("Approve is not implemented yet.");
+            });
+
+            document.getElementById("giReject").addEventListener("click", function () {
+                requireOneSelected("reject");
+                alert("Reject is not implemented yet.");
+            });
+
+            document.getElementById("giAuthTracker").addEventListener("click", function () {
+                requireOneSelected("view the authorization tracker");
+                alert("Auth Tracker is not implemented yet.");
+            });
+
+            updateSummary();
+            renderTable();
+        });
+    </script>
+}

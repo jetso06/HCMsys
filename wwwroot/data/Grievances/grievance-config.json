@@ -1,0 +1,31 @@
+{
+  "moduleId": 501,
+  "options": {
+    "against": [
+      "HOD",
+      "HR",
+      "Company Policy",
+      "Working Environment",
+      "Colleague"
+    ],
+    "hrStatus": [
+      "New",
+      "Open",
+      "Closed"
+    ],
+    "empStatus": [
+      "Satisfactory",
+      "Non Satisfactory"
+    ]
+  },
+  "validation": {
+    "documentNoMaxLength": 60,
+    "designationMaxLength": 60,
+    "departmentMaxLength": 60,
+    "reportingManagerMaxLength": 60,
+    "commentsMaxLength": 200,
+    "closingCommentsMaxLength": 200,
+    "employeeClosingCommentsMaxLength": 200,
+    "closingCommentsRequiredWhenHrStatus": "Closed"
+  }
+}

@@ -134,5 +134,13 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult GrievancesIndex()
+        {
+            return View();
+        }
+        public ActionResult Grievances()
+        {
+            return View();
+        }
     }
 }
