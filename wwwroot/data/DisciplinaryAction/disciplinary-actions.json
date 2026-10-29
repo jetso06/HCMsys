@@ -1,0 +1,24 @@
+{
+  "records": [
+    {
+      "documentNo": "DA-2026-001",
+      "date": "2026-10-29T00:00:00",
+      "employeeId": "OM-001",
+      "employeeCode": "OM-001",
+      "employeeName": "Ahmed Al Balushi",
+      "designation": "",
+      "department": "Finance",
+      "reportingManager": "",
+      "discpActionType": "Misconduct",
+      "incidentDateTime": "2026-10-28T09:00:00",
+      "incidentLocation": "Office",
+      "comments": "Sample disciplinary action record",
+      "hrStatus": "Open",
+      "approvalStatus": "Pending",
+      "closingComments": "",
+      "warningType": "Written",
+      "warningAction": "Warning Letter & Memo",
+      "warningComments": "Sample warning comments"
+    }
+  ]
+}

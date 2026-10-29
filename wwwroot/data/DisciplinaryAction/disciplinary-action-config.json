@@ -1,0 +1,132 @@
+{
+  "moduleId": 502,
+  "moduleName": "Disciplinary Action Master",
+  "labels": {
+    "documentNo": "Document No.",
+    "date": "Date",
+    "postDate": "PostDate",
+    "employee": "Employee",
+    "designation": "Designation",
+    "department": "Department",
+    "reportingManager": "Reporting Manager",
+    "disciplinaryActionType": "Discp. Action Type",
+    "incidentDateTime": "Incident Date & Time",
+    "incidentLocation": "Incident Location",
+    "comments": "Comments",
+    "hrStatus": "HR Status",
+    "closingComments": "Closing Comments",
+    "warningType": "Warning Type",
+    "warningAction": "Warning Action",
+    "warningComments": "Warning Comments",
+    "attachments": "Attachments"
+  },
+  "buttons": {
+    "new": "New",
+    "edit": "Edit",
+    "save": "Save",
+    "clone": "Clone",
+    "unPost": "UnPost",
+    "print": "Print",
+    "delete": "Delete",
+    "approve": "Approve",
+    "reject": "Reject",
+    "authTracker": "Auth Tracker",
+    "close": "Close",
+    "addAttachment": "Add Attachment",
+    "apply": "Apply",
+    "clear": "Clear",
+    "search": "Search"
+  },
+  "placeholders": {
+    "employee": "-- Select Employee --",
+    "warningType": "-- Select Warning Type --",
+    "warningAction": "-- Select Warning Action --",
+    "search": "Search disciplinary actions..."
+  },
+  "sections": {
+    "mainDetails": "Disciplinary Action Details",
+    "warningDetails": "Warning Details",
+    "attachmentDetails": "Attachments"
+  },
+  "messages": {
+    "confirmDelete": "Are you sure you want to delete this disciplinary action?",
+    "saveSuccess": "Disciplinary action saved successfully.",
+    "deleteSuccess": "Disciplinary action deleted successfully.",
+    "noRecords": "No disciplinary action records found."
+  },
+  "options": {
+    "hrStatus": [
+      "New",
+      "Open",
+      "Closed"
+    ],
+    "warningType": [
+      "Verbal",
+      "Written"
+    ],
+    "warningAction": [
+      "Counselling",
+      "Warning Letter & Memo",
+      "Suspension",
+      "Termination"
+    ]
+  },
+  "validation": {
+    "documentNoMaxLength": 60,
+    "designationMaxLength": 60,
+    "departmentMaxLength": 60,
+    "reportingManagerMaxLength": 60,
+    "disciplinaryActionTypeMaxLength": 60,
+    "incidentLocationMaxLength": 60,
+    "commentsMaxLength": 200,
+    "warningCommentsMaxLength": 200
+  },
+  "index": {
+    "title": "Disciplinary Action Index",
+    "searchPlaceholder": "Search disciplinary actions...",
+    "newButton": "New",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "printButton": "Print",
+    "closeButton": "Close",
+    "emptyMessage": "No disciplinary action records found.",
+    "columns": [
+      {
+        "key": "documentNo",
+        "label": "Document No."
+      },
+      {
+        "key": "date",
+        "label": "Date"
+      },
+      {
+        "key": "employeeCode",
+        "label": "Employee Code"
+      },
+      {
+        "key": "employeeName",
+        "label": "Employee Name"
+      },
+      {
+        "key": "department",
+        "label": "Department"
+      },
+      {
+        "key": "discpActionType",
+        "label": "Disciplinary Action Type"
+      },
+      {
+        "key": "hrStatus",
+        "label": "HR Status"
+      },
+      {
+        "key": "warningType",
+        "label": "Warning Type"
+      },
+      {
+        "key": "warningAction",
+        "label": "Warning Action"
+      }
+    ]
+  }
+}

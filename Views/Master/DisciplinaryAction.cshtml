@@ -1,0 +1,856 @@
+
+@model HCMSys.Controllers.DisciplinaryActionViewModel
+
+@{
+    ViewData["Title"] = "Disciplinary Action";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid da-page">
+
+    <!-- Header and toolbar -->
+    <div class="card shadow mb-3">
+        <div class="card-header da-header">
+            <h6 class="da-title">
+                <i class="fas fa-gavel mr-2"></i>
+                DISCIPLINARY ACTION MASTER
+                <span class="da-module-badge">502</span>
+            </h6>
+
+            <div class="da-actions">
+                <button type="button" class="btn btn-success btn-sm" id="daNew">
+                    <i class="fas fa-plus mr-1"></i> New
+                </button>
+
+                <button type="button" class="btn btn-primary btn-sm" id="daEdit">
+                    <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+
+                <button type="submit" form="daForm" class="btn btn-primary btn-sm">
+                    <i class="fas fa-save mr-1"></i> Save
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="daClone">
+                    <i class="fas fa-copy mr-1"></i> Clone
+                </button>
+
+                <button type="button" class="btn btn-warning btn-sm" id="daUnPost" disabled>
+                    <i class="fas fa-undo mr-1"></i> UnPost
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="daPrint">
+                    <i class="fas fa-print mr-1"></i> Print
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="daDelete" disabled>
+                    <i class="fas fa-trash mr-1"></i> Delete
+                </button>
+
+                <button type="button" class="btn btn-success btn-sm" id="daApprove" disabled>
+                    <i class="fas fa-check mr-1"></i> Approve
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="daReject" disabled>
+                    <i class="fas fa-times mr-1"></i> Reject
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="daAuthTracker" disabled>
+                    <i class="fas fa-route mr-1"></i> Auth Tracker
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="daClose">
+                    <i class="fas fa-times-circle mr-1"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string successMessage)
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+
+    <div asp-validation-summary="All"
+         class="text-danger small mb-3"></div>
+
+    <!-- Disciplinary Action details -->
+    <div class="card shadow mb-3">
+        <div class="card-header da-section-header">
+            <h6><i class="fas fa-file-alt mr-2"></i> Disciplinary Action Details</h6>
+            <span id="daFormStatus">New Disciplinary Action</span>
+        </div>
+
+        <div class="card-body">
+            <form id="daForm"
+                  action="@Url.Content("~/Master/DisciplinaryAction/Save")"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <div class="form-row">
+
+                    <!-- Row 1 -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.DocumentNo">
+                            Document No. <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Form.DocumentNo"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.DocumentNoMaxLength"
+                               required />
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.Date">
+                            Date <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="Form.Date" type="date"
+                               class="form-control" required />
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.PostDate">PostDate</label>
+                        <input asp-for="Form.PostDate"
+                               type="datetime-local"
+                               class="form-control" />
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.EmployeeId">
+                            Employee <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Form.EmployeeId"
+                                id="daEmployeeSelect"
+                                class="form-control"
+                                required>
+                            <option value="">-- Select Employee --</option>
+                            @foreach (var employee in Model.Employees)
+                            {
+                                <option value="@employee.Id"
+                                        data-code="@employee.Code"
+                                        data-department="@employee.Department">
+                                    @employee.Name (@employee.Code)
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.Designation">Designation</label>
+                        <input asp-for="Form.Designation"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.DesignationMaxLength"
+                               readonly />
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.Department">Department</label>
+                        <input asp-for="Form.Department"
+                               id="daDepartment"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.DepartmentMaxLength"
+                               readonly />
+                    </div>
+
+                    <!-- Row 3 -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.ReportingManager">Reporting Manager</label>
+                        <input asp-for="Form.ReportingManager"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.ReportingManagerMaxLength"
+                               readonly />
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.DiscpActionType">Discp. Action Type</label>
+                        <input asp-for="Form.DiscpActionType"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.DisciplinaryActionTypeMaxLength" />
+                    </div>
+
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.IncidentDateTime">Incident Date &amp; Time</label>
+                        <input asp-for="Form.IncidentDateTime"
+                               type="datetime-local"
+                               class="form-control" />
+                    </div>
+
+                    <!-- Row 4 -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.IncidentLocation">Incident Location</label>
+                        <input asp-for="Form.IncidentLocation"
+                               class="form-control"
+                               maxlength="@Model.Config.Validation.IncidentLocationMaxLength" />
+                    </div>
+
+                    <!-- Comments -->
+                    <div class="form-group col-12" id="daCommentsGroup">
+                        <label asp-for="Form.Comments">Comments</label>
+                        <textarea asp-for="Form.Comments"
+                                  class="form-control da-textarea"
+                                  maxlength="@Model.Config.Validation.CommentsMaxLength"></textarea>
+                    </div>
+
+                    
+                    <!-- HR Status -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.HrStatus">
+                            HR Status <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="Form.HrStatus"
+                                id="daHrStatus"
+                                class="form-control"
+                                required>
+                            @foreach (var option in Model.Config.Options.HrStatus)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Closing Comments: visible and mandatory when Closed -->
+                    <div class="form-group col-12" id="daClosingCommentsGroup" hidden>
+                        <label asp-for="Form.ClosingComments">
+                            <span id="daClosingCommentsLabel"></span>
+                            <span class="text-danger">*</span>
+                        </label>
+                        <textarea asp-for="Form.ClosingComments"
+                                  id="daClosingComments"
+                                  class="form-control da-textarea"
+                                  maxlength="200"></textarea>
+                    </div>
+
+                    <!-- Warning Type -->
+                    <div class="form-group col-xl-4 col-md-6">
+                        <label asp-for="Form.WarningType">Warning Type</label>
+                        <select asp-for="Form.WarningType" class="form-control">
+                            <option value="">-- Select Warning Type --</option>
+                            @foreach (var option in Model.Config.Options.WarningType)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                    </div>
+                                     
+                    <!-- Warning Action -->
+                    <div class="form-group col-xl-6 col-md-12">
+                        <label asp-for="Form.WarningAction">Warning Action</label>
+                        <select asp-for="Form.WarningAction" class="form-control">
+                            <option value="">-- Select Warning Action --</option>
+                            @foreach (var option in Model.Config.Options.WarningAction)
+                            {
+                                <option value="@option">@option</option>
+                            }
+                        </select>
+                    </div>
+
+                    <!-- Warning Comments -->
+                    <div class="form-group col-12">
+                        <label asp-for="Form.WarningComments">Warning Comments</label>
+                        <textarea asp-for="Form.WarningComments"
+                                  class="form-control da-textarea"
+                                  maxlength="@Model.Config.Validation.WarningCommentsMaxLength"></textarea>
+                    </div>
+
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <!-- Attachments -->
+    <div class="card shadow mb-3">
+        <div class="card-header da-section-header">
+            <h6 id="daAttachmentsTitle"></h6>
+
+            <button type="button"
+                    class="btn btn-primary btn-sm"
+                    id="daAddAttachmentButton">
+                <i class="fas fa-plus mr-1"></i>
+                <span id="daAddAttachmentLabel"></span>
+            </button>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover da-attachment-table">
+                    <thead id="daAttachmentsHead"></thead>
+                    <tbody id="daAttachmentsBody"></tbody>
+                </table>
+            </div>
+
+            <small class="text-muted" id="daAttachmentsHelp"></small>
+        </div>
+    </div>
+
+
+</div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+    .da-page {
+        width: 100%;
+        padding: 12px;
+        color: #5a5c69;
+        font-family: 'Nunito', sans-serif;
+        font-size: 13px;
+    }
+
+    .da-page .card {
+        border: 1px solid #e3e6f0;
+        border-radius: 5px;
+        background: #fff;
+    }
+
+    .da-page .shadow {
+        box-shadow: 0 .15rem 1.25rem rgba(58, 59, 69, .10) !important;
+    }
+
+    .da-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 9px 14px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .da-title {
+        margin: 0;
+        color: #5a5c69;
+        font-size: .88rem;
+        font-weight: 800;
+        letter-spacing: .06em;
+    }
+
+    .da-title > i {
+        color: #4e73df;
+    }
+
+    .da-module-badge {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #e8efff;
+        color: #4e73df;
+        font-size: .72rem;
+        letter-spacing: 0;
+    }
+
+    .da-actions {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .da-actions .btn {
+        padding: 5px 9px;
+        line-height: 1.3;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .08);
+    }
+
+    .da-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #f8f9fc;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .da-section-header h6 {
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .da-section-header > span {
+        color: #858796;
+        font-size: .78rem;
+    }
+
+    .da-page .card-body {
+        padding: 14px;
+    }
+
+    .da-page .form-group {
+        margin-bottom: 15px;
+    }
+
+    .da-page label {
+        display: block;
+        margin-bottom: 5px;
+        color: #5a5c69;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    .da-page .form-control {
+        width: 100%;
+        min-height: 38px;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        color: #6e707e;
+        font-family: 'Nunito', sans-serif;
+        font-size: .85rem;
+    }
+
+    .da-page textarea.form-control {
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .da-page .form-control:focus {
+        border-color: #bac8f3;
+        box-shadow: 0 0 0 .2rem rgba(78, 115, 223, .15);
+    }
+
+    .da-page input[readonly] {
+        background: #f8f9fc;
+    }
+
+    .da-page table thead th {
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .75rem;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+    }
+
+    .da-page table tbody td {
+        color: #5a5c69;
+        font-size: .82rem;
+        vertical-align: middle;
+    }
+
+.da-attachment-table {
+    min-width: 1250px;
+    margin-bottom: 0;
+}
+
+.da-attachment-table thead th {
+    background: #4e73df;
+    color: #fff;
+    border-color: #3d5cbe;
+    font-size: .72rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.da-attachment-table tbody td {
+    font-size: .8rem;
+    vertical-align: middle;
+}
+
+.da-attachment-table .form-control {
+    min-width: 120px;
+    font-size: .8rem;
+}
+
+.da-attachment-table input[type="file"] {
+    min-width: 190px;
+    max-width: 220px;
+    font-size: .75rem;
+}
+
+.da-attachment-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.da-attachment-table .da-date-cell {
+    min-width: 180px;
+}
+
+.da-attachment-table .da-date-control {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.da-attachment-table .da-date-control input[type="date"] {
+    min-width: 130px;
+}
+    @@media (max-width: 768px) {
+        .da-header {
+            align-items: flex-start;
+        }
+
+        .da-actions {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .da-actions,
+        #daAttachmentInput,
+        .da-page .text-muted {
+            display: none !important;
+        }
+
+        .da-page .card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        let daAttachmentCounter = 0;
+        let daAttachmentConfig = null;
+
+        async function daLoadAttachments() {
+            const head = document.getElementById("daAttachmentsHead");
+            const body = document.getElementById("daAttachmentsBody");
+
+            body.innerHTML = "";
+
+            try {
+                const configUrl =
+                    '@Url.Content("~/data/DisciplinaryAction/attachment-config.json")';
+                const recordsUrl =
+                    '@Url.Content("~/data/DisciplinaryAction/attachments.json")';
+
+                const [configResponse, recordsResponse] = await Promise.all([
+                    fetch(configUrl),
+                    fetch(recordsUrl)
+                ]);
+
+                if (!configResponse.ok || !recordsResponse.ok) {
+                    throw new Error("Unable to read attachment JSON files.");
+                }
+
+                daAttachmentConfig = await configResponse.json();
+                const store = await recordsResponse.json();
+                const records = Array.isArray(store)
+                    ? store
+                    : (store.records || []);
+
+                // All column labels come from JSON.
+                head.innerHTML = "";
+                const headerRow = document.createElement("tr");
+
+                daAttachmentConfig.columns.forEach(column => {
+                    const th = document.createElement("th");
+                    th.textContent = column.label;
+                    headerRow.appendChild(th);
+                });
+
+                head.appendChild(headerRow);
+
+                document.getElementById("daAttachmentsTitle").textContent =
+                    "Attachments";
+
+                document.getElementById("daAddAttachmentLabel").textContent =
+                    daAttachmentConfig.labels.addButton;
+
+                document.getElementById("daAttachmentsHelp").textContent =
+                    daAttachmentConfig.labels.helpText;
+
+                daAttachmentCounter = 0;
+
+                if (records.length === 0) {
+                    daAddAttachmentRow();
+                } else {
+                    records.forEach(record => daAddAttachmentRow(record));
+                }
+            } catch (error) {
+                console.error(error);
+
+                head.innerHTML = "";
+                body.innerHTML = "";
+
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = Math.max(
+                    daAttachmentConfig?.columns?.length || 1, 1
+                );
+                cell.className = "text-center text-danger";
+                cell.textContent =
+                    daAttachmentConfig?.labels?.errorMessage ||
+                    "Unable to load attachment data.";
+
+                row.appendChild(cell);
+                body.appendChild(row);
+            }
+        }
+
+        function daAddAttachmentRow(item = {}) {
+            const config = daAttachmentConfig;
+            if (!config) return;
+
+            const body = document.getElementById("daAttachmentsBody");
+            const row = document.createElement("tr");
+
+            row.dataset.rowId = daAttachmentCounter++;
+            row.dataset.attachmentId = item.id ?? "";
+
+            const cells = {};
+
+            // Build cells in the order defined in JSON.
+            config.columns.forEach(column => {
+                const cell = document.createElement("td");
+                const key = column.key;
+
+                if (key === "show" || key === "trackExpiry") {
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.className = `da-${key}`;
+                    checkbox.checked = item[key] === true;
+                    checkbox.setAttribute(
+                        "aria-label",
+                        key === "show"
+                            ? config.labels.showLabel
+                            : config.labels.trackExpiryLabel
+                    );
+
+                    if (key === "trackExpiry") {
+                        checkbox.addEventListener("change", () =>
+                            daUpdateExpiryControls(row)
+                        );
+                    }
+
+                    cell.className = "text-center";
+                    cell.appendChild(checkbox);
+                } else if (key === "attachmentType") {
+                    const select = document.createElement("select");
+                    select.className = "form-control da-attachmentType";
+
+                    const placeholder = document.createElement("option");
+                    placeholder.value = "";
+                    placeholder.textContent = config.labels.selectPlaceholder;
+                    select.appendChild(placeholder);
+
+                    config.attachmentTypes.forEach(type => {
+                        const option = document.createElement("option");
+                        option.value = type;
+                        option.textContent = type;
+                        select.appendChild(option);
+                    });
+
+                    // Preserve a saved type even if it is no longer in the config.
+                    if (item.attachmentType &&
+                        !config.attachmentTypes.includes(item.attachmentType)) {
+                        const option = document.createElement("option");
+                        option.value = item.attachmentType;
+                        option.textContent = item.attachmentType;
+                        select.appendChild(option);
+                    }
+
+                    select.value = item.attachmentType || "";
+                    cell.appendChild(select);
+                } else if (key === "remarks" || key === "refNo") {
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.className = `form-control da-${key}`;
+                    input.placeholder = config.labels.optionalPlaceholder;
+                    input.maxLength = key === "remarks"
+                        ? config.validation.remarksMaxLength
+                        : config.validation.refNoMaxLength;
+                    input.value = item[key] || "";
+                    cell.appendChild(input);
+                } else if (key === "fileName") {
+                    const input = document.createElement("input");
+                    input.type = "file";
+                    input.className = "da-file-input";
+                    input.accept = config.acceptedFileExtensions.join(",");
+
+                    const fileName = document.createElement("div");
+                    fileName.className = "da-file-name small text-muted mt-1";
+                    fileName.textContent = item.fileName || "";
+
+                    input.addEventListener("change", function () {
+                        fileName.textContent = this.files.length
+                            ? this.files[0].name
+                            : (item.fileName || "");
+                    });
+
+                    cell.append(input, fileName);
+                } else if (key === "issueDate" || key === "expiryDate") {
+                    const isIssue = key === "issueDate";
+                    const enabledKey = isIssue
+                        ? "issueDateEnabled"
+                        : "expiryDateEnabled";
+
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "da-date-control";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.className = `da-${enabledKey}`;
+                    checkbox.checked = item[enabledKey] === true;
+                    checkbox.setAttribute(
+                        "aria-label",
+                        isIssue
+                            ? config.labels.issueDateLabel
+                            : config.labels.expiryDateLabel
+                    );
+
+                    const date = document.createElement("input");
+                    date.type = "date";
+                    date.className = `form-control da-${key}`;
+                    date.value = item[key] || "";
+
+                    checkbox.addEventListener("change", () => {
+                        date.disabled = !checkbox.checked;
+                        if (!checkbox.checked) date.value = "";
+                    });
+
+                    wrapper.append(checkbox, date);
+                    cell.className = "da-date-cell";
+                    cell.appendChild(wrapper);
+                } else if (key === "action") {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "btn btn-danger btn-sm";
+                    button.title = config.labels.removeButton;
+                    button.innerHTML = '<i class="fas fa-trash"></i>';
+                    button.addEventListener("click", () => row.remove());
+                    cell.appendChild(button);
+                }
+
+                cells[key] = cell;
+                row.appendChild(cell);
+            });
+
+            body.appendChild(row);
+
+            const fileInput = row.querySelector(".da-file-input");
+            if (fileInput) {
+                const fileName = row.querySelector(".da-file-name");
+                fileInput.addEventListener("change", function () {
+                    if (this.files.length) {
+                        fileName.textContent = this.files[0].name;
+                    }
+                });
+            }
+
+            daUpdateExpiryControls(row);
+        }
+
+        function daUpdateExpiryControls(row) {
+            const trackExpiry = row.querySelector(".da-trackExpiry");
+            const enabled = row.querySelector(".da-expiryDateEnabled");
+            const date = row.querySelector(".da-expiryDate");
+
+            if (!trackExpiry || !enabled || !date) return;
+
+            enabled.disabled = !trackExpiry.checked;
+
+            if (!trackExpiry.checked) {
+                enabled.checked = false;
+                date.value = "";
+            }
+
+            date.disabled = !trackExpiry.checked || !enabled.checked;
+        }
+
+        
+        function daUpdateClosingComments() {
+            const status = document.getElementById("daHrStatus");
+            const group = document.getElementById("daClosingCommentsGroup");
+            const comments = document.getElementById("daClosingComments");
+
+            const isClosed =
+                status.value.trim().toLowerCase() === "closed";
+
+            group.hidden = !isClosed;
+            comments.required = isClosed;
+
+            if (!isClosed) {
+                comments.value = "";
+            }
+        }
+
+                async function daLoadFormLabels() {
+            const response = await fetch(
+                '@Url.Content("~/data/DisciplinaryAction/disciplinary-action-config.json")'
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load disciplinary action configuration.");
+            }
+
+            const config = await response.json();
+
+            document.getElementById("daClosingCommentsLabel").textContent =
+                config.labels.closingComments;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("daForm");
+            const employeeSelect = document.getElementById("daEmployeeSelect");
+            const departmentInput = document.getElementById("daDepartment");
+            const formStatus = document.getElementById("daFormStatus");
+            const hrStatus = document.getElementById("daHrStatus");
+
+                hrStatus.addEventListener("change", daUpdateClosingComments);
+                daUpdateClosingComments();
+
+            daLoadAttachments();
+            daLoadFormLabels().catch(console.error);
+
+            document.getElementById("daAddAttachmentButton")
+            .addEventListener("click", () => daAddAttachmentRow());
+
+            function updateEmployeeDetails() {
+                const selected = employeeSelect.options[employeeSelect.selectedIndex];
+                departmentInput.value = selected?.dataset.department || "";
+            }
+
+            function resetForm() {
+                form.reset();
+                formStatus.textContent = "New Disciplinary Action";
+                updateEmployeeDetails();
+            }
+
+            employeeSelect.addEventListener("change", updateEmployeeDetails);
+
+            document.getElementById("daNew").addEventListener("click", function () {
+                if (confirm("Clear the current form and start a new disciplinary action?")) {
+                    resetForm();
+                }
+            });
+
+            document.getElementById("daEdit").addEventListener("click", function () {
+                formStatus.textContent = "Editing Disciplinary Action";
+                alert("Open a saved record from the Disciplinary Action Index to edit it.");
+            });
+
+            document.getElementById("daClone").addEventListener("click", function () {
+                if (confirm("Create a new record using the current values?")) {
+                    form.querySelector('[name="Form.DocumentNo"]').value = "";
+                    formStatus.textContent = "New Disciplinary Action (Clone)";
+                }
+            });
+
+            document.getElementById("daPrint").addEventListener("click", function () {
+                window.print();
+            });
+
+            document.getElementById("daClose").addEventListener("click", function () {
+                window.location.href = '@Url.Content("~/Master/DisciplinaryActionIndex")';
+            });
+
+            updateEmployeeDetails();
+        });
+    </script>
+}

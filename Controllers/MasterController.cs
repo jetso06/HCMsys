@@ -142,5 +142,13 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult DisciplinaryActionIndex()
+        {
+            return View();
+        }
+        public ActionResult DisciplinaryAction()
+        {
+            return View();
+        }
     }
 }

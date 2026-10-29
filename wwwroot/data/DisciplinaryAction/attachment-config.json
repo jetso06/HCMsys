@@ -1,0 +1,76 @@
+{
+  "columns": [
+    {
+      "key": "show",
+      "label": "Show"
+    },
+    {
+      "key": "attachmentType",
+      "label": "Attachment Type"
+    },
+    {
+      "key": "remarks",
+      "label": "Remarks"
+    },
+    {
+      "key": "fileName",
+      "label": "Attachment"
+    },
+    {
+      "key": "trackExpiry",
+      "label": "TrackExpiry"
+    },
+    {
+      "key": "refNo",
+      "label": "Ref No"
+    },
+    {
+      "key": "issueDate",
+      "label": "Issue Date"
+    },
+    {
+      "key": "expiryDate",
+      "label": "Expiry Date"
+    },
+    {
+      "key": "action",
+      "label": "Action"
+    }
+  ],
+  "attachmentTypes": [
+    "Contract",
+    "Agreement",
+    "Invoice",
+    "Purchase Order",
+    "Supporting Document",
+    "Other"
+  ],
+  "acceptedFileExtensions": [
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".png",
+    ".jpg",
+    ".jpeg"
+  ],
+  "labels": {
+    "addButton": "Add Attachment",
+    "emptyMessage": "No attachments added.",
+    "loadingMessage": "Loading attachments...",
+    "errorMessage": "Could not load attachment configuration or records.",
+    "helpText": "Use Add Attachment to insert more rows. Issue and expiry dates are optional.",
+    "selectPlaceholder": "-- Select --",
+    "optionalPlaceholder": "Optional",
+    "removeButton": "Remove attachment",
+    "showLabel": "Show attachment",
+    "trackExpiryLabel": "Track expiry",
+    "issueDateLabel": "Enable issue date",
+    "expiryDateLabel": "Enable expiry date"
+  },
+  "validation": {
+    "remarksMaxLength": 200,
+    "refNoMaxLength": 80
+  }
+}
