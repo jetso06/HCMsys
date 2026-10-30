@@ -1,0 +1,192 @@
+{
+  "moduleId": 503,
+  "moduleName": "Resignation Request",
+  "sections": {
+    "mainDetails": "Resignation Request Details"
+  },
+  "labels": {
+    "documentNo": "Document No",
+    "date": "Date",
+    "postDate": "PostDate",
+    "employee": "Employee",
+    "designation": "Designation",
+    "department": "Department",
+    "reportingManager": "Reporting Manager",
+    "noticePeriod": "Notice Period",
+    "comments": "Comments",
+    "lastWorkingDay": "Last Working Day",
+    "closingComments": "Closing Comments",
+    "approvalStatus": "Approval Status"
+  },
+  "fields": [
+    {
+      "key": "DocumentNo",
+      "labelKey": "documentNo",
+      "type": "text",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "required": true,
+      "maxLength": 60
+    },
+    {
+      "key": "Date",
+      "labelKey": "date",
+      "type": "date",
+      "dataType": "date",
+      "section": "mainDetails",
+      "required": true
+    },
+    {
+      "key": "PostDate",
+      "labelKey": "postDate",
+      "type": "datetime-local",
+      "dataType": "datetime",
+      "section": "mainDetails",
+      "readonly": true
+    },
+    {
+      "key": "EmployeeId",
+      "labelKey": "employee",
+      "type": "employee",
+      "dataType": "dropdown",
+      "section": "mainDetails",
+      "required": true,
+      "placeholderKey": "employee"
+    },
+    {
+      "key": "Designation",
+      "labelKey": "designation",
+      "type": "text",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "readonly": true,
+      "maxLength": 60
+    },
+    {
+      "key": "Department",
+      "labelKey": "department",
+      "type": "text",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "readonly": true,
+      "maxLength": 60
+    },
+    {
+      "key": "ReportingManager",
+      "labelKey": "reportingManager",
+      "type": "text",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "readonly": true,
+      "maxLength": 60
+    },
+    {
+      "key": "NoticePeriod",
+      "labelKey": "noticePeriod",
+      "type": "text",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "maxLength": 60
+    },
+    {
+      "key": "Comments",
+      "labelKey": "comments",
+      "type": "textarea",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "maxLength": 200
+    },
+    {
+      "key": "LastWorkingDay",
+      "labelKey": "lastWorkingDay",
+      "type": "date",
+      "dataType": "date",
+      "section": "mainDetails"
+    },
+    {
+      "key": "ClosingComments",
+      "labelKey": "closingComments",
+      "type": "textarea",
+      "dataType": "nvarchar",
+      "section": "mainDetails",
+      "maxLength": 200
+    }
+  ],
+  "buttons": {
+    "new": "New",
+    "edit": "Edit",
+    "save": "Save",
+    "clone": "Clone",
+    "unPost": "UnPost",
+    "print": "Print",
+    "delete": "Delete",
+    "approve": "Approve",
+    "reject": "Reject",
+    "authTracker": "Auth Tracker",
+    "close": "Close"
+  },
+  "placeholders": {
+    "employee": "-- Select Employee --"
+  },
+  "options": {
+    "approvalStatus": [
+      "Pending",
+      "Approved",
+      "Rejected"
+    ]
+  },
+  "validation": {
+    "documentNoMaxLength": 60,
+    "designationMaxLength": 60,
+    "departmentMaxLength": 60,
+    "reportingManagerMaxLength": 60,
+    "noticePeriodMaxLength": 60,
+    "commentsMaxLength": 200,
+    "closingCommentsMaxLength": 200
+  },
+  "messages": {
+    "confirmDelete": "Are you sure you want to delete this resignation request?",
+    "saveSuccess": "Resignation request saved successfully.",
+    "deleteSuccess": "Resignation request deleted successfully.",
+    "noRecords": "No resignation requests found."
+  },
+  "index": {
+    "title": "Resignation Request Index",
+    "searchPlaceholder": "Search document, employee, department...",
+    "emptyMessage": "No resignation requests found.",
+    "columns": [
+      {
+        "key": "documentNo",
+        "label": "Document No."
+      },
+      {
+        "key": "date",
+        "label": "Date"
+      },
+      {
+        "key": "employeeCode",
+        "label": "Employee Code"
+      },
+      {
+        "key": "employeeName",
+        "label": "Employee Name"
+      },
+      {
+        "key": "department",
+        "label": "Department"
+      },
+      {
+        "key": "noticePeriod",
+        "label": "Notice Period"
+      },
+      {
+        "key": "lastWorkingDay",
+        "label": "Last Working Day"
+      },
+      {
+        "key": "approvalStatus",
+        "label": "Approval Status"
+      }
+    ]
+  }
+}

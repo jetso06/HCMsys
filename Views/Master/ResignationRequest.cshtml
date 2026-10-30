@@ -1,0 +1,661 @@
+@model HCMSys.Controllers.ResignationViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = Model.Config.ModuleName;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var configJson = JsonSerializer.Serialize(
+        Model.Config,
+        new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+    var formJson = JsonSerializer.Serialize(
+        Model.Form,
+        new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+    var employeesJson = JsonSerializer.Serialize(
+        Model.Employees,
+        new JsonSerializerOptions(JsonSerializerDefaults.Web));
+}
+
+<div class="container-fluid rr-page">
+    <div class="card shadow mb-3">
+        <div class="card-header rr-toolbar">
+            <h6 class="rr-title">
+                <i class="fas fa-file-signature mr-2"></i>
+                @Model.Config.ModuleName.ToUpperInvariant()
+                <span class="rr-badge">@Model.Config.ModuleId</span>
+            </h6>
+
+            <div class="rr-buttons">
+                <button type="button" class="btn btn-success btn-sm" id="rrNew">
+                    <i class="fas fa-plus mr-1"></i>@Model.Config.Buttons["new"]
+                </button>
+
+                <button type="button" class="btn btn-primary btn-sm" id="rrEdit">
+                    <i class="fas fa-edit mr-1"></i>@Model.Config.Buttons["edit"]
+                </button>
+
+                <button type="button" class="btn btn-primary btn-sm" id="rrSave"
+                        onclick="document.getElementById('rrForm').requestSubmit()">
+                    <i class="fas fa-save mr-1"></i>@Model.Config.Buttons["save"]
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="rrClone">
+                    <i class="fas fa-copy mr-1"></i>@Model.Config.Buttons["clone"]
+                </button>
+
+                <button type="button" class="btn btn-warning btn-sm" id="rrUnPost">
+                    <i class="fas fa-undo mr-1"></i>@Model.Config.Buttons["unPost"]
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="rrPrint"
+                        onclick="window.print()">
+                    <i class="fas fa-print mr-1"></i>@Model.Config.Buttons["print"]
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="rrDelete">
+                    <i class="fas fa-trash mr-1"></i>@Model.Config.Buttons["delete"]
+                </button>
+
+                <button type="button" class="btn btn-success btn-sm" id="rrApprove">
+                    <i class="fas fa-check mr-1"></i>@Model.Config.Buttons["approve"]
+                </button>
+
+                <button type="button" class="btn btn-danger btn-sm" id="rrReject">
+                    <i class="fas fa-times mr-1"></i>@Model.Config.Buttons["reject"]
+                </button>
+
+                <button type="button" class="btn btn-info btn-sm" id="rrAuthTracker">
+                    <i class="fas fa-route mr-1"></i>@Model.Config.Buttons["authTracker"]
+                </button>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="rrClose">
+                    <i class="fas fa-times-circle mr-1"></i>@Model.Config.Buttons["close"]
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form id="rrForm" method="post"
+          action="@Url.Content("~/Master/ResignationRequest/Save")">
+        @Html.AntiForgeryToken()
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="card shadow mb-3">
+            <div class="card-header rr-section-title">
+                <i class="fas fa-file-alt mr-2"></i>
+                <span id="rrMainHeading"></span>
+            </div>
+
+            <div class="card-body">
+                <div id="rrMainFields" class="row"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<!-- SAVE SUCCESS MODAL -->
+<div class="modal fade" id="rrSaveSuccessModal" tabindex="-1"
+     role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rr-save-modal">
+            <div class="modal-header rr-save-modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    Success
+                </h5>
+                <button type="button" class="close text-white"
+                        data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center py-4">
+                <div class="rr-save-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+                <h5 class="rr-modal-title">Saved Successfully!</h5>
+                <p class="rr-modal-message" id="rrSaveMessage">
+                    Resignation request saved successfully.
+                </p>
+            </div>
+
+            <button type="button" class="btn btn-success" id="rrConfirmSave">
+    <i class="fas fa-check mr-1"></i> OK
+</button>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal fade" id="rrDeleteConfirmModal" tabindex="-1"
+     role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content rr-delete-modal">
+            <div class="modal-header rr-delete-modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="close text-white"
+                        data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center py-4">
+                <div class="rr-delete-icon">
+                    <i class="fas fa-trash-alt"></i>
+                </div>
+                <h5 class="rr-modal-title">Are you sure?</h5>
+                <p class="rr-modal-message" id="rrDeleteMessage">
+                    Are you sure you want to delete this resignation request?
+                </p>
+                <p class="rr-modal-submessage">
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i> No
+                </button>
+                <button type="button" class="btn btn-danger"
+                        id="rrConfirmDelete">
+                    <i class="fas fa-trash-alt mr-1"></i> Yes, Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<form id="rrFormDelete" method="post"
+      action="@Url.Content("~/Master/ResignationRequest/Delete")"
+      hidden>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="documentNo" id="rrFormDeleteDocumentNo" />
+</form>
+
+
+<style>
+
+    
+    html {
+        font-size: 14px;
+    }
+
+    .rr-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+        /* Cards and spacing */
+        .rr-page > .card {
+            width: 100%;
+            max-width: none;
+            margin-bottom: 24px !important;
+            border: 1px solid #e1e6ed;
+            border-radius: 6px;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+        }
+
+            .rr-page > .card:first-child {
+                border-color: #e3e6f0;
+                border-radius: 0.35rem;
+                box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+            }
+
+    /* Header and toolbar */
+    .rr-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px 18px !important;
+        background: #eef0f3 !important;
+        border: none !important;
+        border-bottom: 1px solid #e3e6f0 !important;
+    }
+
+    .rr-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+        .rr-title i {
+            color: #4e73df;
+        }
+
+    .rr-badge {
+        margin-left: 4px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        border: 1px solid #ccd3db;
+        font-size: 0.68rem;
+        letter-spacing: normal;
+    }
+
+    /* Toolbar buttons */
+    .rr-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+        .rr-buttons .btn {
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.08);
+            transition: filter 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .rr-buttons .btn:hover {
+                filter: brightness(0.96);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            }
+
+    /* Resignation Request Details header */
+    .rr-section-title {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        background: #eef0f3 !important;
+        color: #4e73df;
+        border-bottom: 1px solid #e1e6ed;
+        font-size: 0.9rem;
+        font-weight: 800;
+    }
+
+        .rr-section-title i {
+            color: #4e73df;
+        }
+
+    .rr-page .card-body {
+        padding: 20px 16px;
+        background: #ffffff;
+    }
+
+    /* Form field spacing */
+    .rr-field {
+        margin-bottom: 20px;
+    }
+
+        .rr-field label {
+            display: block;
+            margin-bottom: 5px;
+            color: #596579;
+            font-size: 0.76rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.055em;
+        }
+
+        .rr-field .form-control {
+            width: 100%;
+            height: 36px;
+            padding: 6px 10px;
+            box-sizing: border-box;
+            border: 1px solid #d2d0cb;
+            border-radius: 5px;
+            background: #ffffff;
+            color: #4d596b;
+            font-family: inherit;
+            font-size: 0.83rem;
+            box-shadow: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .rr-field .form-control:focus {
+                border-color: #7d9fe5;
+                outline: none;
+                box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+            }
+
+        .rr-field textarea.form-control {
+            height: auto;
+            min-height: 90px;
+            resize: vertical;
+        }
+
+    /* Validation messages */
+    .rr-page .text-danger {
+        font-size: 0.8rem;
+    }
+
+    .rr-field .text-danger {
+        color: #e74a3b !important;
+    }
+
+    
+    /* Grey background for read-only fields */
+    .rr-field .form-control[readonly],
+    .rr-field .form-control:read-only {
+        background-color: #eaecf4 !important;
+        color: #6e707e !important;
+        border-color: #d1d3e2 !important;
+        cursor: default;
+        opacity: 1;
+    }
+    
+    /* Save success modal */
+    .rr-save-modal,
+    .rr-delete-modal {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, .25);
+    }
+
+    .rr-save-modal-header {
+        background: #20c997;
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .rr-save-icon,
+    .rr-delete-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        font-size: 30px;
+        animation: rrModalPulse 1.5s infinite;
+    }
+
+    .rr-save-icon {
+        background: #e8fff5;
+        color: #20c997;
+    }
+
+    .rr-delete-modal-header {
+        background: #e74a3b;
+        color: #fff;
+        border-bottom: none;
+    }
+
+    .rr-delete-icon {
+        background: #fdecea;
+        color: #e74a3b;
+    }
+
+    .rr-modal-title {
+        color: #343a40;
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .rr-modal-message {
+        color: #5a5c69;
+        font-size: .85rem;
+        margin-bottom: 4px;
+    }
+
+    .rr-modal-submessage {
+        color: #858796;
+        font-size: .75rem;
+    }
+
+    .rr-save-modal .modal-footer,
+    .rr-delete-modal .modal-footer {
+        border-top: 1px solid #e3e6f0;
+        padding: 14px;
+        gap: 8px;
+    }
+
+    .rr-save-modal .btn,
+    .rr-delete-modal .btn {
+        min-width: 100px;
+        font-size: .8rem;
+        font-weight: 700;
+    }
+
+    @@keyframes rrModalPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.06);
+        }
+    }
+
+
+    /* Responsive layout */
+    @@media (max-width: 768px) {
+        .rr-page {
+            padding: 12px 0 20px;
+        }
+
+        .rr-toolbar {
+            align-items: flex-start;
+        }
+
+        .rr-buttons {
+            width: 100%;
+        }
+
+            .rr-buttons .btn {
+                flex: 0 0 auto;
+            }
+
+        .rr-page .card-body {
+            padding: 16px 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .rr-title {
+            font-size: 0.78rem;
+        }
+
+        .rr-buttons {
+            gap: 5px;
+        }
+
+            .rr-buttons .btn {
+                font-size: 0.75rem;
+                padding: 5px 7px;
+            }
+    }
+
+    /* Printing */
+    @@media print {
+        .rr-buttons {
+            display: none !important;
+        }
+
+        .rr-page > .card {
+            box-shadow: none !important;
+            margin-bottom: 12px !important;
+        }
+    }
+
+
+</style>
+
+@section Scripts {
+    <script>
+        const rrConfig = @Html.Raw(configJson);
+        const rrInitialForm = @Html.Raw(formJson);
+        const rrEmployees = @Html.Raw(employeesJson);
+
+        function rrValue(key) {
+            return rrInitialForm[key.charAt(0).toLowerCase() + key.slice(1)] ?? "";
+        }
+
+        function rrCreateField(field) {
+            const wrapper = document.createElement("div");
+            wrapper.className =
+                field.type === "textarea"
+                    ? "col-12 rr-field"
+                    : "col-xl-4 col-md-6 rr-field";
+
+            const label = document.createElement("label");
+            label.htmlFor = "Form_" + field.key;
+            label.textContent = rrConfig.labels[field.labelKey] || field.labelKey;
+
+            if (field.required) {
+                const star = document.createElement("span");
+                star.className = "text-danger";
+                star.textContent = " *";
+                label.appendChild(star);
+            }
+
+            let control;
+
+            if (field.type === "textarea") {
+                control = document.createElement("textarea");
+                control.className = "form-control";
+            } else if (field.type === "employee") {
+                control = document.createElement("select");
+                control.className = "form-control";
+
+                const placeholder = document.createElement("option");
+                placeholder.value = "";
+                placeholder.textContent =
+                    rrConfig.placeholders[field.placeholderKey] || "-- Select --";
+                control.appendChild(placeholder);
+
+                rrEmployees.forEach(employee => {
+                    const option = document.createElement("option");
+                    option.value = employee.id || employee.Id;
+                    option.textContent =
+                        (employee.name || employee.Name) + " (" +
+                        (employee.code || employee.Code) + ")";
+                    control.appendChild(option);
+                });
+
+                control.addEventListener("change", () => {
+                    const selected = rrEmployees.find(employee =>
+                        String(employee.id || employee.Id) === control.value
+                    );
+
+                    const setValue = (key, value) => {
+                        const element = document.getElementById("Form_" + key);
+                        if (element) element.value = value || "";
+                    };
+
+                    setValue("Department", selected?.department || selected?.Department);
+                    setValue("Designation", selected?.designation || selected?.Designation);
+                    setValue("ReportingManager",
+                        selected?.reportingManager || selected?.ReportingManager);
+                });
+            } else {
+                control = document.createElement("input");
+                control.type = field.type || "text";
+                control.className = "form-control";
+            }
+
+            control.id = "Form_" + field.key;
+            control.name = "Form." + field.key;
+            control.value = rrValue(field.key);
+
+            if (field.required) control.required = true;
+            if (field.readonly) control.readOnly = true;
+            if (field.maxLength) control.maxLength = field.maxLength;
+
+            wrapper.appendChild(label);
+            wrapper.appendChild(control);
+            return wrapper;
+        }
+
+        function rrRenderSection(sectionKey, containerId) {
+            const container = document.getElementById(containerId);
+
+            rrConfig.fields
+                .filter(field => field.section === sectionKey)
+                .forEach(field => container.appendChild(rrCreateField(field)));
+        }
+
+               
+document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("rrMainHeading").textContent =
+        rrConfig.sections.mainDetails;
+
+    rrRenderSection("mainDetails", "rrMainFields");
+
+    const form = document.getElementById("rrForm");
+    const saveButton = document.getElementById("rrSave");
+    const confirmSaveButton = document.getElementById("rrConfirmSave");
+    const deleteButton = document.getElementById("rrDelete");
+    const confirmDeleteButton = document.getElementById("rrConfirmDelete");
+
+    // Save confirmation
+    saveButton?.addEventListener("click", function () {
+        if (!form.reportValidity()) return;
+
+        $("#rrSaveSuccessModal").modal("show");
+    });
+
+    confirmSaveButton?.addEventListener("click", function () {
+        $("#rrSaveSuccessModal").modal("hide");
+        form.requestSubmit();
+    });
+
+    // Delete confirmation
+    deleteButton?.addEventListener("click", function () {
+        const documentNo =
+            document.getElementById("Form_DocumentNo")?.value.trim();
+
+        if (!documentNo) {
+            alert("Save the resignation request before deleting it.");
+            return;
+        }
+
+        document.getElementById("rrFormDeleteDocumentNo").value =
+            documentNo;
+
+        $("#rrDeleteConfirmModal").modal("show");
+    });
+
+    confirmDeleteButton?.addEventListener("click", function () {
+        document.getElementById("rrFormDelete").submit();
+    });
+
+    // New form
+    document.getElementById("rrNew")?.addEventListener("click", function () {
+        form.reset();
+    });
+
+    // Close page
+    document.getElementById("rrClose")?.addEventListener("click", function () {
+        window.location.href =
+            '@Url.Content("~/Master/ResignationRequestIndex")';
+    });
+});
+
+    </script>
+}

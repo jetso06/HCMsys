@@ -1,0 +1,841 @@
+
+@model List<HCMSys.Controllers.ResignationRecord>
+@using System.Text.Json
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var config = (HCMSys.Controllers.ResignationConfig)ViewBag.ResignationConfig;
+    var records = Model ?? new List<HCMSys.Controllers.ResignationRecord>();
+
+    var configJson = JsonSerializer.Serialize(
+        config,
+        new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+    var total = records.Count;
+    var pending = records.Count(r =>
+        string.Equals(r.ApprovalStatus, "Pending", StringComparison.OrdinalIgnoreCase));
+    var approved = records.Count(r =>
+        string.Equals(r.ApprovalStatus, "Approved", StringComparison.OrdinalIgnoreCase));
+    var rejected = records.Count(r =>
+        string.Equals(r.ApprovalStatus, "Rejected", StringComparison.OrdinalIgnoreCase));
+}
+
+<div class="container-fluid rr-index">
+
+    <!-- MASTER TOOLBAR -->
+    <div class="card rr-card rr-toolbar-card">
+        <div class="card-header rr-toolbar">
+            <h6 class="rr-title">
+                <i class="fas fa-file-signature"></i>
+                <span id="rrIndexTitle"></span>
+                <span class="rr-module-badge">@config.ModuleId</span>
+            </h6>
+
+            <div class="rr-buttons">
+                <a class="btn btn-success btn-sm"
+                   href="@Url.Content("~/Master/ResignationRequest")">
+                    <i class="fas fa-plus"></i>
+                    <span data-button="new"></span>
+                </a>
+
+                <button class="btn btn-primary btn-sm" id="rrEdit" type="button">
+                    <i class="fas fa-edit"></i>
+                    <span data-button="edit"></span>
+                </button>
+
+                <a class="btn btn-primary btn-sm"
+                   href="@Url.Content("~/Master/ResignationRequest")">
+                    <i class="fas fa-save"></i>
+                    <span data-button="save"></span>
+                </a>
+
+                <button class="btn btn-info btn-sm" id="rrClone" type="button">
+                    <i class="fas fa-copy"></i>
+                    <span data-button="clone"></span>
+                </button>
+
+                <button class="btn btn-warning btn-sm" id="rrUnPost" type="button">
+                    <i class="fas fa-undo"></i>
+                    <span data-button="unPost"></span>
+                </button>
+
+                <button class="btn btn-secondary btn-sm" type="button"
+                        onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    <span data-button="print"></span>
+                </button>
+
+                <button class="btn btn-danger btn-sm" id="rrDelete" type="button">
+                    <i class="fas fa-trash"></i>
+                    <span data-button="delete"></span>
+                </button>
+
+                <button class="btn btn-success btn-sm" id="rrApprove" type="button">
+                    <i class="fas fa-check"></i>
+                    <span data-button="approve"></span>
+                </button>
+
+                <button class="btn btn-danger btn-sm" id="rrReject" type="button">
+                    <i class="fas fa-times"></i>
+                    <span data-button="reject"></span>
+                </button>
+
+                <button class="btn btn-info btn-sm" id="rrAuthTracker" type="button">
+                    <i class="fas fa-route"></i>
+                    <span data-button="authTracker"></span>
+                </button>
+
+                <a class="btn btn-secondary btn-sm"
+                   href="@Url.Content("~/Master/ResignationRequest")">
+                    <i class="fas fa-times-circle"></i>
+                    <span data-button="close"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] is string success)
+    {
+        <div class="alert alert-success mt-3">@success</div>
+    }
+
+    @if (TempData["ErrorMessage"] is string error)
+    {
+        <div class="alert alert-danger mt-3">@error</div>
+    }
+
+    <!-- SUMMARY CARDS -->
+    <div class="row rr-summary">
+        <div class="col-xl-3 col-md-6">
+            <div class="card rr-card rr-summary-card rr-border-primary">
+                <div class="card-body">
+                    <div class="rr-summary-label" id="rrTotalLabel"></div>
+                    <div class="rr-summary-value">@total</div>
+                    <i class="fas fa-layer-group rr-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card rr-card rr-summary-card rr-border-warning">
+                <div class="card-body">
+                    <div class="rr-summary-label" id="rrPendingLabel"></div>
+                    <div class="rr-summary-value">@pending</div>
+                    <i class="fas fa-clock rr-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card rr-card rr-summary-card rr-border-success">
+                <div class="card-body">
+                    <div class="rr-summary-label" id="rrApprovedLabel"></div>
+                    <div class="rr-summary-value">@approved</div>
+                    <i class="fas fa-check-circle rr-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card rr-card rr-summary-card rr-border-info">
+                <div class="card-body">
+                    <div class="rr-summary-label" id="rrModuleLabel"></div>
+                    <div class="rr-summary-module">@config.ModuleName</div>
+                    <i class="fas fa-sitemap rr-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECORDS CARD -->
+    <div class="card rr-card rr-records-card">
+        <div class="card-header rr-records-header">
+            <h6>
+                <i class="fas fa-table"></i>
+                <span id="rrRecordsTitle"></span>
+            </h6>
+            <span class="badge badge-primary" id="rrRecordCount"></span>
+        </div>
+
+        <div class="card-body">
+
+            <div class="rr-table-tools">
+                <div class="rr-page-size">
+                    <span id="rrShowText"></span>
+                    <select id="rrPageSize" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span id="rrEntriesText"></span>
+                </div>
+
+                <input id="rrSearch"
+                       class="form-control form-control-sm rr-search"
+                       placeholder="" />
+            </div>
+
+            <div class="row rr-filters">
+                <div class="col-md-4 form-group">
+                    <label id="rrStatusLabel" for="rrStatusFilter"></label>
+                    <select id="rrStatusFilter" class="form-control form-control-sm">
+                        <option value="">All Statuses</option>
+                        @foreach (var status in config.Options["approvalStatus"])
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3 form-group">
+                    <label id="rrFromLabel" for="rrFrom"></label>
+                    <input type="date" id="rrFrom"
+                           class="form-control form-control-sm" />
+                </div>
+
+                <div class="col-md-3 form-group">
+                    <label id="rrToLabel" for="rrTo"></label>
+                    <input type="date" id="rrTo"
+                           class="form-control form-control-sm" />
+                </div>
+
+                <div class="col-md-2 form-group d-flex align-items-end">
+                    <button class="btn btn-light btn-sm border" id="rrClear" type="button">
+                        <i class="fas fa-eraser"></i>
+                        <span id="rrClearText"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="rrTable">
+                    <thead>
+                        <tr>
+                            <th class="rr-select-column">
+                                <input type="checkbox" id="rrSelectAll" />
+                            </th>
+                            <th>#</th>
+                            @foreach (var column in config.Index.Columns)
+                            {
+                                <th data-column="@column.Key">@column.Label</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody id="rrTableBody">
+                        @foreach (var record in records)
+                        {
+                            <tr data-document="@record.DocumentNo"
+                                data-date="@record.Date.ToString("yyyy-MM-dd")"
+                                data-status="@(record.ApprovalStatus ?? "Pending")"
+                                data-search="@($"{record.DocumentNo} {record.EmployeeCode} {record.EmployeeName} {record.Department} {record.NoticePeriod} {record.Comments}")">
+
+                                <td class="text-center">
+                                    <input type="checkbox" class="rr-select" />
+                                </td>
+                                <td class="rr-serial"></td>
+                                <td data-key="documentNo">@record.DocumentNo</td>
+                                <td data-key="date">@record.Date.ToString("dd-MM-yyyy")</td>
+                                <td data-key="employeeCode">@record.EmployeeCode</td>
+                                <td data-key="employeeName">@record.EmployeeName</td>
+                                <td data-key="department">@record.Department</td>
+                                <td data-key="noticePeriod">@record.NoticePeriod</td>
+                                <td data-key="lastWorkingDay">
+                                    @(record.LastWorkingDay?.ToString("dd-MM-yyyy") ?? "")
+                                </td>
+                                <td data-key="approvalStatus">
+                                    <span class="rr-status-badge"
+                                          data-status="@(record.ApprovalStatus ?? "Pending")">
+                                        @(record.ApprovalStatus ?? "Pending")
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="rr-empty" id="rrEmpty" hidden></div>
+
+            <div class="rr-table-footer">
+                <span id="rrShowing"></span>
+                <div class="rr-pagination">
+                    <button class="btn btn-light btn-sm" id="rrPrevious" type="button"></button>
+                    <span id="rrPageInfo"></span>
+                    <button class="btn btn-light btn-sm" id="rrNext" type="button"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="rrDeleteForm" method="post"
+          action="@Url.Content("~/Master/ResignationRequest/Delete")" hidden>
+        @Html.AntiForgeryToken()
+        <input name="documentNo" id="rrDeleteDocumentNo" />
+    </form>
+</div>
+
+<style>
+
+    html{font-size:14px}
+
+    .rr-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                     Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .rr-index .rr-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .rr-toolbar-card {
+        margin-bottom: 20px;
+    }
+
+    .rr-toolbar, .rr-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .rr-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .rr-title i, .rr-records-header i {
+        color: #4e73df;
+    }
+
+    .rr-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .rr-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .rr-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .rr-buttons .btn i {
+        margin-right: 4px;
+    }
+
+    .rr-summary {
+        margin-bottom: 8px;
+    }
+
+    .rr-summary > div {
+        margin-bottom: 16px;
+    }
+
+    .rr-summary-card {
+        min-height: 78px;
+    }
+
+    .rr-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .rr-summary-label {
+        margin-bottom: 4px;
+        color: #4e73df;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .rr-summary-value, .rr-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    .rr-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    
+/* Summary card title colors */
+.rr-summary .rr-border-primary .rr-summary-label {
+    color: #4e73df !important;
+}
+
+.rr-summary .rr-border-warning .rr-summary-label {
+    color: #f6c23e !important;
+}
+
+.rr-summary .rr-border-success .rr-summary-label {
+    color: #1cc88a !important;
+}
+
+.rr-summary .rr-border-info .rr-summary-label {
+    color: #36b9cc !important;
+}
+
+
+    .rr-border-primary { border-left: 4px solid #4e73df !important; }
+    .rr-border-warning { border-left: 4px solid #f6c23e !important; }
+    .rr-border-success { border-left: 4px solid #1cc88a !important; }
+    .rr-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .rr-records-card {
+        margin-bottom: 20px;
+    }
+
+    .rr-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .rr-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+    }
+
+    .rr-records-card .card-body {
+        padding: 16px;
+    }
+
+    .rr-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .rr-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rr-page-size select {
+        width: 60px;
+    }
+
+    .rr-search {
+        width: 320px;
+        max-width: 100%;
+    }
+
+    .rr-filters label {
+        display: block;
+        margin-bottom: 5px;
+        color: #596579;
+        font-size: .76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .035em;
+    }
+
+    .rr-index .form-control {
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .rr-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+    #rrTable {
+        width: 100%;
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
+
+    #rrTable thead th {
+        padding: 10px 8px;
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        vertical-align: middle;
+    }
+
+    #rrTable tbody td {
+        padding: 8px;
+        color: #5a5c69;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    #rrTable tbody tr:hover {
+        background-color: #f3f6ff;
+    }
+
+    .rr-status-badge {
+        display: inline-block;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #f6c23e;
+        color: #212529;
+        font-size: .7rem;
+        font-weight: 800;
+    }
+
+    .rr-status-badge[data-status="Approved"] {
+        background: #1cc88a;
+        color: #fff;
+    }
+
+    .rr-status-badge[data-status="Rejected"] {
+        background: #e74a3b;
+        color: #fff;
+    }
+
+    .rr-empty {
+        padding: 24px;
+        color: #858796;
+        text-align: center;
+    }
+
+    .rr-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .rr-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .rr-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .rr-pagination .btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    @@media(max-width: 768px) {
+        .rr-toolbar {
+            align-items: flex-start;
+        }
+
+        .rr-buttons {
+            width: 100%;
+        }
+
+        .rr-search {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .rr-buttons, .rr-table-tools, .rr-filters,
+        .rr-table-footer, .rr-select-column,
+        #rrTable tbody td:first-child {
+            display: none !important;
+        }
+
+        .rr-index .rr-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+@section Scripts {
+<script>
+    const rrIndexConfig = @Html.Raw(configJson);
+
+    // Apply toolbar captions and index text from JSON.
+    document.getElementById("rrIndexTitle").textContent =
+        rrIndexConfig.index.title;
+
+    document.getElementById("rrRecordsTitle").textContent =
+        rrIndexConfig.index.recordsTitle || rrIndexConfig.index.title;
+
+    document.getElementById("rrTotalLabel").textContent =
+        rrIndexConfig.index.summaryLabels?.total || "Total Requests";
+
+    document.getElementById("rrPendingLabel").textContent =
+        rrIndexConfig.index.summaryLabels?.pending || "Pending Approval";
+
+    document.getElementById("rrApprovedLabel").textContent =
+        rrIndexConfig.index.summaryLabels?.approved || "Approved Requests";
+
+    document.getElementById("rrModuleLabel").textContent =
+        rrIndexConfig.index.summaryLabels?.module || "Module";
+
+    document.getElementById("rrShowText").textContent =
+        rrIndexConfig.index.filters?.show || "Show";
+
+    document.getElementById("rrEntriesText").textContent =
+        rrIndexConfig.index.filters?.entries || "entries";
+
+    document.getElementById("rrStatusLabel").textContent =
+        rrIndexConfig.index.filters?.approvalStatus || "Approval Status";
+
+    document.getElementById("rrFromLabel").textContent =
+        rrIndexConfig.index.filters?.fromDate || "From Date";
+
+    document.getElementById("rrToLabel").textContent =
+        rrIndexConfig.index.filters?.toDate || "To Date";
+
+    document.getElementById("rrClearText").textContent =
+        rrIndexConfig.index.filters?.clear || "Clear";
+
+    document.getElementById("rrPrevious").textContent =
+        rrIndexConfig.index.filters?.previous || "Previous";
+
+    document.getElementById("rrNext").textContent =
+        rrIndexConfig.index.filters?.next || "Next";
+
+    document.getElementById("rrSearch").placeholder =
+        rrIndexConfig.index.searchPlaceholder;
+
+    document.getElementById("rrEmpty").textContent =
+        rrIndexConfig.index.emptyMessage;
+
+    document.querySelectorAll("[data-button]").forEach(element => {
+        const key = element.dataset.button;
+        element.append(document.createTextNode(
+            rrIndexConfig.buttons[key] || key
+        ));
+    });
+
+    const rrBody = document.getElementById("rrTableBody");
+    const rrRows = Array.from(rrBody.querySelectorAll("tr"));
+    const rrSearch = document.getElementById("rrSearch");
+    const rrStatus = document.getElementById("rrStatusFilter");
+    const rrFrom = document.getElementById("rrFrom");
+    const rrTo = document.getElementById("rrTo");
+    const rrPageSize = document.getElementById("rrPageSize");
+
+    let rrFilteredRows = [];
+    let rrCurrentPage = 1;
+
+    function rrFilterRows() {
+        const query = rrSearch.value.trim().toLowerCase();
+
+        rrFilteredRows = rrRows.filter(row => {
+            const textMatch =
+                !query || (row.dataset.search || "").toLowerCase().includes(query);
+
+            const statusMatch =
+                !rrStatus.value ||
+                (row.dataset.status || "").toLowerCase() ===
+                    rrStatus.value.toLowerCase();
+
+            const date = row.dataset.date || "";
+            const dateMatch =
+                (!rrFrom.value || date >= rrFrom.value) &&
+                (!rrTo.value || date <= rrTo.value);
+
+            return textMatch && statusMatch && dateMatch;
+        });
+
+        rrCurrentPage = 1;
+        rrRenderRows();
+    }
+
+    function rrRenderRows() {
+        const pageSize = Number(rrPageSize.value);
+        const totalPages = Math.max(1, Math.ceil(rrFilteredRows.length / pageSize));
+        rrCurrentPage = Math.min(rrCurrentPage, totalPages);
+
+        rrRows.forEach(row => row.hidden = true);
+
+        const start = (rrCurrentPage - 1) * pageSize;
+        const visibleRows = rrFilteredRows.slice(start, start + pageSize);
+
+        visibleRows.forEach((row, index) => {
+            row.hidden = false;
+            row.querySelector(".rr-serial").textContent = start + index + 1;
+        });
+
+        document.getElementById("rrRecordCount").textContent =
+            `${rrFilteredRows.length} ${rrFilteredRows.length === 1 ? "Record" : "Records"}`;
+
+        document.getElementById("rrShowing").textContent =
+            rrFilteredRows.length
+                ? `Showing ${start + 1} to ${start + visibleRows.length} of ${rrFilteredRows.length} requests`
+                : "Showing 0 requests";
+
+        document.getElementById("rrPageInfo").textContent =
+            rrFilteredRows.length ? `${rrCurrentPage} / ${totalPages}` : "0 / 0";
+
+        document.getElementById("rrEmpty").hidden =
+            rrFilteredRows.length !== 0;
+
+        document.getElementById("rrPrevious").disabled =
+            rrCurrentPage <= 1;
+
+        document.getElementById("rrNext").disabled =
+            rrCurrentPage >= totalPages;
+    }
+
+    [rrSearch, rrStatus, rrFrom, rrTo].forEach(element => {
+        element.addEventListener("input", rrFilterRows);
+        element.addEventListener("change", rrFilterRows);
+    });
+
+    rrPageSize.addEventListener("change", rrFilterRows);
+
+    document.getElementById("rrClear").addEventListener("click", () => {
+        rrSearch.value = "";
+        rrStatus.value = "";
+        rrFrom.value = "";
+        rrTo.value = "";
+        rrFilterRows();
+    });
+
+    document.getElementById("rrPrevious").addEventListener("click", () => {
+        if (rrCurrentPage > 1) {
+            rrCurrentPage--;
+            rrRenderRows();
+        }
+    });
+
+    document.getElementById("rrNext").addEventListener("click", () => {
+        const totalPages = Math.max(
+            1, Math.ceil(rrFilteredRows.length / Number(rrPageSize.value)));
+
+        if (rrCurrentPage < totalPages) {
+            rrCurrentPage++;
+            rrRenderRows();
+        }
+    });
+
+    function rrSelectedRow() {
+        const selected = rrRows.filter(row =>
+            row.querySelector(".rr-select").checked);
+
+        if (selected.length !== 1) {
+            alert("Please select exactly one resignation request.");
+            return null;
+        }
+
+        return selected[0];
+    }
+
+    document.getElementById("rrSelectAll").addEventListener("change", event => {
+        rrRows.filter(row => !row.hidden).forEach(row => {
+            row.querySelector(".rr-select").checked = event.target.checked;
+        });
+    });
+
+    document.getElementById("rrEdit").addEventListener("click", () => {
+        const row = rrSelectedRow();
+        if (!row) return;
+
+        window.location.href =
+            '@Url.Content("~/Master/ResignationRequest")' +
+            '?documentNo=' + encodeURIComponent(row.dataset.document);
+    });
+
+    document.getElementById("rrClone").addEventListener("click", () => {
+        const row = rrSelectedRow();
+        if (!row) return;
+
+        window.location.href =
+            '@Url.Content("~/Master/ResignationRequest")' +
+            '?documentNo=' + encodeURIComponent(row.dataset.document);
+    });
+
+    document.getElementById("rrDelete").addEventListener("click", () => {
+        const row = rrSelectedRow();
+        if (!row) return;
+
+        if (confirm(rrIndexConfig.messages.confirmDelete)) {
+            document.getElementById("rrDeleteDocumentNo").value =
+                row.dataset.document;
+            document.getElementById("rrDeleteForm").submit();
+        }
+    });
+
+    document.getElementById("rrApprove").addEventListener("click", () => {
+        if (rrSelectedRow()) {
+            alert("Approval status updates need to be implemented in the controller.");
+        }
+    });
+
+    document.getElementById("rrReject").addEventListener("click", () => {
+        if (rrSelectedRow()) {
+            alert("Rejection status updates need to be implemented in the controller.");
+        }
+    });
+
+    document.getElementById("rrUnPost").addEventListener("click", () => {
+        if (rrSelectedRow()) {
+            alert("UnPost functionality is not implemented yet.");
+        }
+    });
+
+    document.getElementById("rrAuthTracker").addEventListener("click", () => {
+        if (rrSelectedRow()) {
+            alert("Auth Tracker functionality is not implemented yet.");
+        }
+    });
+
+    rrFilterRows();
+</script>
+}
