@@ -375,6 +375,40 @@
         box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.12);
     }
 
+    /* Compact attachment upload control */
+.candidate-file-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 220px;
+}
+
+.candidate-grid td .candidate-file-control input[type="file"] {
+    flex: 1;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+}
+
+.candidate-file-delete {
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 5px;
+    background: #e74a3b;
+    color: #fff;
+    cursor: pointer;
+}
+
+.candidate-file-delete:hover {
+    background: #d9362b;
+}
+
     .candidate-remove-row {
         padding: 4px 7px;
         border: 0;
@@ -480,6 +514,40 @@
             display: block !important;
         }
     }
+    /* Fix date checkbox and input alignment */
+.candidate-grid td .candidate-date-control {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    width: 100%;
+}
+
+.candidate-grid td .candidate-date-control input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    display: inline-block !important;
+    width: 18px !important;
+    height: 18px !important;
+    min-width: 18px !important;
+    min-height: 18px !important;
+    max-width: 18px !important;
+    max-height: 18px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 18px !important;
+}
+
+
+.candidate-grid td .candidate-date-control input[type="date"] {
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    margin: 0 !important;
+}
 </style>
 
 <div class="candidate-page">
@@ -893,18 +961,24 @@
                     `;
                 }
                 else if (type === "file") {
-                    control = `
-                        <input type="file"
-                               class="candidate-attachment-file"
-                               data-grid-field="${escapeHtml(field)}"
-                               accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-                               onchange="updateGridFileName(this)">
+    control = `
+        <div class="candidate-file-control">
+            <input type="file"
+                   class="candidate-attachment-file"
+                   data-grid-field="${escapeHtml(field)}"
+                   data-existing-file="${escapeHtml(value)}"
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                   onchange="updateGridFileName(this)">
 
-                        <div class="candidate-file-name small text-muted mt-1">
-                            ${value ? escapeHtml(value) : "No file chosen"}
-                        </div>
-                    `;
-                }
+            <button type="button"
+                    class="candidate-file-delete"
+                    title="Remove attachment"
+                    onclick="removeGridFile(this)">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+}
                 else if (type === "dateToggle") {
                     const dateField = header.dateField;
                     const dateValue = getValue(row, dateField);
@@ -948,12 +1022,18 @@
 }
 
     function updateGridFileName(input) {
-    const row = input.closest("tr");
-    const fileName = row.querySelector(".candidate-file-name");
+    // The browser displays the selected filename automatically.
+    input.dataset.fileSelected = input.files.length ? "true" : "false";
+}
 
-    fileName.textContent = input.files.length
-        ? input.files[0].name
-        : "No file chosen";
+function removeGridFile(button) {
+    const wrapper = button.closest(".candidate-file-control");
+    const input = wrapper.querySelector(".candidate-attachment-file");
+
+    // Clear the selected file and any previously saved filename.
+    input.value = "";
+    input.dataset.existingFile = "";
+    input.dataset.fileSelected = "false";
 }
 
 function showGridAttachment(button) {
@@ -1047,8 +1127,9 @@ function removeGridRow(button, dataField) {
                 row.querySelectorAll("[data-grid-field]")
     .forEach(input => {
         if (input.type === "file") {
-    rowData[input.dataset.gridField] =
-        input.files.length ? input.files[0].name : "";
+    rowData[input.dataset.gridField] = input.files.length
+        ? input.files[0].name
+        : (input.dataset.existingFile || "");
 
     return;
 }
