@@ -41,13 +41,11 @@
     {
       "field": "issueDateEnabled",
       "title": "Issue Date",
-      "type": "dateToggle",
       "dateField": "issueDate"
     },
     {
       "field": "expiryDateEnabled",
       "title": "Expiry Date",
-      "type": "dateToggle",
       "dateField": "expiryDate"
     }
   ]

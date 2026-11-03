@@ -646,23 +646,26 @@
         let filteredRows = rows.slice();
         let currentPage = 1;
 
-        function selectCandidate(row) {
-    body.querySelectorAll("tr").forEach(tr => {
-        tr.classList.remove("selected");
+        function updateSelectedCandidates() {
+    const selectedCheckboxes = body.querySelectorAll(
+        ".ci-checkbox:checked"
+    );
 
-        const checkbox = tr.querySelector(".ci-checkbox");
-        if (checkbox) checkbox.checked = false;
+    const names = Array.from(selectedCheckboxes).map(checkbox =>
+        checkbox.closest("tr").cells[3]?.textContent.trim()
+    );
+
+    body.querySelectorAll("tr[data-id]").forEach(row => {
+        const checkbox = row.querySelector(".ci-checkbox");
+        row.classList.toggle("selected", checkbox?.checked);
     });
 
-    row.classList.add("selected");
-
-    selectedCandidateId = row.dataset.id;
-
-    const checkbox = row.querySelector(".ci-checkbox");
-    if (checkbox) checkbox.checked = true;
+    selectedCandidateId = selectedCheckboxes.length === 1
+        ? selectedCheckboxes[0].value
+        : null;
 
     document.getElementById("ciSelected").textContent =
-        row.cells[2]?.textContent.trim() || "Selected";
+        names.length ? names.join(", ") : "None";
 }
 
         function renderRows() {
@@ -705,22 +708,15 @@
                 (row.dataset.search || row.innerText).toLowerCase().includes(query)
             );
 
-            if (selectedCandidateId &&
-                !filteredRows.some(row => row.dataset.id === selectedCandidateId)) {
-                selectedCandidateId = null;
-                document.getElementById("ciSelected").textContent = "None";
-                body.querySelectorAll("tr").forEach(tr => tr.classList.remove("selected"));
-                body.querySelectorAll(".ci-checkbox").forEach(
-    checkbox => checkbox.checked = false
-);
-            }
+            updateSelectedCandidates();
 
             currentPage = 1;
             renderRows();
         }
 
-        // Row selection
+
 rows.forEach(row => {
+
     row.addEventListener("click", event => {
         if (event.target.closest(
             ".ci-row-edit, .ci-row-delete, .ci-checkbox"
@@ -728,19 +724,18 @@ rows.forEach(row => {
             return;
         }
 
-        selectCandidate(row);
+        const checkbox = row.querySelector(".ci-checkbox");
+
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+            updateSelectedCandidates();
+        }
     });
 
     const checkbox = row.querySelector(".ci-checkbox");
 
     checkbox?.addEventListener("change", () => {
-        if (checkbox.checked) {
-            selectCandidate(row);
-        } else {
-            row.classList.remove("selected");
-            selectedCandidateId = null;
-            document.getElementById("ciSelected").textContent = "None";
-        }
+        updateSelectedCandidates();
     });
 });
 
