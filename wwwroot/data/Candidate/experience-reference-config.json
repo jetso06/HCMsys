@@ -1,0 +1,32 @@
+{
+  "headers": [
+    {
+      "field": "organization",
+      "title": "Name of Organization"
+    },
+    {
+      "field": "position",
+      "title": "Position"
+    },
+    {
+      "field": "years",
+      "title": "No of Years"
+    },
+    {
+      "field": "referencePerson",
+      "title": "Reference Person"
+    },
+    {
+      "field": "contactNo",
+      "title": "Contact No"
+    },
+    {
+      "field": "fromDate",
+      "title": "From Date"
+    },
+    {
+      "field": "toDate",
+      "title": "To Date"
+    }
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "moduleId": 601,
+  "moduleName": "Candidate",
+  "tabs": [
+    {
+      "id": "general",
+      "title": "General",
+      "sections": [
+        {
+          "id": "generalDetails",
+          "title": "General",
+          "fields": [
+            {
+              "name": "name",
+              "label": "Name",
+              "type": "text",
+              "required": true
+            },
+            {
+              "name": "code",
+              "label": "Code",
+              "type": "text",
+              "auto": true
+            },
+            {
+              "name": "nameNL",
+              "label": "NameNL",
+              "type": "text"
+            },
+            {
+              "name": "photo",
+              "label": "Photo",
+              "type": "picture"
+            },
+            {
+              "name": "company",
+              "label": "Company",
+              "type": "master",
+              "required": true,
+              "options": []
+            },
+            {
+              "name": "mainFrameAgreement",
+              "label": "Main Frame Agreement",
+              "type": "master",
+              "options": []
+            },
+            {
+              "name": "postAppliedFor",
+              "label": "Post Applied For",
+              "type": "text"
+            },
+            {
+              "name": "airlineSector",
+              "label": "Airline Sector",
+              "type": "master",
+              "options": []
+            },
+            {
+              "name": "probationPeriod",
+              "label": "Probation Period",
+              "type": "master",
+              "options": []
+            },
+            {
+              "name": "expectedDOJ",
+              "label": "Expected DOJ",
+              "type": "date"
+            },
+            {
+              "name": "spfNo",
+              "label": "SPF No",
+              "type": "text"
+            },
+            {
+              "name": "spfStatus",
+              "label": "SPF Status",
+              "type": "numberList",
+              "required": true,
+              "options": [
+                "No",
+                "Yes",
+                "Cancelled",
+                "GCC National",
+                "Saudi National"
+              ]
+            },
+            {
+              "name": "residentCardNo",
+              "label": "Resident Card No",
+              "type": "text"
+            },
+            {
+              "name": "rpIssueDate",
+              "label": "RP Issue Date",
+              "type": "date"
+            },
+            {
+              "name": "rpExpiryDate",
+              "label": "RP Expiry Date",
+              "type": "date"
+            },
+            {
+              "name": "sponsor",
+              "label": "Sponsor",
+              "type": "master",
+              "options": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "personalInformation",
+      "title": "Personal Information",
+      "sections": [
+        {
+          "id": "personalDetails",
+          "title": "Personal Information",
+          "fields": [
+            {
+              "name": "gender",
+              "label": "Gender",
+              "type": "numberList",
+              "options": [ "Male", "Female" ]
+            },
+            {
+              "name": "maritalStatus",
+              "label": "Marital Status",
+              "type": "numberList",
+              "options": [ "DIVORCEE", "WIDOWER" ]
+            },
+            {
+              "name": "nationality",
+              "label": "Nationality",
+              "type": "master",
+              "required": true,
+              "options": []
+            },
+            {
+              "name": "dateOfBirth",
+              "label": "Date of Birth",
+              "type": "date",
+              "possibleValues": "NONE"
+            },
+            {
+              "name": "expectedSalary",
+              "label": "Expected Salary",
+              "type": "number"
+            },
+            {
+              "name": "source",
+              "label": "Source",
+              "type": "text"
+            },
+            {
+              "name": "religion",
+              "label": "Religion",
+              "type": "master",
+              "required": true,
+              "options": []
+            },
+            {
+              "name": "passportNumber",
+              "label": "Passport Number",
+              "type": "text"
+            },
+            {
+              "name": "passportIssueDate",
+              "label": "Passport Issue Date",
+              "type": "date",
+              "possibleValues": "NONE"
+            },
+            {
+              "name": "passportExpiryDate",
+              "label": "Passport Expiry Date",
+              "type": "date",
+              "possibleValues": "NONE"
+            },
+            {
+              "name": "passportIssuePlace",
+              "label": "Passport Issue Place",
+              "type": "text"
+            },
+            {
+              "name": "drivingLicenceNumber",
+              "label": "Driving Licence Number",
+              "type": "text"
+            },
+            {
+              "name": "drivingLicenceIssuePlace",
+              "label": "Driving Licence Issue Place",
+              "type": "text"
+            },
+            {
+              "name": "drivingLicenceType",
+              "label": "Driving Licence Type",
+              "type": "numberList",
+              "options": [ "Learner Driving Licence" ]
+            },
+            {
+              "name": "drivingLicenceIssueDate",
+              "label": "Driving Licence Issue Date",
+              "type": "date",
+              "possibleValues": "NONE"
+            },
+            {
+              "name": "drivingLicenceExpiryDate",
+              "label": "Driving Licence Expiry Date",
+              "type": "date",
+              "possibleValues": "NONE"
+            },
+            {
+              "name": "bloodGroup",
+              "label": "Blood Group",
+              "type": "numberList",
+              "options": [ "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" ]
+            },
+            {
+              "name": "address",
+              "label": "Address",
+              "type": "text"
+            },
+            {
+              "name": "city",
+              "label": "City",
+              "type": "master",
+              "options": []
+            },
+            {
+              "name": "pinZipCode",
+              "label": "Pin/Zip Code",
+              "type": "text"
+            },
+            {
+              "name": "phoneNumber",
+              "label": "Phone Number",
+              "type": "text"
+            },
+            {
+              "name": "mobileNumber",
+              "label": "Mobile Number",
+              "type": "text"
+            },
+            {
+              "name": "email",
+              "label": "Email",
+              "type": "email"
+            },
+            {
+              "name": "mobileNumber2",
+              "label": "Mobile Number2",
+              "type": "text"
+            },
+            {
+              "name": "country",
+              "label": "Country",
+              "type": "master",
+              "options": []
+            },
+            {
+              "name": "nextOfKinName",
+              "label": "Next of Kin Name",
+              "type": "text"
+            },
+            {
+              "name": "nextOfKinContactNo",
+              "label": "Next of Kin Contact No.",
+              "type": "text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "educationalQualification",
+      "title": "Educational Qualification",
+      "type": "grid",
+      "configFile": "educational-qualification-config.json",
+      "dataField": "education"
+    },
+    {
+      "id": "experienceReference",
+      "title": "Experience & Ref",
+      "type": "grid",
+      "configFile": "experience-reference-config.json",
+      "dataField": "experience"
+    },
+    {
+      "id": "reference",
+      "title": "Reference",
+      "type": "grid",
+      "configFile": "reference-config.json",
+      "dataField": "references"
+    },
+    {
+      "id": "attachments",
+      "title": "Attachment Grid",
+      "type": "grid",
+      "configFile": "attachment-config.json",
+      "dataField": "attachments"
+    }
+  ]
+}

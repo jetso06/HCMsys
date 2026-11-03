@@ -1,0 +1,835 @@
+@using System.Text.Json.Nodes
+@model List<JsonNode>
+
+@{
+    ViewData["Title"] = "Candidate List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var candidates = Model ?? new List<JsonNode>();
+    var total = candidates.Count;
+}
+
+<div class="container-fluid candidate-index">
+
+    <!-- MASTER TOOLBAR -->
+    <div class="card ci-card ci-toolbar-card">
+        <div class="card-header ci-toolbar">
+            <h6 class="ci-title">
+                <i class="fas fa-user-tie"></i>
+                Candidate List
+                <span class="ci-module-badge">CANDIDATE</span>
+            </h6>
+
+            <div class="ci-buttons">
+
+    <!-- New -->
+    <a href="@Url.Action("Index", "Candidate")"
+       class="btn btn-success btn-sm shadow-sm">
+        <i class="fas fa-plus"></i> New
+    </a>
+
+    <!-- Edit -->
+    <button type="button" id="ciEdit"
+            class="btn btn-primary btn-sm shadow-sm">
+        <i class="fas fa-edit"></i> Edit
+    </button>
+
+    <!-- Save -->
+    <button type="button" id="ciSave"
+            class="btn btn-primary btn-sm shadow-sm" disabled>
+        <i class="fas fa-save"></i> Save
+    </button>
+
+    <!-- Clone -->
+    <button type="button" id="ciClone"
+            class="btn btn-info btn-sm shadow-sm" disabled>
+        <i class="fas fa-copy"></i> Clone
+    </button>
+
+    <!-- UnPost -->
+    <button type="button" id="ciUnPost"
+            class="btn btn-secondary btn-sm shadow-sm" disabled>
+        <i class="fas fa-undo"></i> UnPost
+    </button>
+
+    <!-- Print -->
+    <button type="button" id="ciPrint"
+            class="btn btn-light btn-sm shadow-sm">
+        <i class="fas fa-print"></i> Print
+    </button>
+
+    <!-- Delete -->
+    <button type="button" id="ciDelete"
+            class="btn btn-danger btn-sm shadow-sm">
+        <i class="fas fa-trash"></i> Delete
+    </button>
+
+    <!-- Approve -->
+    <button type="button" id="ciApprove"
+            class="btn btn-success btn-sm shadow-sm" disabled>
+        <i class="fas fa-check"></i> Approve
+    </button>
+
+    <!-- Reject -->
+    <button type="button" id="ciReject"
+            class="btn btn-danger btn-sm shadow-sm" disabled>
+        <i class="fas fa-times"></i> Reject
+    </button>
+
+    <!-- Auth Tracker -->
+    <button type="button" id="ciAuthTracker"
+            class="btn btn-info btn-sm shadow-sm" disabled>
+        <i class="fas fa-history"></i> Auth Tracker
+    </button>
+
+    <!-- Close -->
+    <button type="button" id="ciClose"
+            class="btn btn-light btn-sm shadow-sm">
+        <i class="fas fa-times-circle"></i> Close
+    </button>
+
+</div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["SuccessMessage"]</div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+    }
+
+    <!-- SUMMARY CARDS -->
+    <div class="row ci-summary">
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-primary">
+                <div class="card-body">
+                    <div class="ci-summary-label">Total Candidates</div>
+                    <div class="ci-summary-value" id="ciTotal">@total</div>
+                    <i class="fas fa-users ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-info">
+                <div class="card-body">
+                    <div class="ci-summary-label">Displayed Records</div>
+                    <div class="ci-summary-value" id="ciDisplayed">@total</div>
+                    <i class="fas fa-list ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-success">
+                <div class="card-body">
+                    <div class="ci-summary-label">Selected Candidate</div>
+                    <div class="ci-summary-value" id="ciSelected">None</div>
+                    <i class="fas fa-user-check ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-warning">
+                <div class="card-body">
+                    <div class="ci-summary-label">Module</div>
+                    <div class="ci-summary-module">Candidate Master</div>
+                    <i class="fas fa-sitemap ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RECORDS CARD -->
+    <div class="card ci-card ci-records-card">
+        <div class="card-header ci-records-header">
+            <h6><i class="fas fa-table"></i> Candidate Records</h6>
+            <span class="badge badge-primary" id="ciRecordCount">@total Records</span>
+        </div>
+
+        <div class="card-body">
+            <div class="ci-table-tools">
+                <div class="ci-page-size">
+                    <span>Show</span>
+                    <select id="ciPageSize" class="form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>entries</span>
+                </div>
+
+                <input type="text"
+                       id="ciSearch"
+                       class="form-control form-control-sm ci-search"
+                       placeholder="Search candidates..." />
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="ciTable">
+                    <thead>
+    <tr>
+        <th class="ci-control-column">Select</th>
+        <th class="ci-action-column">Action</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Group Name</th>
+        <th>Type</th>
+        <th>iStatus</th>
+        <th>Approval Status</th>
+        <th>iMID (ID)</th>
+        <th>Created By</th>
+        <th>Created DateTime</th>
+        <th>Modified By</th>
+        <th>Modified DateTime</th>
+    </tr>
+</thead>
+                    </thead>
+                    <tbody id="ciTableBody">
+    @if (candidates.Count > 0)
+    {
+        foreach (var item in candidates)
+        {
+            var id = item["id"]?.ToString() ?? "";
+            var name = item["name"]?.ToString() ?? "";
+            var code = item["code"]?.ToString() ?? "";
+            var groupName = item["groupName"]?.ToString() ?? "";
+            var type = item["type"]?.ToString() ?? "";
+
+            var statusValue = item["iStatus"]?.ToString();
+
+            var isActive = statusValue == "1" ||
+                statusValue?.Equals(
+                    "true",
+                    StringComparison.OrdinalIgnoreCase
+                ) == true;
+
+            var approvalValue =
+                item["approvalStatus"]?.ToString();
+
+            var approvalLabel = approvalValue switch
+            {
+                "1" => "Approved",
+                "2" => "Reject",
+                _ => "Pending"
+            };
+
+            var masterId =
+                item["iMID"]?.ToString() ?? id;
+
+            var createdBy =
+                item["createdBy"]?.ToString() ?? "";
+
+            var createdDateTime =
+                item["createdDateTime"]?.ToString() ?? "";
+
+            var modifiedBy =
+                item["modifiedBy"]?.ToString() ?? "";
+
+            var modifiedDateTime =
+                item["modifiedDateTime"]?.ToString() ?? "";
+
+            <tr data-id="@id"
+                data-search="@($"{name} {code} {groupName} {type} {statusValue} {approvalLabel} {masterId} {createdBy} {createdDateTime} {modifiedBy} {modifiedDateTime}")">
+
+                <td class="text-center ci-control-column">
+    <input type="checkbox"
+           class="ci-checkbox"
+           value="@id" />
+</td>
+
+<td class="text-center ci-action-column">
+    <button type="button"
+            class="ci-row-edit"
+            title="Edit">
+        <i class="fas fa-edit"></i>
+    </button>
+
+    <button type="button"
+            class="ci-row-delete"
+            title="Delete">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+</td>
+
+                <td>@name</td>
+                <td>@code</td>
+                <td>@groupName</td>
+                <td>@type</td>
+
+                <td>
+                    @if (isActive)
+                    {
+                        <span class="badge badge-success">YES</span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-danger">NO</span>
+                    }
+                </td>
+
+                <td>
+                    @if (approvalLabel == "Approved")
+                    {
+                        <span class="badge badge-success">
+                            Approved
+                        </span>
+                    }
+                    else if (approvalLabel == "Reject")
+                    {
+                        <span class="badge badge-danger">
+                            Reject
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge badge-warning">
+                            Pending
+                        </span>
+                    }
+                </td>
+
+                <td>@masterId</td>
+                <td>@createdBy</td>
+                <td>@createdDateTime</td>
+                <td>@modifiedBy</td>
+                <td>@modifiedDateTime</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr class="ci-no-data">
+            <td colspan="13" class="ci-empty">
+                No candidate records found.
+            </td>
+        </tr>
+    }
+</tbody>
+                </table>
+            </div>
+
+            <div class="ci-empty ci-filter-empty" id="ciFilterEmpty" hidden>
+                No matching candidate records found.
+            </div>
+
+            <div class="ci-table-footer">
+                <span id="ciShowing">Showing 0 records</span>
+                <div class="ci-pagination">
+                    <button class="btn btn-light btn-sm" id="ciPrevious" type="button">Previous</button>
+                    <span id="ciPageInfo">0 / 0</span>
+                    <button class="btn btn-light btn-sm" id="ciNext" type="button">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="ciDeleteForm"
+      method="post"
+      action="@Url.Action("Delete", "Candidate")"
+      hidden>
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="ciDeleteId" />
+</form>
+
+<style>
+    html { font-size: 14px; }
+
+    .candidate-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .candidate-index .ci-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .ci-toolbar-card { margin-bottom: 20px; }
+
+    .ci-toolbar, .ci-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .ci-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .ci-title i, .ci-records-header i { color: #4e73df; }
+
+    .ci-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .ci-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ci-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .ci-buttons .btn i { margin-right: 4px; }
+
+    .ci-summary { margin-bottom: 8px; }
+    .ci-summary > div { margin-bottom: 16px; }
+    .ci-summary-card { min-height: 78px; }
+
+    .ci-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .ci-summary-label {
+        margin-bottom: 4px;
+        color: #4e73df;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .ci-summary-value, .ci-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    #ciSelected { font-size: .9rem; }
+
+    .ci-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    .ci-border-primary { border-left: 4px solid #4e73df !important; }
+    .ci-border-warning { border-left: 4px solid #f6c23e !important; }
+    .ci-border-success { border-left: 4px solid #1cc88a !important; }
+    .ci-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .ci-summary .ci-border-primary .ci-summary-label { color: #4e73df !important; }
+    .ci-summary .ci-border-warning .ci-summary-label { color: #f6c23e !important; }
+    .ci-summary .ci-border-success .ci-summary-label { color: #1cc88a !important; }
+    .ci-summary .ci-border-info .ci-summary-label { color: #36b9cc !important; }
+
+    .ci-records-card { margin-bottom: 20px; }
+
+    .ci-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .ci-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+    }
+
+    .ci-records-card .card-body { padding: 16px; }
+
+    .ci-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ci-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-page-size select { width: 60px; }
+
+    .ci-search { width: 320px; max-width: 100%; }
+
+    .candidate-index .form-control {
+        min-height: 32px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .candidate-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+    #ciTable {
+        width: 100%;
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
+
+    #ciTable thead th {
+        padding: 10px 8px;
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: .04em;
+        vertical-align: middle;
+    }
+
+    #ciTable tbody td {
+        padding: 8px;
+        color: #5a5c69;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    #ciTable tbody tr:hover {
+    background-color: #f3f6ff;
+}
+
+.ci-row-edit,
+.ci-row-delete {
+    border: none;
+    background: transparent;
+    padding: 4px 7px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.ci-row-edit {
+    color: #4e73df;
+}
+
+.ci-row-delete {
+    color: #e74a3b;
+}
+
+.ci-row-edit:hover,
+.ci-row-delete:hover {
+    opacity: 0.7;
+}
+
+.ci-checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.ci-action-column {
+    text-align: center;
+    min-width: 85px;
+}
+    #ciTable tbody tr.selected { background-color: #eaecf4; }
+    .ci-radio { cursor: pointer; }
+
+    .ci-empty {
+        padding: 24px !important;
+        color: #858796;
+        text-align: center !important;
+    }
+
+    .ci-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .ci-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .ci-pagination .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+    @@media (max-width: 768px) {
+    .ci-toolbar {
+        align-items: flex-start;
+    }
+
+    .ci-buttons {
+        width: 100%;
+    }
+
+    .ci-search {
+        width: 100%;
+    }
+}
+
+@@media print {
+    .ci-buttons,
+    .ci-table-tools,
+    .ci-table-footer,
+    .ci-control-column,
+    .ci-action-column {
+        display: none !important;
+    }
+
+    .candidate-index .ci-card {
+        box-shadow: none !important;
+    }
+}
+    }
+</style>
+
+<script>
+    (() => {
+        const body = document.getElementById("ciTableBody");
+        const table = document.getElementById("ciTable");
+        const searchInput = document.getElementById("ciSearch");
+        const pageSizeInput = document.getElementById("ciPageSize");
+        const rows = Array.from(body.querySelectorAll("tr[data-id]"));
+
+        let selectedCandidateId = null;
+        let filteredRows = rows.slice();
+        let currentPage = 1;
+
+        function selectCandidate(row) {
+    body.querySelectorAll("tr").forEach(tr => {
+        tr.classList.remove("selected");
+
+        const checkbox = tr.querySelector(".ci-checkbox");
+        if (checkbox) checkbox.checked = false;
+    });
+
+    row.classList.add("selected");
+
+    selectedCandidateId = row.dataset.id;
+
+    const checkbox = row.querySelector(".ci-checkbox");
+    if (checkbox) checkbox.checked = true;
+
+    document.getElementById("ciSelected").textContent =
+        row.cells[2]?.textContent.trim() || "Selected";
+}
+
+        function renderRows() {
+            const pageSize = Number(pageSizeInput.value);
+            const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
+            currentPage = Math.min(currentPage, totalPages);
+
+            rows.forEach(row => row.hidden = true);
+
+            const start = (currentPage - 1) * pageSize;
+            const visibleRows = filteredRows.slice(start, start + pageSize);
+
+            visibleRows.forEach((row, index) => {
+                row.hidden = false;
+                const serial = row.querySelector(".ci-serial");
+                if (serial) serial.textContent = start + index + 1;
+            });
+
+            document.getElementById("ciDisplayed").textContent = filteredRows.length;
+            document.getElementById("ciRecordCount").textContent =
+                `${filteredRows.length} ${filteredRows.length === 1 ? "Record" : "Records"}`;
+
+            document.getElementById("ciShowing").textContent =
+                filteredRows.length
+                    ? `Showing ${start + 1} to ${start + visibleRows.length} of ${filteredRows.length} candidates`
+                    : "Showing 0 candidates";
+
+            document.getElementById("ciPageInfo").textContent =
+                filteredRows.length ? `${currentPage} / ${totalPages}` : "0 / 0";
+
+            document.getElementById("ciFilterEmpty").hidden = filteredRows.length !== 0;
+            document.getElementById("ciPrevious").disabled = currentPage <= 1;
+            document.getElementById("ciNext").disabled = currentPage >= totalPages;
+        }
+
+        function filterRows() {
+            const query = searchInput.value.trim().toLowerCase();
+
+            filteredRows = rows.filter(row =>
+                (row.dataset.search || row.innerText).toLowerCase().includes(query)
+            );
+
+            if (selectedCandidateId &&
+                !filteredRows.some(row => row.dataset.id === selectedCandidateId)) {
+                selectedCandidateId = null;
+                document.getElementById("ciSelected").textContent = "None";
+                body.querySelectorAll("tr").forEach(tr => tr.classList.remove("selected"));
+                body.querySelectorAll(".ci-checkbox").forEach(
+    checkbox => checkbox.checked = false
+);
+            }
+
+            currentPage = 1;
+            renderRows();
+        }
+
+        // Row selection
+rows.forEach(row => {
+    row.addEventListener("click", event => {
+        if (event.target.closest(
+            ".ci-row-edit, .ci-row-delete, .ci-checkbox"
+        )) {
+            return;
+        }
+
+        selectCandidate(row);
+    });
+
+    const checkbox = row.querySelector(".ci-checkbox");
+
+    checkbox?.addEventListener("change", () => {
+        if (checkbox.checked) {
+            selectCandidate(row);
+        } else {
+            row.classList.remove("selected");
+            selectedCandidateId = null;
+            document.getElementById("ciSelected").textContent = "None";
+        }
+    });
+});
+
+// Edit selected candidate
+function editCandidate(id) {
+    if (!id) {
+        alert("Please select a candidate.");
+        return;
+    }
+
+    window.location.href =
+        '@Url.Action("Index", "Candidate")' +
+        "?id=" + encodeURIComponent(id);
+}
+
+// Delete candidate
+function deleteCandidate(id) {
+    if (!id) {
+        alert("Please select a candidate.");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to delete this candidate?")) {
+        return;
+    }
+
+    document.getElementById("ciDeleteId").value = id;
+    document.getElementById("ciDeleteForm").requestSubmit();
+}
+
+// Toolbar Edit
+document.getElementById("ciEdit").addEventListener("click", () => {
+    editCandidate(selectedCandidateId);
+});
+
+// Toolbar Delete
+document.getElementById("ciDelete").addEventListener("click", () => {
+    deleteCandidate(selectedCandidateId);
+});
+
+// Individual row Edit and Delete icons
+body.addEventListener("click", event => {
+    const editButton = event.target.closest(".ci-row-edit");
+    const deleteButton = event.target.closest(".ci-row-delete");
+
+    if (editButton || deleteButton) {
+        const row = event.target.closest("tr");
+        if (!row) return;
+
+        if (editButton) {
+            editCandidate(row.dataset.id);
+        }
+
+        if (deleteButton) {
+            deleteCandidate(row.dataset.id);
+        }
+    }
+});
+
+        searchInput.addEventListener("input", filterRows);
+        pageSizeInput.addEventListener("change", () => {
+            currentPage = 1;
+            renderRows();
+        });
+
+        document.getElementById("ciPrevious").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                renderRows();
+            }
+        });
+
+        document.getElementById("ciNext").addEventListener("click", () => {
+            const totalPages = Math.max(1, Math.ceil(filteredRows.length / Number(pageSizeInput.value)));
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderRows();
+            }
+        });
+
+        renderRows();
+    })();
+    // Print
+document.getElementById("ciPrint").addEventListener("click", () => {
+    window.print();
+});
+
+// Close
+document.getElementById("ciClose").addEventListener("click", () => {
+    window.location.href = '@Url.Action("Index", "Candidate")';
+});
+</script>

@@ -1,0 +1,54 @@
+{
+  "headers": [
+    {
+      "field": "show",
+      "title": "Show",
+      "type": "show"
+    },
+    {
+      "field": "attachmentType",
+      "title": "Attachment Type",
+      "type": "select",
+      "options": [
+        "Contract",
+        "Agreement",
+        "Invoice",
+        "Purchase Order",
+        "Supporting Document",
+        "Other"
+      ]
+    },
+    {
+      "field": "remarks",
+      "title": "Remarks",
+      "type": "text"
+    },
+    {
+      "field": "fileName",
+      "title": "Attachment",
+      "type": "file"
+    },
+    {
+      "field": "trackExpiry",
+      "title": "TrackExpiry",
+      "type": "checkbox"
+    },
+    {
+      "field": "refNo",
+      "title": "Ref No",
+      "type": "text"
+    },
+    {
+      "field": "issueDateEnabled",
+      "title": "Issue Date",
+      "type": "dateToggle",
+      "dateField": "issueDate"
+    },
+    {
+      "field": "expiryDateEnabled",
+      "title": "Expiry Date",
+      "type": "dateToggle",
+      "dateField": "expiryDate"
+    }
+  ]
+}

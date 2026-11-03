@@ -1,0 +1,20 @@
+{
+  "headers": [
+    {
+      "field": "institute",
+      "title": "Institute"
+    },
+    {
+      "field": "qualification",
+      "title": "Qualification"
+    },
+    {
+      "field": "specialization",
+      "title": "Specialization"
+    },
+    {
+      "field": "remarks",
+      "title": "Remarks"
+    }
+  ]
+}

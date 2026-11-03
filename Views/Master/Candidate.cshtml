@@ -1,0 +1,1122 @@
+@using System.Text.Json
+@using System.Text.Json.Nodes
+@model JsonObject
+
+@{
+    ViewData["Title"] = "Candidate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var candidateConfig = ViewData["CandidateConfig"] as JsonObject
+        ?? new JsonObject();
+
+    var educationConfig = ViewData["EducationConfig"] as JsonObject
+        ?? new JsonObject();
+
+    var experienceConfig = ViewData["ExperienceConfig"] as JsonObject
+        ?? new JsonObject();
+
+    var referenceConfig = ViewData["ReferenceConfig"] as JsonObject
+        ?? new JsonObject();
+
+    var attachmentConfig = ViewData["AttachmentConfig"] as JsonObject
+        ?? new JsonObject();
+
+    var initialCandidate = Model?.DeepClone() ?? new JsonObject();
+
+    var jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .candidate-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .candidate-page > .candidate-card {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 24px;
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14);
+    }
+
+    .candidate-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: none;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .candidate-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .candidate-title i {
+        color: #4e73df;
+    }
+
+    .candidate-toolbar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .candidate-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 5px 9px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.5;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.08);
+        transition: filter 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .candidate-btn:hover {
+        filter: brightness(0.96);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        text-decoration: none;
+    }
+
+    .candidate-btn-primary {
+        background: #4e73df;
+        border-color: #4e73df;
+        color: #fff;
+    }
+
+    .candidate-btn-secondary {
+        background: #858796;
+        border-color: #858796;
+        color: #fff;
+    }
+
+    .candidate-btn-success {
+        background: #1cc88a;
+        border-color: #1cc88a;
+        color: #fff;
+    }
+
+    .candidate-btn-danger {
+        background: #e74a3b;
+        border-color: #e74a3b;
+        color: #fff;
+    }
+
+    .candidate-btn-light {
+        background: #f8f9fc;
+        border-color: #d1d3e2;
+        color: #5a5c69;
+    }
+
+    .candidate-btn-primary:hover,
+    .candidate-btn-secondary:hover,
+    .candidate-btn-success:hover,
+    .candidate-btn-danger:hover {
+        color: #fff;
+    }
+
+    .candidate-card-body {
+        padding: 20px 16px;
+        background: #fff;
+    }
+
+    .candidate-tabs {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin: 0 0 18px;
+        padding: 0 0 12px;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .candidate-tab {
+        padding: 7px 12px;
+        border: 1px solid #d1d3e2;
+        border-radius: 4px;
+        background: #f8f9fc;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .candidate-tab:hover {
+        border-color: #7d9fe5;
+        color: #4e73df;
+    }
+
+    .candidate-tab.active {
+        color: #fff;
+        background: #4e73df;
+        border-color: #4e73df;
+        box-shadow: 0 0.1rem 0.3rem rgba(78, 115, 223, 0.18);
+    }
+
+    .candidate-panel {
+        display: none;
+    }
+
+    .candidate-panel.active {
+        display: block;
+    }
+
+    .candidate-section {
+        margin-bottom: 24px;
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(58, 59, 69, 0.08);
+    }
+
+    .candidate-section-title {
+        display: flex;
+        align-items: center;
+        padding: 12px 16px;
+        margin: 0;
+        background: #eef0f3;
+        color: #4e73df;
+        border-bottom: 1px solid #e1e6ed;
+        font-size: 0.9rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.035em;
+    }
+
+    .candidate-section-content {
+        padding: 20px 16px;
+        background: #fff;
+    }
+
+    .candidate-form-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0 14px;
+        padding: 20px 16px 4px;
+    }
+
+    .candidate-field {
+        margin-bottom: 20px;
+        min-width: 0;
+    }
+
+    .candidate-field label {
+        display: block;
+        margin-bottom: 5px;
+        color: #596579;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+    }
+
+    .candidate-required {
+        color: #e74a3b;
+        margin-left: 3px;
+        font-weight: 800;
+    }
+
+    .candidate-field input,
+    .candidate-field select,
+    .candidate-field textarea {
+        display: block;
+        width: 100%;
+        height: 36px;
+        padding: 6px 10px;
+        box-sizing: border-box;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        background: #fff;
+        color: #4d596b;
+        font-family: inherit;
+        font-size: 0.83rem;
+        box-shadow: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .candidate-field input:focus,
+    .candidate-field select:focus,
+    .candidate-field textarea:focus {
+        border-color: #7d9fe5;
+        outline: none;
+        box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+    }
+
+    .candidate-field input[readonly],
+    .candidate-field input:read-only {
+        background-color: #eaecf4;
+        color: #6e707e;
+        border-color: #d1d3e2;
+        cursor: default;
+        opacity: 1;
+    }
+
+    .candidate-field input[type="file"] {
+        height: auto;
+        min-height: 36px;
+        padding: 5px 8px;
+    }
+
+    .candidate-field textarea {
+        height: auto;
+        min-height: 90px;
+        resize: vertical;
+    }
+
+    .candidate-message {
+        font-size: 0.8rem;
+        margin-bottom: 14px;
+    }
+
+    .candidate-page .text-danger {
+        font-size: 0.8rem;
+    }
+
+    .candidate-grid-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin: 16px 16px 12px;
+    }
+
+    .candidate-grid-wrap {
+        overflow-x: auto;
+        padding: 0 16px 16px;
+    }
+
+    .candidate-grid {
+        width: 100%;
+        min-width: 650px;
+        border-collapse: collapse;
+        background: #fff;
+    }
+
+    .candidate-grid th,
+    .candidate-grid td {
+        padding: 10px;
+        border: 1px solid #e3e6f0;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .candidate-grid th {
+    background-color: #4e73df;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-color: #3d5cbe;
+    vertical-align: middle;
+    white-space: nowrap;
+    }
+
+    .candidate-grid td input,
+    .candidate-grid td select {
+        width: 100%;
+        min-width: 110px;
+        height: 34px;
+        padding: 5px 8px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #4d596b;
+        font-family: inherit;
+        font-size: 0.8rem;
+    }
+
+    .candidate-grid tbody tr:hover {
+    background-color: #f0f3ff;
+}
+
+    .candidate-grid td input:focus,
+    .candidate-grid td select:focus {
+        border-color: #7d9fe5;
+        outline: none;
+        box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.12);
+    }
+
+    .candidate-remove-row {
+        padding: 4px 7px;
+        border: 0;
+        border-radius: 4px;
+        background: transparent;
+        color: #e74a3b;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .candidate-remove-row:hover {
+        background: #fdecea;
+    }
+
+    .candidate-photo-preview {
+        display: block;
+        width: 110px;
+        height: 110px;
+        margin-top: 8px;
+        border: 1px dashed #d1d3e2;
+        border-radius: 5px;
+        background: #f8f9fc;
+        object-fit: cover;
+    }
+
+    .candidate-bottom-actions {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 18px;
+        padding-top: 14px;
+        border-top: 1px solid #e3e6f0;
+    }
+
+    @@media (max-width: 900px) {
+        .candidate-form-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .candidate-page {
+            padding: 12px 0 20px;
+        }
+
+        .candidate-card-header {
+            align-items: flex-start;
+        }
+
+        .candidate-toolbar {
+            width: 100%;
+        }
+
+        .candidate-card-body {
+            padding: 16px 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .candidate-title {
+            font-size: 0.78rem;
+        }
+
+        .candidate-toolbar {
+            gap: 5px;
+        }
+
+        .candidate-btn {
+            font-size: 0.75rem;
+            padding: 5px 7px;
+        }
+
+        .candidate-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .candidate-tabs {
+            gap: 5px;
+        }
+
+        .candidate-tab {
+            font-size: 0.73rem;
+            padding: 6px 9px;
+        }
+    }
+
+    @@media print {
+        .candidate-toolbar,
+        .candidate-bottom-actions,
+        .candidate-grid-actions,
+        .candidate-remove-row {
+            display: none !important;
+        }
+
+        .candidate-page > .candidate-card,
+        .candidate-section {
+            box-shadow: none !important;
+            margin-bottom: 12px !important;
+        }
+
+        .candidate-panel {
+            display: block !important;
+        }
+    }
+</style>
+
+<div class="candidate-page">
+
+    <div class="candidate-card">
+        <div class="candidate-card-header">
+            <h5 class="candidate-title"><i class="fas fa-user-tie"></i> Candidate</h5>
+
+            <div class="candidate-toolbar">
+
+    <button type="button" id="candidateNew"
+            class="candidate-btn candidate-btn-secondary">
+        <i class="fas fa-plus"></i> New
+    </button>
+
+    <button type="button" id="candidateEdit"
+            class="candidate-btn candidate-btn-primary" disabled>
+        <i class="fas fa-edit"></i> Edit
+    </button>
+
+    <button type="button" id="candidateSave"
+            class="candidate-btn candidate-btn-success">
+        <i class="fas fa-save"></i> Save
+    </button>
+
+    <button type="button" id="candidateClone"
+            class="candidate-btn candidate-btn-secondary" disabled>
+        <i class="fas fa-copy"></i> Clone
+    </button>
+
+    <button type="button" id="candidateUnPost"
+            class="candidate-btn candidate-btn-secondary" disabled>
+        <i class="fas fa-undo"></i> UnPost
+    </button>
+
+    <button type="button" id="candidatePrint"
+            class="candidate-btn candidate-btn-light">
+        <i class="fas fa-print"></i> Print
+    </button>
+
+    <button type="button" id="candidateDelete"
+            class="candidate-btn candidate-btn-danger" disabled>
+        <i class="fas fa-trash"></i> Delete
+    </button>
+
+    <button type="button" id="candidateApprove"
+            class="candidate-btn candidate-btn-success" disabled>
+        <i class="fas fa-check"></i> Approve
+    </button>
+
+    <button type="button" id="candidateReject"
+            class="candidate-btn candidate-btn-danger" disabled>
+        <i class="fas fa-times"></i> Reject
+    </button>
+
+    <button type="button" id="candidateAuthTracker"
+            class="candidate-btn candidate-btn-light" disabled>
+        <i class="fas fa-history"></i> Auth Tracker
+    </button>
+
+    <button type="button" id="candidateClose"
+            class="candidate-btn candidate-btn-danger">
+        <i class="fas fa-times-circle"></i> Close
+    </button>
+
+</div>
+        </div>
+
+        <div class="candidate-card-body">
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger candidate-message">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <form id="candidateForm"
+                  method="post"
+                  action="@Url.Action("Save", "Candidate")">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" id="candidateJson"
+                       name="candidateJson" />
+
+                <div id="candidateTabs" class="candidate-tabs"></div>
+
+                <div id="candidatePanels"></div>
+
+                <div class="candidate-bottom-actions">
+                    <button type="button" id="candidateSaveBottom"
+                            class="candidate-btn candidate-btn-success">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+
+                    <a href="@Url.Action("CandidateIndex", "Candidate")"
+                       class="candidate-btn candidate-btn-light">
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const candidateConfig =
+        @Html.Raw(JsonSerializer.Serialize(candidateConfig));
+
+    const educationConfig =
+        @Html.Raw(JsonSerializer.Serialize(educationConfig));
+
+    const experienceConfig =
+        @Html.Raw(JsonSerializer.Serialize(experienceConfig));
+
+    const referenceConfig =
+        @Html.Raw(JsonSerializer.Serialize(referenceConfig));
+
+    const attachmentConfig =
+        @Html.Raw(JsonSerializer.Serialize(attachmentConfig));
+
+    const initialCandidate =
+        @Html.Raw(initialCandidate.ToJsonString());
+
+    const candidateId =
+        @((ViewData["CandidateId"] as int?) ?? 0);
+
+    let candidateData = structuredClone(initialCandidate);
+
+    const gridConfigurations = {
+        education: educationConfig,
+        experience: experienceConfig,
+        references: referenceConfig,
+        attachments: attachmentConfig
+    };
+
+    const gridLabels = {
+        education: "Educational Qualification",
+        experience: "Experience & Ref",
+        references: "Reference",
+        attachments: "Attachments"
+    };
+
+    function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        })[char]);
+    }
+
+    function getValue(object, key) {
+        return object?.[key] ?? "";
+    }
+
+    function renderTabs() {
+        const tabsContainer = document.getElementById("candidateTabs");
+        const panelsContainer = document.getElementById("candidatePanels");
+
+        tabsContainer.innerHTML = "";
+        panelsContainer.innerHTML = "";
+
+        (candidateConfig.tabs || []).forEach((tab, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className =
+                "candidate-tab" + (index === 0 ? " active" : "");
+            button.textContent = tab.title;
+            button.dataset.tab = tab.id;
+
+            button.addEventListener("click", () => activateTab(tab.id));
+
+            tabsContainer.appendChild(button);
+
+            const panel = document.createElement("div");
+            panel.className =
+                "candidate-panel" + (index === 0 ? " active" : "");
+            panel.id = "candidate-panel-" + tab.id;
+
+            if (tab.type === "grid") {
+                panel.innerHTML = renderGrid(tab.dataField);
+            } else {
+                (tab.sections || []).forEach(section => {
+                    panel.innerHTML += renderSection(section);
+                });
+            }
+
+            panelsContainer.appendChild(panel);
+        });
+
+        // If a grid tab is missing from the main configuration,
+        // do not hardcode it here. Add it to candidate-config.json.
+    }
+
+    function activateTab(tabId) {
+        document.querySelectorAll(".candidate-tab")
+            .forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.tab === tabId
+                );
+            });
+
+        document.querySelectorAll(".candidate-panel")
+            .forEach(panel => {
+                panel.classList.toggle(
+                    "active",
+                    panel.id === "candidate-panel-" + tabId
+                );
+            });
+    }
+
+    function renderSection(section) {
+        let html = `
+            <div class="candidate-section">
+                <div class="candidate-section-title">
+                    ${escapeHtml(section.title)}
+                </div>
+                <div class="candidate-form-grid">
+        `;
+
+        (section.fields || []).forEach(field => {
+            html += renderField(field);
+        });
+
+        html += `
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    function renderField(field) {
+        const name = field.name;
+        const value = getValue(candidateData, name);
+        const required = field.required === true;
+        const requiredMark = required
+            ? '<span class="candidate-required">*</span>'
+            : "";
+
+        let control = "";
+
+        const options = field.options || [];
+
+        if (field.type === "master" ||
+            field.type === "numberList") {
+
+            control = `
+                <select id="field-${escapeHtml(name)}"
+                        data-field="${escapeHtml(name)}"
+                        ${required ? "required" : ""}>
+                    <option value="">Select ${escapeHtml(field.label)}</option>
+                    ${options.map(option => `
+                        <option value="${escapeHtml(option)}"
+                            ${String(option) === String(value) ? "selected" : ""}>
+                            ${escapeHtml(option)}
+                        </option>
+                    `).join("")}
+                </select>
+            `;
+        }
+        else if (field.type === "picture") {
+            control = `
+                <input type="file"
+                       id="field-${escapeHtml(name)}"
+                       data-field="${escapeHtml(name)}"
+                       accept="image/*">
+                <img class="candidate-photo-preview"
+                     id="photoPreview"
+                     src="${value ? escapeHtml(value) : ""}"
+                     style="${value ? "" : "display:none"}">
+            `;
+        }
+        else {
+            const type =
+                field.type === "date" ? "date" :
+                field.type === "email" ? "email" :
+                field.type === "number" ? "number" :
+                "text";
+
+            control = `
+                <input type="${type}"
+                       id="field-${escapeHtml(name)}"
+                       data-field="${escapeHtml(name)}"
+                       value="${escapeHtml(value)}"
+                       ${field.auto ? "readonly" : ""}
+                       ${required ? "required" : ""}>
+            `;
+        }
+
+        return `
+            <div class="candidate-field">
+                <label for="field-${escapeHtml(name)}">
+                    ${escapeHtml(field.label)}${requiredMark}
+                </label>
+                ${control}
+            </div>
+        `;
+    }
+
+    function renderGrid(dataField) {
+        const config = gridConfigurations[dataField];
+        const headers = config?.headers || [];
+        const rows = candidateData[dataField] || [];
+
+        let html = `
+            <div class="candidate-section">
+                <div class="candidate-section-title">
+                    ${escapeHtml(gridLabels[dataField] || dataField)}
+                </div>
+
+                <div class="candidate-grid-actions">
+                    <button type="button"
+                            class="candidate-btn candidate-btn-primary"
+                            onclick="addGridRow('${dataField}')">
+                        <i class="fas fa-plus"></i> Add Row
+                    </button>
+                </div>
+
+                <div class="candidate-grid-wrap">
+                    <table class="candidate-grid">
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `
+                                    <th>${escapeHtml(header.title)}</th>
+                                `).join("")}
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grid-${dataField}">
+        `;
+
+        if (rows.length > 0) {
+    rows.forEach(row => {
+        html += renderGridRow(dataField, row);
+    });
+} else {
+    // Display one blank row when the grid has no records.
+    html += renderGridRow(dataField, {});
+}
+
+        html += `
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    function gridInputType(field) {
+        const key = field.toLowerCase();
+
+        if (key.includes("date")) return "date";
+        if (key.includes("year") || key === "years") return "number";
+        if (key.includes("contactno")) return "tel";
+
+        return "text";
+    }
+
+    function renderGridRow(dataField, row = {}) {
+    const headers =
+        gridConfigurations[dataField]?.headers || [];
+
+    return `
+        <tr>
+            ${headers.map(header => {
+                const field = header.field;
+                const value = getValue(row, field);
+                const type = header.type || gridInputType(field);
+
+                let control = "";
+
+                if (type === "show") {
+                    control = `
+                        <button type="button"
+                                class="btn btn-info btn-sm"
+                                onclick="showGridAttachment(this)">
+                            <i class="fas fa-eye"></i> Show
+                        </button>
+                    `;
+                }
+                else if (type === "checkbox") {
+                    control = `
+                        <input type="checkbox"
+                               data-grid-field="${escapeHtml(field)}"
+                               ${value === true ? "checked" : ""}
+                               onchange="${field === "trackExpiry" ? "toggleGridExpiry(this)" : ""}"
+                               style="width:18px; min-width:18px; height:18px;">
+                    `;
+                }
+                else if (type === "select") {
+                    const options = header.options || [];
+
+                    control = `
+                        <select data-grid-field="${escapeHtml(field)}">
+                            <option value="">-- Select --</option>
+                            ${options.map(option => `
+                                <option value="${escapeHtml(option)}"
+                                    ${String(option) === String(value) ? "selected" : ""}>
+                                    ${escapeHtml(option)}
+                                </option>
+                            `).join("")}
+                        </select>
+                    `;
+                }
+                else if (type === "file") {
+                    control = `
+                        <input type="file"
+                               class="candidate-attachment-file"
+                               data-grid-field="${escapeHtml(field)}"
+                               accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                               onchange="updateGridFileName(this)">
+
+                        <div class="candidate-file-name small text-muted mt-1">
+                            ${value ? escapeHtml(value) : "No file chosen"}
+                        </div>
+                    `;
+                }
+                else if (type === "dateToggle") {
+                    const dateField = header.dateField;
+                    const dateValue = getValue(row, dateField);
+                    const enabled = value === true;
+
+                    control = `
+                        <div class="candidate-date-control">
+                            <input type="checkbox"
+                                   data-grid-field="${escapeHtml(field)}"
+                                   ${enabled ? "checked" : ""}
+                                   onchange="toggleGridDate(this)">
+
+                            <input type="date"
+                                   data-grid-field="${escapeHtml(dateField)}"
+                                   value="${escapeHtml(dateValue)}"
+                                   ${enabled ? "" : "disabled"}>
+                        </div>
+                    `;
+                }
+                else {
+                    control = `
+                        <input type="${escapeHtml(type)}"
+                               data-grid-field="${escapeHtml(field)}"
+                               value="${escapeHtml(value)}">
+                    `;
+                }
+
+                return `<td>${control}</td>`;
+            }).join("")}
+
+            <td>
+                <button type="button"
+                        class="candidate-remove-row"
+                        title="Remove row"
+                        onclick="removeGridRow(this, '${dataField}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+}
+
+    function updateGridFileName(input) {
+    const row = input.closest("tr");
+    const fileName = row.querySelector(".candidate-file-name");
+
+    fileName.textContent = input.files.length
+        ? input.files[0].name
+        : "No file chosen";
+}
+
+function showGridAttachment(button) {
+    const row = button.closest("tr");
+    const input = row.querySelector(".candidate-attachment-file");
+
+    if (!input || !input.files.length) {
+        alert("Choose a file in this row first.");
+        return;
+    }
+
+    const file = input.files[0];
+    const url = URL.createObjectURL(file);
+
+    window.open(url, "_blank");
+
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function toggleGridDate(checkbox) {
+    const dateInput = checkbox.parentElement
+        .querySelector('input[type="date"]');
+
+    dateInput.disabled = !checkbox.checked;
+
+    if (!checkbox.checked) {
+        dateInput.value = "";
+    }
+}
+
+function toggleGridExpiry(checkbox) {
+    const row = checkbox.closest("tr");
+
+    const expiryCheckbox = row.querySelector(
+        '[data-grid-field="expiryDateEnabled"]'
+    );
+
+    const expiryDate = row.querySelector(
+        '[data-grid-field="expiryDate"]'
+    );
+
+    if (expiryCheckbox && expiryDate) {
+        expiryCheckbox.disabled = !checkbox.checked;
+
+        if (!checkbox.checked) {
+            expiryCheckbox.checked = false;
+            expiryDate.checked = false;
+            expiryDate.disabled = true;
+            expiryDate.value = "";
+        }
+    }
+}
+
+function removeGridRow(button, dataField) {
+    const tbody = document.getElementById("grid-" + dataField);
+
+    if (dataField === "attachments" &&
+        tbody.querySelectorAll("tr").length <= 1) {
+        alert("Keep at least one attachment row. You can leave it empty.");
+        return;
+    }
+
+    button.closest("tr").remove();
+}
+
+    function collectFormData() {
+        const result = structuredClone(candidateData);
+
+        result.id = candidateId;
+
+        document.querySelectorAll("[data-field]").forEach(control => {
+            const field = control.dataset.field;
+
+            if (control.type === "file") {
+                return;
+            }
+
+            result[field] = control.value;
+        });
+
+        Object.keys(gridConfigurations).forEach(dataField => {
+            const tbody = document.getElementById("grid-" + dataField);
+
+            if (!tbody) return;
+
+            const rows = [];
+
+            tbody.querySelectorAll("tr").forEach(row => {
+                const rowData = {};
+
+                row.querySelectorAll("[data-grid-field]")
+    .forEach(input => {
+        if (input.type === "file") {
+    rowData[input.dataset.gridField] =
+        input.files.length ? input.files[0].name : "";
+
+    return;
+}
+
+        if (input.type === "checkbox") {
+            rowData[input.dataset.gridField] = input.checked;
+        } else {
+            rowData[input.dataset.gridField] = input.value;
+        }
+    });
+
+const hasValue = Object.values(rowData)
+    .some(value =>
+        value === true ||
+        (typeof value === "string" && value.trim() !== "")
+    );
+
+                if (hasValue) rows.push(rowData);
+            });
+
+            result[dataField] = rows;
+        });
+
+        return result;
+    }
+
+    function saveCandidate() {
+        const form = document.getElementById("candidateForm");
+
+        if (!form.reportValidity()) return;
+
+        const data = collectFormData();
+
+        document.getElementById("candidateJson").value =
+            JSON.stringify(data);
+
+        form.submit();
+    }
+
+    document.getElementById("candidateSave")
+        .addEventListener("click", saveCandidate);
+
+    document.getElementById("candidateSaveBottom")
+        .addEventListener("click", saveCandidate);
+
+    document.getElementById("candidateNew")
+        .addEventListener("click", () => {
+            window.location.href =
+                '@Url.Action("Index", "Candidate")';
+        });
+
+    document.getElementById("candidateClose")
+        .addEventListener("click", () => {
+            window.location.href =
+                '@Url.Action("CandidateIndex", "Candidate")';
+        });
+
+    document.addEventListener("change", event => {
+        if (event.target.id === "field-photo") {
+            const file = event.target.files?.[0];
+
+            if (!file) return;
+
+            const preview = document.getElementById("photoPreview");
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        }
+    });
+
+    renderTabs();
+</script>

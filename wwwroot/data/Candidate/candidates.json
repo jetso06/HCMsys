@@ -1,0 +1,15 @@
+{
+  "lastId": 0,
+  "records": [
+    {
+      "id": 1,
+      "code": "CAND-0001",
+      "name": "Example Candidate",
+      "company": "",
+      "education": [],
+      "experience": [],
+      "references": [],
+      "attachments": []
+    }
+  ]
+}

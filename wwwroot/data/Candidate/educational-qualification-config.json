@@ -1,0 +1,24 @@
+{
+  "headers": [
+    {
+      "field": "type",
+      "title": "Type"
+    },
+    {
+      "field": "qualification",
+      "title": "Qualification"
+    },
+    {
+      "field": "specialization",
+      "title": "Specialization"
+    },
+    {
+      "field": "yearOfPassing",
+      "title": "Year of Passing"
+    },
+    {
+      "field": "collegeUniversityName",
+      "title": "College/University Name"
+    }
+  ]
+}
