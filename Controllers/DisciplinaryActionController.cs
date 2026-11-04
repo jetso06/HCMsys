@@ -153,7 +153,8 @@ namespace HCMSys.Controllers
                         HrStatus = record.HrStatus,
                         WarningType = record.WarningType,
                         WarningAction = record.WarningAction,
-                        WarningComments = record.WarningComments
+                        WarningComments = record.WarningComments,
+                        Attachments = record.Attachments
                     };
                 }
 
@@ -208,6 +209,11 @@ namespace HCMSys.Controllers
                 }
 
                 var input = model.Form;
+
+                input.Attachments = JsonSerializer.Deserialize<List<DisciplinaryActionAttachment>>(
+                    input.AttachmentsJson ?? "[]", _jsonOptions)
+                    ?? new List<DisciplinaryActionAttachment>();
+
                 var store = ReadRecords();
 
                 var existing = store.Records.FirstOrDefault(
@@ -247,7 +253,8 @@ namespace HCMSys.Controllers
                     HrStatus = input.HrStatus,
                     WarningType = input.WarningType,
                     WarningAction = input.WarningAction,
-                    WarningComments = input.WarningComments
+                    WarningComments = input.WarningComments,
+                    Attachments = input.Attachments
                 };
 
                 if (existing == null)
@@ -388,14 +395,26 @@ namespace HCMSys.Controllers
         public bool Active { get; set; } = true;
     }
 
-    // Entry-page view model
     public class DisciplinaryActionViewModel
     {
         public DisciplinaryActionConfig Config { get; set; } = new();
         public List<DisciplinaryActionEmployee> Employees { get; set; } = new();
         public DisciplinaryActionInput Form { get; set; } = new();
     }
-
+   
+    public class DisciplinaryActionAttachment
+    {
+        public bool Show { get; set; }
+        public string AttachmentType { get; set; } = "";
+        public string Remarks { get; set; } = "";
+        public string FileName { get; set; } = "";
+        public bool TrackExpiry { get; set; }
+        public string RefNo { get; set; } = "";
+        public bool IssueDateEnabled { get; set; }
+        public string IssueDate { get; set; } = "";
+        public bool ExpiryDateEnabled { get; set; }
+        public string ExpiryDate { get; set; } = "";
+    }
     public class DisciplinaryActionInput
     {
         public string DocumentNo { get; set; } = "";
@@ -414,6 +433,10 @@ namespace HCMSys.Controllers
         public string WarningType { get; set; } = "";
         public string WarningAction { get; set; } = "";
         public string WarningComments { get; set; } = "";
+        [JsonIgnore]
+        public string AttachmentsJson { get; set; } = "[]";
+
+        public List<DisciplinaryActionAttachment> Attachments { get; set; } = new();
     }
 
     // JSON store

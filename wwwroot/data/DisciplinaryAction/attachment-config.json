@@ -1,76 +1,54 @@
 {
-  "columns": [
+  "headers": [
     {
-      "key": "show",
-      "label": "Show"
+      "field": "show",
+      "title": "Show",
+      "type": "show"
     },
     {
-      "key": "attachmentType",
-      "label": "Attachment Type"
+      "field": "attachmentType",
+      "title": "Attachment Type",
+      "type": "select",
+      "options": [
+        "Contract",
+        "Agreement",
+        "Invoice",
+        "Purchase Order",
+        "Supporting Document",
+        "Other"
+      ]
     },
     {
-      "key": "remarks",
-      "label": "Remarks"
+      "field": "remarks",
+      "title": "Remarks",
+      "type": "text"
     },
     {
-      "key": "fileName",
-      "label": "Attachment"
+      "field": "fileName",
+      "title": "Attachment",
+      "type": "file"
     },
     {
-      "key": "trackExpiry",
-      "label": "TrackExpiry"
+      "field": "trackExpiry",
+      "title": "TrackExpiry",
+      "type": "checkbox"
     },
     {
-      "key": "refNo",
-      "label": "Ref No"
+      "field": "refNo",
+      "title": "Ref No",
+      "type": "text"
     },
     {
-      "key": "issueDate",
-      "label": "Issue Date"
+      "field": "issueDateEnabled",
+      "title": "Issue Date",
+      "type": "dateToggle",
+      "dateField": "issueDate"
     },
     {
-      "key": "expiryDate",
-      "label": "Expiry Date"
-    },
-    {
-      "key": "action",
-      "label": "Action"
+      "field": "expiryDateEnabled",
+      "title": "Expiry Date",
+      "type": "dateToggle",
+      "dateField": "expiryDate"
     }
-  ],
-  "attachmentTypes": [
-    "Contract",
-    "Agreement",
-    "Invoice",
-    "Purchase Order",
-    "Supporting Document",
-    "Other"
-  ],
-  "acceptedFileExtensions": [
-    ".pdf",
-    ".doc",
-    ".docx",
-    ".xls",
-    ".xlsx",
-    ".png",
-    ".jpg",
-    ".jpeg"
-  ],
-  "labels": {
-    "addButton": "Add Attachment",
-    "emptyMessage": "No attachments added.",
-    "loadingMessage": "Loading attachments...",
-    "errorMessage": "Could not load attachment configuration or records.",
-    "helpText": "Use Add Attachment to insert more rows. Issue and expiry dates are optional.",
-    "selectPlaceholder": "-- Select --",
-    "optionalPlaceholder": "Optional",
-    "removeButton": "Remove attachment",
-    "showLabel": "Show attachment",
-    "trackExpiryLabel": "Track expiry",
-    "issueDateLabel": "Enable issue date",
-    "expiryDateLabel": "Enable expiry date"
-  },
-  "validation": {
-    "remarksMaxLength": 200,
-    "refNoMaxLength": 80
-  }
+  ]
 }

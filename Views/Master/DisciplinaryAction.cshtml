@@ -255,6 +255,13 @@
 
 
                 </div>
+                <input type="hidden"
+                       id="daAttachmentsJson"
+                       name="Form.AttachmentsJson"
+                       value='@System.Text.Json.JsonSerializer.Serialize(
+                           Model.Form.Attachments,
+                           new System.Text.Json.JsonSerializerOptions(
+                               System.Text.Json.JsonSerializerDefaults.Web))' />
             </form>
         </div>
     </div>
@@ -469,6 +476,40 @@
     font-size: .75rem;
 }
 
+    /* File input and its delete button stay on one line */
+    .da-file-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: nowrap;
+        min-width: 280px;
+    }
+
+        .da-file-wrapper input[type="file"] {
+            flex: 1;
+            min-width: 190px;
+            max-width: none;
+        }
+
+        .da-file-wrapper .da-clear-file,
+        .da-attachment-table .da-delete-row {
+            width: 36px;
+            height: 36px;
+            min-width: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .da-attachment-table .da-delete-row {
+        margin: 0 auto;
+    }
+
+    .da-attachment-table .da-show {
+        white-space: nowrap;
+    }
+
 .da-attachment-table input[type="checkbox"] {
     width: 16px;
     height: 16px;
@@ -514,254 +555,338 @@
 @section Scripts {
     <script>
         let daAttachmentCounter = 0;
-        let daAttachmentConfig = null;
+let daAttachmentConfig = null;
 
-        async function daLoadAttachments() {
-            const head = document.getElementById("daAttachmentsHead");
-            const body = document.getElementById("daAttachmentsBody");
+async function daLoadAttachments() {
+    const head = document.getElementById("daAttachmentsHead");
+    const body = document.getElementById("daAttachmentsBody");
+    const hidden = document.getElementById("daAttachmentsJson");
 
-            body.innerHTML = "";
+    try {
+        const configUrl =
+            '@Url.Content("~/data/DisciplinaryAction/attachment-config.json")';
 
-            try {
-                const configUrl =
-                    '@Url.Content("~/data/DisciplinaryAction/attachment-config.json")';
-                const recordsUrl =
-                    '@Url.Content("~/data/DisciplinaryAction/attachments.json")';
+                const response = await fetch(configUrl, {
+            cache: "no-store"
+        });
 
-                const [configResponse, recordsResponse] = await Promise.all([
-                    fetch(configUrl),
-                    fetch(recordsUrl)
-                ]);
+        if (!response.ok) {
+            throw new Error("Unable to load attachment configuration.");
+        }
 
-                if (!configResponse.ok || !recordsResponse.ok) {
-                    throw new Error("Unable to read attachment JSON files.");
-                }
+                daAttachmentConfig = await response.json();
 
-                daAttachmentConfig = await configResponse.json();
-                const store = await recordsResponse.json();
-                const records = Array.isArray(store)
-                    ? store
-                    : (store.records || []);
+        if (!Array.isArray(daAttachmentConfig.headers) ||
+            daAttachmentConfig.headers.length === 0) {
+            throw new Error(
+                "attachment-config.json has no valid headers."
+            );
+        }
 
-                // All column labels come from JSON.
-                head.innerHTML = "";
-                const headerRow = document.createElement("tr");
+        const headers = daAttachmentConfig.headers;
 
-                daAttachmentConfig.columns.forEach(column => {
-                    const th = document.createElement("th");
-                    th.textContent = column.label;
-                    headerRow.appendChild(th);
-                });
+        head.innerHTML = "";
+        body.innerHTML = "";
 
-                head.appendChild(headerRow);
+        const headerRow = document.createElement("tr");
 
-                document.getElementById("daAttachmentsTitle").textContent =
-                    "Attachments";
+        headers.forEach(header => {
+            const th = document.createElement("th");
+            th.textContent = header.title;
+            headerRow.appendChild(th);
+        });
+                const actionHeader = document.createElement("th");
+        actionHeader.textContent = "Action";
+        headerRow.appendChild(actionHeader);
 
-                document.getElementById("daAddAttachmentLabel").textContent =
-                    daAttachmentConfig.labels.addButton;
+        head.appendChild(headerRow);
 
-                document.getElementById("daAttachmentsHelp").textContent =
-                    daAttachmentConfig.labels.helpText;
+        document.getElementById("daAttachmentsTitle").textContent =
+            "Attachments";
 
-                daAttachmentCounter = 0;
+        document.getElementById("daAddAttachmentLabel").textContent =
+            "Add Attachment";
 
-                if (records.length === 0) {
-                    daAddAttachmentRow();
-                } else {
-                    records.forEach(record => daAddAttachmentRow(record));
-                }
-            } catch (error) {
-                console.error(error);
+        document.getElementById("daAttachmentsHelp").textContent =
+            "Add supporting documents and enter their details.";
 
-                head.innerHTML = "";
-                body.innerHTML = "";
+        let records = [];
 
-                const row = document.createElement("tr");
-                const cell = document.createElement("td");
+        try {
+            records = JSON.parse(hidden.value || "[]");
+        } catch {
+            records = [];
+        }
+
+        daAttachmentCounter = 0;
+
+        if (records.length > 0) {
+            records.forEach(item => daAddAttachmentRow(item));
+        } else {
+            daAddAttachmentRow();
+        }
+
+    } catch (error) {
+        console.error(error);
+
+        head.innerHTML = "";
+        body.innerHTML = "";
+
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
 
                 cell.colSpan = Math.max(
-                    daAttachmentConfig?.columns?.length || 1, 1
-                );
-                cell.className = "text-center text-danger";
+            (daAttachmentConfig?.headers?.length || 0) + 1,
+            1
+        );
+        cell.className = "text-center text-danger";
                 cell.textContent =
-                    daAttachmentConfig?.labels?.errorMessage ||
-                    "Unable to load attachment data.";
+            error.message || "Unable to load attachment configuration.";
 
-                row.appendChild(cell);
-                body.appendChild(row);
-            }
-        }
+        row.appendChild(cell);
+                // ACTION column - delete button
+        const actionCell = document.createElement("td");
+        actionCell.className = "text-center align-middle";
 
-        function daAddAttachmentRow(item = {}) {
-            const config = daAttachmentConfig;
-            if (!config) return;
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "btn btn-danger btn-sm";
+        removeButton.title = "Delete attachment";
+        removeButton.innerHTML = '<i class="fas fa-trash"></i>';
 
-            const body = document.getElementById("daAttachmentsBody");
-            const row = document.createElement("tr");
+        removeButton.addEventListener("click", function () {
+            row.remove();
+            daSyncAttachments();
+        });
 
-            row.dataset.rowId = daAttachmentCounter++;
-            row.dataset.attachmentId = item.id ?? "";
+        actionCell.appendChild(removeButton);
+        row.appendChild(actionCell);
+        body.appendChild(row);
+    }
+}
 
-            const cells = {};
 
-            // Build cells in the order defined in JSON.
-            config.columns.forEach(column => {
-                const cell = document.createElement("td");
-                const key = column.key;
+function daAddAttachmentRow(item = {}) {
+    if (!daAttachmentConfig) return;
 
-                if (key === "show" || key === "trackExpiry") {
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.className = `da-${key}`;
-                    checkbox.checked = item[key] === true;
-                    checkbox.setAttribute(
-                        "aria-label",
-                        key === "show"
-                            ? config.labels.showLabel
-                            : config.labels.trackExpiryLabel
-                    );
+    const body = document.getElementById("daAttachmentsBody");
+    const row = document.createElement("tr");
 
-                    if (key === "trackExpiry") {
-                        checkbox.addEventListener("change", () =>
-                            daUpdateExpiryControls(row)
-                        );
-                    }
+    row.dataset.rowId = daAttachmentCounter++;
 
-                    cell.className = "text-center";
-                    cell.appendChild(checkbox);
-                } else if (key === "attachmentType") {
-                    const select = document.createElement("select");
-                    select.className = "form-control da-attachmentType";
+    (daAttachmentConfig.headers || []).forEach(header => {
+        const cell = document.createElement("td");
+        const field = header.field;
+        const type = header.type;
 
-                    const placeholder = document.createElement("option");
-                    placeholder.value = "";
-                    placeholder.textContent = config.labels.selectPlaceholder;
-                    select.appendChild(placeholder);
+                if (type === "show") {
+            const showButton = document.createElement("button");
 
-                    config.attachmentTypes.forEach(type => {
-                        const option = document.createElement("option");
-                        option.value = type;
-                        option.textContent = type;
-                        select.appendChild(option);
-                    });
+            showButton.type = "button";
+            showButton.className = "btn btn-info btn-sm da-show";
+            showButton.innerHTML = '<i class="fas fa-eye"></i> Show';
+            showButton.dataset.shown = item[field] === true ? "true" : "false";
 
-                    // Preserve a saved type even if it is no longer in the config.
-                    if (item.attachmentType &&
-                        !config.attachmentTypes.includes(item.attachmentType)) {
-                        const option = document.createElement("option");
-                        option.value = item.attachmentType;
-                        option.textContent = item.attachmentType;
-                        select.appendChild(option);
-                    }
-
-                    select.value = item.attachmentType || "";
-                    cell.appendChild(select);
-                } else if (key === "remarks" || key === "refNo") {
-                    const input = document.createElement("input");
-                    input.type = "text";
-                    input.className = `form-control da-${key}`;
-                    input.placeholder = config.labels.optionalPlaceholder;
-                    input.maxLength = key === "remarks"
-                        ? config.validation.remarksMaxLength
-                        : config.validation.refNoMaxLength;
-                    input.value = item[key] || "";
-                    cell.appendChild(input);
-                } else if (key === "fileName") {
-                    const input = document.createElement("input");
-                    input.type = "file";
-                    input.className = "da-file-input";
-                    input.accept = config.acceptedFileExtensions.join(",");
-
-                    const fileName = document.createElement("div");
-                    fileName.className = "da-file-name small text-muted mt-1";
-                    fileName.textContent = item.fileName || "";
-
-                    input.addEventListener("change", function () {
-                        fileName.textContent = this.files.length
-                            ? this.files[0].name
-                            : (item.fileName || "");
-                    });
-
-                    cell.append(input, fileName);
-                } else if (key === "issueDate" || key === "expiryDate") {
-                    const isIssue = key === "issueDate";
-                    const enabledKey = isIssue
-                        ? "issueDateEnabled"
-                        : "expiryDateEnabled";
-
-                    const wrapper = document.createElement("div");
-                    wrapper.className = "da-date-control";
-
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.className = `da-${enabledKey}`;
-                    checkbox.checked = item[enabledKey] === true;
-                    checkbox.setAttribute(
-                        "aria-label",
-                        isIssue
-                            ? config.labels.issueDateLabel
-                            : config.labels.expiryDateLabel
-                    );
-
-                    const date = document.createElement("input");
-                    date.type = "date";
-                    date.className = `form-control da-${key}`;
-                    date.value = item[key] || "";
-
-                    checkbox.addEventListener("change", () => {
-                        date.disabled = !checkbox.checked;
-                        if (!checkbox.checked) date.value = "";
-                    });
-
-                    wrapper.append(checkbox, date);
-                    cell.className = "da-date-cell";
-                    cell.appendChild(wrapper);
-                } else if (key === "action") {
-                    const button = document.createElement("button");
-                    button.type = "button";
-                    button.className = "btn btn-danger btn-sm";
-                    button.title = config.labels.removeButton;
-                    button.innerHTML = '<i class="fas fa-trash"></i>';
-                    button.addEventListener("click", () => row.remove());
-                    cell.appendChild(button);
-                }
-
-                cells[key] = cell;
-                row.appendChild(cell);
+            showButton.addEventListener("click", function () {
+                const isShown = this.dataset.shown === "true";
+                this.dataset.shown = isShown ? "false" : "true";
             });
 
-            body.appendChild(row);
+            cell.className = "text-center";
+            cell.appendChild(showButton);
+        } else if (type === "select") {
+            const select = document.createElement("select");
 
-            const fileInput = row.querySelector(".da-file-input");
-            if (fileInput) {
+            select.className = `form-control da-${field}`;
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = "-- Select --";
+            select.appendChild(placeholder);
+
+            (header.options || []).forEach(optionValue => {
+                const option = document.createElement("option");
+                option.value = optionValue;
+                option.textContent = optionValue;
+                select.appendChild(option);
+            });
+
+            select.value = item[field] || "";
+            cell.appendChild(select);
+
+        } else if (type === "text") {
+            const input = document.createElement("input");
+
+            input.type = "text";
+            input.className = `form-control da-${field}`;
+            input.value = item[field] || "";
+
+            cell.appendChild(input);
+
+                } else if (type === "file") {
+            const fileWrapper = document.createElement("div");
+            fileWrapper.className = "da-file-wrapper";
+
+            const input = document.createElement("input");
+            input.type = "file";
+            input.className = `da-${field}-input`;
+
+            const fileName = document.createElement("span");
+            fileName.className = "da-file-name small text-muted";
+            fileName.textContent = item[field] || "";
+
+            // First delete button: clear only the selected file.
+            const clearFileButton = document.createElement("button");
+            clearFileButton.type = "button";
+            clearFileButton.className = "btn btn-danger btn-sm da-clear-file";
+            clearFileButton.title = "Remove selected file";
+            clearFileButton.innerHTML = '<i class="fas fa-trash"></i>';
+
+            input.addEventListener("change", function () {
+                fileName.textContent = this.files.length
+                    ? this.files[0].name
+                    : "";
+            });
+
+            clearFileButton.addEventListener("click", function () {
+                input.value = "";
+                fileName.textContent = "";
+                daSyncAttachments();
+            });
+
+            fileWrapper.append(input, clearFileButton);
+            cell.append(fileWrapper, fileName);
+        }else if (type === "dateToggle") {
+            const dateField = header.dateField;
+            const wrapper = document.createElement("div");
+
+            wrapper.className = "da-date-control";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = `da-${field}`;
+            checkbox.checked = item[field] === true;
+
+            const date = document.createElement("input");
+            date.type = "date";
+            date.className = `form-control da-${dateField}`;
+            date.value = item[dateField] || "";
+date.disabled = !checkbox.checked;
+
+checkbox.addEventListener("change", () => {
+                date.disabled = !checkbox.checked;
+
+                if (!checkbox.checked) {
+                    date.value = "";
+                }
+            });
+
+            wrapper.append(checkbox, date);
+            cell.className = "da-date-cell";
+            cell.appendChild(wrapper);
+        }
+
+        row.appendChild(cell);
+    });
+
+                   // Second delete button: delete the entire attachment row.
+        const actionCell = document.createElement("td");
+        actionCell.className = "text-center align-middle";
+
+        const deleteRowButton = document.createElement("button");
+        deleteRowButton.type = "button";
+        deleteRowButton.className = "btn btn-danger btn-sm da-delete-row";
+        deleteRowButton.title = "Delete attachment row";
+        deleteRowButton.innerHTML = '<i class="fas fa-trash"></i>';
+
+        deleteRowButton.addEventListener("click", function () {
+            row.remove();
+            daSyncAttachments();
+        });
+
+        actionCell.appendChild(deleteRowButton);
+        row.appendChild(actionCell);
+
+        body.appendChild(row);
+
+    body.appendChild(row);
+
+    daUpdateExpiryControls(row);
+}
+
+
+function daUpdateExpiryControls(row) {
+    const trackExpiry = row.querySelector(".da-trackExpiry");
+    const enabled = row.querySelector(".da-expiryDateEnabled");
+    const date = row.querySelector(".da-expiryDate");
+
+    if (!trackExpiry || !enabled || !date) return;
+
+    enabled.disabled = !trackExpiry.checked;
+
+    if (!trackExpiry.checked) {
+        enabled.checked = false;
+        date.value = "";
+    }
+
+    date.disabled = !trackExpiry.checked || !enabled.checked;
+}
+
+
+// Copy the attachment grid values into the hidden form field.
+        function daSyncAttachments() {
+            const hidden = document.getElementById("daAttachmentsJson");
+
+            if (!daAttachmentConfig || !hidden) {
+                return;
+            }
+
+            const rows = document.querySelectorAll("#daAttachmentsBody tr");
+
+    const attachments = [];
+
+    rows.forEach(row => {
+        const item = {};
+
+        (daAttachmentConfig.headers || []).forEach(header => {
+            const field = header.field;
+            const type = header.type;
+
+                    if (type === "show") {
+            const button = row.querySelector(".da-show");
+            item[field] = button?.dataset.shown === "true";
+
+        } else if (type === "checkbox") {
+            const checkbox = row.querySelector(`.da-${field}`);
+            item[field] = checkbox ? checkbox.checked : false;
+
+            } else if (type === "select" || type === "text") {
+                const input = row.querySelector(`.da-${field}`);
+                item[field] = input ? input.value : "";
+
+            } else if (type === "file") {
+                const fileInput = row.querySelector(`.da-${field}-input`);
                 const fileName = row.querySelector(".da-file-name");
-                fileInput.addEventListener("change", function () {
-                    if (this.files.length) {
-                        fileName.textContent = this.files[0].name;
-                    }
-                });
+
+                item[field] = fileInput?.files?.length
+                    ? fileInput.files[0].name
+                    : (fileName?.textContent || "");
+
+            } else if (type === "dateToggle") {
+                const checkbox = row.querySelector(`.da-${field}`);
+                const date = row.querySelector(`.da-${header.dateField}`);
+
+                item[field] = checkbox ? checkbox.checked : false;
+                item[header.dateField] = date ? date.value : "";
             }
+        });
 
-            daUpdateExpiryControls(row);
-        }
+        attachments.push(item);
+    });
 
-        function daUpdateExpiryControls(row) {
-            const trackExpiry = row.querySelector(".da-trackExpiry");
-            const enabled = row.querySelector(".da-expiryDateEnabled");
-            const date = row.querySelector(".da-expiryDate");
+    hidden.value = JSON.stringify(attachments);
+}
 
-            if (!trackExpiry || !enabled || !date) return;
-
-            enabled.disabled = !trackExpiry.checked;
-
-            if (!trackExpiry.checked) {
-                enabled.checked = false;
-                date.value = "";
-            }
-
-            date.disabled = !trackExpiry.checked || !enabled.checked;
-        }
 
         
         function daUpdateClosingComments() {
@@ -797,6 +922,9 @@
 
         document.addEventListener("DOMContentLoaded", function () {
             const form = document.getElementById("daForm");
+            form.addEventListener("submit", function () {
+    daSyncAttachments();
+});
             const employeeSelect = document.getElementById("daEmployeeSelect");
             const departmentInput = document.getElementById("daDepartment");
             const formStatus = document.getElementById("daFormStatus");
@@ -816,11 +944,25 @@
                 departmentInput.value = selected?.dataset.department || "";
             }
 
-            function resetForm() {
-                form.reset();
-                formStatus.textContent = "New Disciplinary Action";
-                updateEmployeeDetails();
+                    function resetForm() {
+            form.reset();
+
+            // Clear the attachment grid.
+            const attachmentBody =
+                document.getElementById("daAttachmentsBody");
+
+            attachmentBody.innerHTML = "";
+
+            if (daAttachmentConfig) {
+                daAddAttachmentRow();
+                daSyncAttachments();
             }
+
+            formStatus.textContent = "New Disciplinary Action";
+
+            updateEmployeeDetails();
+            daUpdateClosingComments();
+        }
 
             employeeSelect.addEventListener("change", updateEmployeeDetails);
 
