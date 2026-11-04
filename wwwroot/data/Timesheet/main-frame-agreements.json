@@ -1,0 +1,22 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "clientId": 1,
+      "code": "MFA-001",
+      "name": "OIS Manpower Agreement",
+      "startDate": "2025-01-01",
+      "endDate": "2027-12-31",
+      "active": true
+    },
+    {
+      "id": 2,
+      "clientId": 2,
+      "code": "MFA-002",
+      "name": "MTS Technical Support Agreement",
+      "startDate": "2025-04-01",
+      "endDate": "2027-03-31",
+      "active": true
+    }
+  ]
+}

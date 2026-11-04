@@ -1,0 +1,28 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "employeeId": 1,
+      "claimType": "Mena Claim",
+      "amount": 15.00,
+      "date": "2026-11-01",
+      "status": "Approved"
+    },
+    {
+      "id": 2,
+      "employeeId": 3,
+      "claimType": "Reimbursable Claim-1",
+      "amount": 25.50,
+      "date": "2026-11-01",
+      "status": "Approved"
+    },
+    {
+      "id": 3,
+      "employeeId": 2,
+      "claimType": "Reimbursable Claim-2",
+      "amount": 12.00,
+      "date": "2026-11-01",
+      "status": "Pending"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "code": "CL-001",
+      "name": "Oman Integrated Services",
+      "active": true
+    },
+    {
+      "id": 2,
+      "code": "CL-002",
+      "name": "Muscat Technology Solutions",
+      "active": true
+    }
+  ]
+}

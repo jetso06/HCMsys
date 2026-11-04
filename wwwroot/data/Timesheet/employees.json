@@ -1,0 +1,60 @@
+{
+  "lastId": 5,
+  "records": [
+    {
+      "id": 1,
+      "empCode": "OM-001",
+      "empName": "Ahmed Al Balushi",
+      "department": "Administration",
+      "designation": "HR Officer",
+      "clientId": 1,
+      "mainFrameAgreementId": 1,
+      "contractType": "Permanent",
+      "active": true
+    },
+    {
+      "id": 2,
+      "empCode": "OM-002",
+      "empName": "Fatima Al Harthy",
+      "department": "Finance",
+      "designation": "Accountant",
+      "clientId": 1,
+      "mainFrameAgreementId": 1,
+      "contractType": "Permanent",
+      "active": true
+    },
+    {
+      "id": 3,
+      "empCode": "OM-003",
+      "empName": "John Mathew",
+      "department": "IT",
+      "designation": "Software Developer",
+      "clientId": 2,
+      "mainFrameAgreementId": 2,
+      "contractType": "Contract",
+      "active": true
+    },
+    {
+      "id": 4,
+      "empCode": "OM-004",
+      "empName": "Priya Nair",
+      "department": "Human Resources",
+      "designation": "Recruitment Executive",
+      "clientId": 1,
+      "mainFrameAgreementId": 1,
+      "contractType": "Permanent",
+      "active": true
+    },
+    {
+      "id": 5,
+      "empCode": "OM-005",
+      "empName": "Salim Al Rashdi",
+      "department": "Operations",
+      "designation": "Operations Supervisor",
+      "clientId": 2,
+      "mainFrameAgreementId": 2,
+      "contractType": "Contract",
+      "active": true
+    }
+  ]
+}

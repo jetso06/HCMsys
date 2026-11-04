@@ -1,0 +1,22 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "employeeId": 4,
+      "leaveType": "Annual Leave",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-01",
+      "days": 1,
+      "status": "Approved"
+    },
+    {
+      "id": 2,
+      "employeeId": 2,
+      "leaveType": "Sick Leave",
+      "startDate": "2026-11-03",
+      "endDate": "2026-11-03",
+      "days": 1,
+      "status": "Pending"
+    }
+  ]
+}

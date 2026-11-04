@@ -1,0 +1,90 @@
+{
+  "moduleId": 600,
+  "gridId": "attendanceGrid",
+  "columns": [
+    {
+      "id": "empCode",
+      "label": "Employee Code",
+      "type": "text",
+      "editable": false
+    },
+    {
+      "id": "empName",
+      "label": "Employee Name",
+      "type": "text",
+      "editable": false
+    },
+    {
+      "id": "contractType",
+      "label": "Contract Type",
+      "type": "text",
+      "editable": false
+    },
+    {
+      "id": "workingDays",
+      "label": "Working Days",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "daysWorked",
+      "label": "Days Worked",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "otHours",
+      "label": "OT Hours",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "hotHours",
+      "label": "HOT Hours",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "nightOtHours",
+      "label": "Night OT Hours",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "weeklyPublicOffs",
+      "label": "Weekly / Public Offs",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "approvedLeaves",
+      "label": "Approved Leaves",
+      "type": "number",
+      "editable": false
+    },
+    {
+      "id": "menaClaim",
+      "label": "MENA Claim",
+      "type": "number",
+      "editable": true
+    },
+    {
+      "id": "reimbursableClaim1",
+      "label": "Reimbursable Claim 1",
+      "type": "number",
+      "editable": true
+    },
+    {
+      "id": "reimbursableClaim2",
+      "label": "Reimbursable Claim 2",
+      "type": "number",
+      "editable": true
+    },
+    {
+      "id": "remarks",
+      "label": "Remarks",
+      "type": "text",
+      "editable": true
+    }
+  ]
+}

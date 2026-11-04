@@ -1,0 +1,110 @@
+{
+  "moduleId": 600,
+  "moduleName": "Time Sheet",
+  "pageName": "Time Sheet",
+  "sections": [
+    {
+      "id": "header",
+      "title": "Timesheet Details",
+      "fields": [
+        {
+          "id": "batchNo",
+          "label": "Batch No",
+          "type": "text",
+          "dataType": "nvarchar",
+          "maxLength": 60,
+          "required": true
+        },
+        {
+          "id": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "postDate",
+          "label": "Post Date",
+          "type": "datetime",
+          "required": true,
+          "readonly": true,
+          "defaultValue": "currentDateTime"
+        },
+        {
+          "id": "clientId",
+          "label": "Client",
+          "type": "select",
+          "source": "clients.json",
+          "valueField": "id",
+          "textField": "name",
+          "required": true
+        },
+        {
+          "id": "mainFrameAgreementId",
+          "label": "Main Frame Agreement",
+          "type": "select",
+          "source": "main-frame-agreements.json",
+          "valueField": "id",
+          "textField": "name",
+          "dependsOn": "clientId",
+          "required": true
+        },
+        {
+          "id": "payMonth",
+          "label": "Pay Month",
+          "type": "select",
+          "options": [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+          ],
+          "required": true
+        },
+        {
+          "id": "startDate",
+          "label": "Start Date",
+          "type": "date",
+          "info": "Start date for attendance filtering"
+        },
+        {
+          "id": "endDate",
+          "label": "End Date",
+          "type": "date",
+          "info": "End date for attendance filtering"
+        },
+        {
+          "id": "departmentIds",
+          "label": "Department",
+          "type": "multiselect",
+          "source": "departments.json",
+          "valueField": "id",
+          "textField": "name",
+          "purpose": "filter",
+          "columnClass": "col-xl-6 col-lg-6 col-md-6 col-12"
+        },
+        {
+          "id": "load",
+          "label": "Load",
+          "type": "button",
+          "action": "loadAttendance"
+        },
+        {
+          "id": "comments",
+          "label": "Comments",
+          "type": "textarea",
+          "dataType": "nvarchar",
+          "maxLength": 200,
+          "columnClass": "col-xl-6 col-lg-6 col-md-6 col-12"
+        }
+      ]
+    }
+  ]
+}

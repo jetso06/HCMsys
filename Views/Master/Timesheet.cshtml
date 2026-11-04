@@ -1,0 +1,1444 @@
+@using System.Text.Json
+@using System.Text.Json.Nodes
+
+@{
+    ViewData["Title"] = "Time Sheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var timesheetConfig = ViewData["TimesheetConfig"] as JsonObject
+                          ?? new JsonObject();
+
+    var gridConfig = ViewData["GridConfig"] as JsonObject
+                     ?? new JsonObject();
+
+    var clientsJson = JsonSerializer.Serialize(ViewData["Clients"] ?? new object());
+    var departmentsJson = JsonSerializer.Serialize(ViewData["Departments"] ?? new object());
+
+    var timesheetConfigJson = timesheetConfig.ToJsonString();
+    var gridConfigJson = gridConfig.ToJsonString();
+}
+
+<div class="container-fluid ts-page">
+
+    <!-- TOOLBAR -->
+    <div class="card shadow mb-3">
+        <div class="card-header ts-toolbar">
+            <h6 class="ts-title">
+                <i class="fas fa-clock mr-2"></i>
+                TIME SHEET
+                <span class="ts-badge">600</span>
+            </h6>
+
+            <div class="ts-buttons">
+                <button type="button" class="btn btn-success btn-sm" id="tsNew">
+                    <i class="fas fa-plus mr-1"></i>New
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="tsEdit" disabled>
+                    <i class="fas fa-edit mr-1"></i>Edit
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" id="tsSave">
+                    <i class="fas fa-save mr-1"></i>Save
+                </button>
+                <button type="button" class="btn btn-info btn-sm" id="tsClone" disabled>
+                    <i class="fas fa-copy mr-1"></i>Clone
+                </button>
+                <button type="button" class="btn btn-warning btn-sm" id="tsUnPost" disabled>
+                    <i class="fas fa-undo mr-1"></i>UnPost
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="tsPrint">
+                    <i class="fas fa-print mr-1"></i>Print
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="tsDelete" disabled>
+                    <i class="fas fa-trash mr-1"></i>Delete
+                </button>
+                <button type="button" class="btn btn-success btn-sm" id="tsApprove" disabled>
+                    <i class="fas fa-check mr-1"></i>Approve
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" id="tsReject" disabled>
+                    <i class="fas fa-times mr-1"></i>Reject
+                </button>
+                <button type="button" class="btn btn-info btn-sm" id="tsAuthTracker" disabled>
+                    <i class="fas fa-route mr-1"></i>Auth Tracker
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="tsClose">
+                    <i class="fas fa-times-circle mr-1"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <form id="tsForm">
+        @Html.AntiForgeryToken()
+
+        
+        <!-- TIME SHEET DETAILS -->
+        <div class="card shadow mb-3">
+            <div class="card-header ts-section-title">
+    <span>
+        <i class="fas fa-file-alt mr-2"></i>
+        TIME SHEET DETAILS
+    </span>
+</div>
+
+            <div class="card-body">
+                <!-- Fields generated from timesheet-config.json -->
+                <div class="row" id="tsHeaderFields"></div>
+
+                <!-- Configured buttons and messages -->
+                <div class="ts-load-row" id="tsHeaderActions">
+                    <span id="tsMessage"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ATTENDANCE GRID -->
+        <div class="card shadow mb-3">
+            <div class="card-header ts-section-title ts-grid-heading">
+                <span>
+                    <i class="fas fa-table mr-2"></i>
+                    ATTENDANCE DETAILS
+                </span>
+
+                <button type="button" class="btn btn-danger btn-sm" id="tsRemoveSelected">
+                    <i class="fas fa-trash mr-1"></i>Remove Selected
+                </button>
+            </div>
+
+            <div class="card-body ts-grid-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover ts-table">
+                        <thead id="tsGridHead"></thead>
+                        <tbody id="tsGridBody">
+                            <tr class="ts-empty">
+                                <td>No attendance records loaded.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ts-grid-footer" id="tsRecordCount">
+                    0 records
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+</div>
+
+<!-- SAVE CONFIRMATION MODAL -->
+<div class="modal fade" id="tsSaveModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content ts-modal">
+
+            <div class="modal-header ts-save-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle mr-2"></i>Confirm Save
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body text-center py-4">
+                <div class="ts-save-icon">
+                    <i class="fas fa-save"></i>
+                </div>
+                <h5 class="ts-modal-title">Save this time sheet?</h5>
+                <p class="ts-modal-message">
+                    Please confirm that the time sheet details are ready to save.
+                </p>
+            </div>
+
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="tsConfirmSave">
+                    <i class="fas fa-check mr-1"></i>Save
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .ts-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .ts-page > .card {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 24px !important;
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #ffffff;
+        overflow: hidden;
+        box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+    }
+
+    /* Toolbar */
+
+    .ts-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px 18px !important;
+        background: #eef0f3 !important;
+        border: none !important;
+        border-bottom: 1px solid #e3e6f0 !important;
+    }
+
+    .ts-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .ts-title i,
+    .ts-section-title i {
+        color: #4e73df;
+    }
+
+    .ts-badge {
+        margin-left: 4px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        border: 1px solid #ccd3db;
+        font-size: 0.68rem;
+        letter-spacing: normal;
+    }
+
+    .ts-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ts-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.08);
+        transition: filter 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ts-buttons .btn:hover {
+        filter: brightness(0.96);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    .ts-buttons .btn:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    /* Section headers */
+
+    .ts-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 16px;
+        background: #eef0f3 !important;
+        color: #4e73df;
+        border-bottom: 1px solid #e1e6ed;
+        font-size: 0.9rem;
+        font-weight: 800;
+    }
+
+    .ts-page .card-body {
+        padding: 20px 16px;
+        background: #ffffff;
+    }
+
+    /* Form fields */
+
+    .ts-field {
+        margin-bottom: 20px;
+    }
+
+    .ts-field label {
+        display: block;
+        margin-bottom: 5px;
+        color: #596579;
+        font-size: 0.76rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.055em;
+    }
+
+    .ts-field .form-control {
+        width: 100%;
+        height: 36px;
+        padding: 6px 10px;
+        box-sizing: border-box;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        background: #ffffff;
+        color: #4d596b;
+        font-family: inherit;
+        font-size: 0.83rem;
+        box-shadow: none;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .ts-field .form-control:focus {
+        border-color: #7d9fe5;
+        outline: none;
+        box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+    }
+
+    .ts-field textarea.form-control {
+        height: auto;
+        min-height: 82px;
+        resize: vertical;
+    }
+
+    .ts-multiselect {
+    position: relative;
+    width: 100%;
+}
+
+.ts-multiselect-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    cursor: pointer;
+}
+
+.ts-multiselect-button i {
+    color: #858796;
+    font-size: 0.75rem;
+}
+
+.ts-multiselect-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid #d2d0cb;
+    border-radius: 5px;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.14);
+}
+
+.ts-multiselect-panel[hidden] {
+    display: none !important;
+}
+
+.ts-multiselect-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 4px 7px;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #e3e6f0;
+}
+
+.ts-multiselect-actions button {
+    border: 0;
+    background: transparent;
+    color: #4e73df;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.ts-multiselect-list {
+    max-height: 190px;
+    overflow-y: auto;
+}
+
+.ts-multiselect-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px;
+    margin: 0;
+    border-radius: 3px;
+    color: #4d596b;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
+    cursor: pointer;
+}
+
+.ts-multiselect-option:hover {
+    background: #f1f4fb;
+}
+
+.ts-multiselect-option input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #4e73df;
+}
+
+    .ts-help {
+        display: block;
+        margin-top: 5px;
+        color: #858796;
+        font-size: 0.72rem;
+    }
+
+    .ts-load-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 2px;
+    }
+
+    .ts-load-row .btn,
+    .ts-grid-heading .btn {
+        padding: 5px 9px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    #tsMessage {
+        font-size: 0.8rem;
+        color: #596579;
+    }
+
+    /* Attendance grid */
+
+    .ts-grid-body {
+        padding: 16px !important;
+    }
+
+    .ts-table {
+        width: 100%;
+        margin: 0;
+        color: #5a5c69;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+    .ts-table thead th {
+        padding: 10px 8px;
+        vertical-align: middle;
+        text-align: center;
+        background: #4e73df;
+        color: #ffffff;
+        border-color: #3d5cbe;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.035em;
+        text-transform: uppercase;
+    }
+
+    .ts-table tbody td {
+        padding: 7px 8px;
+        vertical-align: middle;
+        border-color: #e3e6f0;
+    }
+
+    .ts-table tbody tr:nth-child(even) {
+        background: #f8f9fc;
+    }
+
+    .ts-table input[type="checkbox"] {
+        width: 15px;
+        height: 15px;
+        vertical-align: middle;
+    }
+
+    .ts-grid-input {
+        min-width: 82px;
+        width: 100%;
+        height: 30px;
+        padding: 4px 6px;
+        border: 1px solid #d2d0cb;
+        border-radius: 4px;
+        color: #4d596b;
+        font: inherit;
+    }
+
+    .ts-grid-input:focus {
+        outline: none;
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.12);
+    }
+
+    .ts-empty td {
+        padding: 22px !important;
+        text-align: center;
+        color: #858796;
+    }
+
+    .ts-grid-footer {
+        padding-top: 10px;
+        text-align: right;
+        color: #858796;
+        font-size: 0.75rem;
+    }
+
+    /* Save modal */
+
+    .ts-modal {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+    }
+
+    .ts-save-header {
+        background: #20c997;
+        color: #ffffff;
+        border-bottom: none;
+    }
+
+    .ts-save-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: #e8fff5;
+        color: #20c997;
+        font-size: 28px;
+    }
+
+    .ts-modal-title {
+        color: #343a40;
+        font-size: 1.15rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .ts-modal-message {
+        color: #5a5c69;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+
+    .ts-modal .modal-footer {
+        border-top: 1px solid #e3e6f0;
+        padding: 14px;
+        gap: 8px;
+    }
+
+    .ts-modal .btn {
+        min-width: 100px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    /* Responsive */
+
+    @@media (max-width: 768px) {
+        .ts-page {
+            padding: 12px 0 20px;
+        }
+
+        .ts-toolbar {
+            align-items: flex-start;
+        }
+
+        .ts-buttons {
+            width: 100%;
+        }
+
+        .ts-page .card-body {
+            padding: 16px 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .ts-title {
+            font-size: 0.78rem;
+        }
+
+        .ts-buttons {
+            gap: 5px;
+        }
+
+        .ts-buttons .btn {
+            font-size: 0.75rem;
+            padding: 5px 7px;
+        }
+
+        .ts-load-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    /* Print */
+
+    @@media print {
+        .ts-buttons,
+        .ts-load-row,
+        #tsRemoveSelected {
+            display: none !important;
+        }
+
+        .ts-page > .card {
+            box-shadow: none !important;
+            margin-bottom: 12px !important;
+        }
+
+        .ts-page {
+            padding: 0;
+        }
+
+        .ts-table {
+            font-size: 9px;
+        }
+    }
+</style>
+
+@section Scripts {
+<script>
+
+const tsClients = @Html.Raw(clientsJson);
+const tsDepartments = @Html.Raw(departmentsJson);
+const tsConfig = @Html.Raw(timesheetConfigJson);
+const tsGridConfig = @Html.Raw(gridConfigJson);
+
+let tsRows = [];
+let tsCurrentId = null;
+
+const tsEl = id => document.getElementById(id);
+
+const tsItems = data =>
+    Array.isArray(data) ? data : (data?.$values || data?.records || []);
+
+function tsGetFieldValue(obj, name) {
+    if (!obj || !name) return "";
+
+    const upperName = name.charAt(0).toUpperCase() + name.slice(1);
+
+    return obj[name] ?? obj[upperName] ?? "";
+}
+
+function tsVal(obj, ...keys) {
+    for (const key of keys) {
+        const value = tsGetFieldValue(obj, key);
+        if (value !== "" && value != null) return value;
+    }
+
+    return "";
+}
+
+function tsGetFields() {
+    return (tsConfig.sections || []).flatMap(section =>
+        section.fields || []
+    );
+}
+
+function tsGetField(id) {
+    return tsGetFields().find(field => field.id === id);
+}
+
+function tsToken() {
+    return document.querySelector(
+        '#tsForm input[name="__RequestVerificationToken"]'
+    )?.value || "";
+}
+
+function tsStatus(message, error = false) {
+    const messageElement = tsEl("tsMessage");
+
+    if (!messageElement) return;
+
+    messageElement.textContent = message;
+    messageElement.style.color = error ? "#e74a3b" : "#1cc88a";
+}
+
+function tsGetSourceData(source) {
+    const fileName = (source || "").split("/").pop().toLowerCase();
+
+    if (fileName === "clients.json") return tsClients;
+    if (fileName === "departments.json") return tsDepartments;
+
+    return [];
+}
+
+function tsAddOptions(select, data, valueField, textField, placeholder) {
+    select.innerHTML = "";
+
+    if (placeholder) {
+        select.add(new Option(placeholder, ""));
+    }
+
+    tsItems(data).forEach(item => {
+        const value = tsGetFieldValue(item, valueField);
+        const text = tsGetFieldValue(item, textField);
+
+        if (value === "" || text === "") return;
+
+        select.add(new Option(String(text), String(value)));
+    });
+}
+
+function tsCreateFieldElement(field) {
+    const wrapper = document.createElement("div");
+wrapper.className =
+    (field.columnClass || "col-xl-3 col-lg-4 col-md-6 col-12") +
+    " ts-field";
+
+    const label = document.createElement("label");
+    label.htmlFor = field.id;
+    label.textContent = field.label || field.id;
+
+    if (field.required) {
+        label.textContent += " *";
+    }
+
+    wrapper.appendChild(label);
+
+    let control;
+
+    if (field.type === "button") {
+        control = document.createElement("button");
+        control.type = "button";
+        control.id = field.id === "load" ? "tsLoad" : field.id;
+        control.className = "btn btn-primary btn-sm";
+
+        if (field.action === "loadAttendance") {
+            control.innerHTML =
+                '<i class="fas fa-sync-alt mr-1"></i>' +
+                (field.label || "Load");
+        } else {
+            control.textContent = field.label || field.id;
+        }
+
+        wrapper.className = "col-12 ts-field";
+        control.addEventListener("click", () => {
+            if (field.action === "loadAttendance") {
+                tsLoad();
+            }
+        });
+
+        wrapper.appendChild(control);
+        return wrapper;
+    }
+
+    if (field.type === "multiselect") {
+        control = tsCreateMultiSelect(field);
+        wrapper.appendChild(control);
+    } else if (field.type === "select") {
+        control = document.createElement("select");
+        control.id = field.id;
+        control.name = field.id;
+        control.className = "form-control";
+
+        if (field.required) control.required = true;
+
+if (field.readonly) {
+    control.disabled = true;
+}
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "-- Select " + field.label + " --";
+        control.appendChild(placeholder);
+
+        if (Array.isArray(field.options)) {
+            field.options.forEach(option => {
+                control.add(new Option(option, option));
+            });
+        } else if (field.source) {
+            const data = tsGetSourceData(field.source);
+
+            tsAddOptions(
+    control,
+    data,
+    field.valueField || "id",
+    field.textField || "name",
+    "-- Select " + field.label + " --"
+);
+        }
+
+        wrapper.appendChild(control);
+    } else {
+        control = document.createElement(
+            field.type === "textarea" ? "textarea" : "input"
+        );
+
+        control.id = field.id;
+        control.name = field.id;
+        control.className = "form-control";
+
+        if (field.type !== "textarea") {
+            control.type = field.type === "datetime"
+                ? "datetime-local"
+                : field.type;
+        }
+
+        if (field.maxLength) {
+            control.maxLength = Number(field.maxLength);
+        }
+
+        if (field.required) control.required = true;
+
+if (field.readonly) {
+    control.readOnly = true;
+    control.disabled = true;
+    control.style.backgroundColor = "#e9ecef";
+    control.style.cursor = "not-allowed";
+    control.style.color = "#6c757d";
+}
+
+        if (field.defaultValue === "currentDateTime") {
+            control.value = tsLocalDateTime();
+        }
+
+        wrapper.appendChild(control);
+    }
+
+    if (field.info) {
+        const help = document.createElement("small");
+        help.className = "ts-help";
+        help.textContent = field.info;
+        wrapper.appendChild(help);
+    }
+
+    return wrapper;
+}
+
+function tsCreateMultiSelect(field) {
+    const container = document.createElement("div");
+    container.className = "ts-multiselect";
+    container.id = "tsDepartmentMultiselect";
+
+    const hiddenSelect = document.createElement("select");
+    hiddenSelect.id = field.id;
+    hiddenSelect.name = field.id;
+    hiddenSelect.multiple = true;
+    hiddenSelect.hidden = true;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.id = "departmentDropdownButton";
+    button.className = "form-control ts-multiselect-button";
+    button.setAttribute("aria-expanded", "false");
+
+    const summary = document.createElement("span");
+    summary.id = "tsDepartmentSummary";
+    summary.textContent = "Select departments";
+
+    const icon = document.createElement("i");
+    icon.className = "fas fa-chevron-down";
+
+    button.append(summary, icon);
+
+    const panel = document.createElement("div");
+    panel.className = "ts-multiselect-panel";
+    panel.id = "tsDepartmentOptions";
+    panel.hidden = true;
+
+    const actions = document.createElement("div");
+    actions.className = "ts-multiselect-actions";
+
+    const selectAll = document.createElement("button");
+    selectAll.type = "button";
+    selectAll.id = "tsDepartmentSelectAll";
+    selectAll.textContent = "Select All";
+
+    const clearAll = document.createElement("button");
+    clearAll.type = "button";
+    clearAll.id = "tsDepartmentClear";
+    clearAll.textContent = "Clear";
+
+    actions.append(selectAll, clearAll);
+
+    const list = document.createElement("div");
+    list.className = "ts-multiselect-list";
+    list.id = "tsDepartmentList";
+
+    panel.append(actions, list);
+    container.append(hiddenSelect, button, panel);
+
+    tsBuildDepartmentDropdown(field, hiddenSelect, list);
+
+    button.addEventListener("click", () => {
+        tsSetDepartmentDropdown(panel.hidden);
+    });
+
+    selectAll.addEventListener("click", () => {
+        Array.from(hiddenSelect.options).forEach(option => {
+            option.selected = true;
+        });
+
+        tsSyncDepartmentCheckboxes();
+    });
+
+    clearAll.addEventListener("click", () => {
+        Array.from(hiddenSelect.options).forEach(option => {
+            option.selected = false;
+        });
+
+        tsSyncDepartmentCheckboxes();
+    });
+
+    document.addEventListener("click", event => {
+        if (!container.contains(event.target)) {
+            tsSetDepartmentDropdown(false);
+        }
+    });
+
+    return container;
+}
+
+function tsBuildDepartmentDropdown(field, select, list) {
+    const data = tsGetSourceData(field.source);
+
+    const valueField = field.valueField || "id";
+    const textField = field.textField || "name";
+
+    // The controller currently filters by department name.
+    // Keep the option value as the department name.
+    tsItems(data).forEach(item => {
+        const name = tsGetFieldValue(item, textField);
+
+        if (!name) return;
+
+        const option = new Option(String(name), String(name));
+        select.add(option);
+
+        const label = document.createElement("label");
+        label.className = "ts-multiselect-option";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = String(name);
+
+        checkbox.addEventListener("change", () => {
+            option.selected = checkbox.checked;
+            tsUpdateDepartmentSummary();
+        });
+
+        const caption = document.createElement("span");
+        caption.textContent = String(name);
+
+        label.append(checkbox, caption);
+        list.appendChild(label);
+    });
+
+    tsUpdateDepartmentSummary();
+}
+
+function tsDepartmentsSelected() {
+    const select = tsEl("departmentIds");
+
+    if (!select) return [];
+
+    return Array.from(select.selectedOptions)
+        .map(option => option.value);
+}
+
+function tsUpdateDepartmentSummary() {
+    const select = tsEl("departmentIds");
+    const summary = tsEl("tsDepartmentSummary");
+
+    if (!select || !summary) return;
+
+    const names = Array.from(select.selectedOptions)
+        .map(option => option.text);
+
+    summary.textContent = names.length
+        ? names.join(", ")
+        : "Select departments";
+}
+
+function tsSetDepartmentDropdown(open) {
+    const panel = tsEl("tsDepartmentOptions");
+    const button = tsEl("departmentDropdownButton");
+
+    if (!panel || !button) return;
+
+    panel.hidden = !open;
+    button.setAttribute("aria-expanded", String(open));
+}
+
+function tsSyncDepartmentCheckboxes() {
+    const select = tsEl("departmentIds");
+
+    if (!select) return;
+
+    const selected = new Set(tsDepartmentsSelected());
+
+    document.querySelectorAll(
+        "#tsDepartmentList input[type='checkbox']"
+    ).forEach(checkbox => {
+        checkbox.checked = selected.has(checkbox.value);
+    });
+
+    tsUpdateDepartmentSummary();
+}
+
+function tsRenderHeader() {
+    const fieldsContainer = tsEl("tsHeaderFields");
+    const actionsContainer = tsEl("tsHeaderActions");
+
+    fieldsContainer.innerHTML = "";
+    actionsContainer.innerHTML = '<span id="tsMessage"></span>';
+
+    tsGetFields().forEach(field => {
+        const element = tsCreateFieldElement(field);
+
+        if (field.type === "button") {
+            actionsContainer.insertBefore(
+                element.querySelector("button"),
+                actionsContainer.firstChild
+            );
+        } else {
+            fieldsContainer.appendChild(element);
+        }
+    });
+
+    // Attach dependent dropdown behavior from the configuration.
+    tsGetFields()
+        .filter(field => field.dependsOn)
+        .forEach(field => {
+            const parent = tsEl(field.dependsOn);
+
+            if (parent) {
+                parent.addEventListener("change", event => {
+                    tsLoadDependentSelect(field, event.target.value);
+                });
+            }
+        });
+}
+
+async function tsLoadDependentSelect(field, parentValue) {
+    const select = tsEl(field.id);
+
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    select.add(new Option(
+        "-- Select " + field.label + " --",
+        ""
+    ));
+
+    if (!parentValue) return;
+
+    try {
+        const response = await fetch(
+            '@Url.Content("~/Master/Timesheet/GetAgreements")?clientId=' +
+            encodeURIComponent(parentValue)
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load agreements.");
+        }
+
+        const data = tsItems(await response.json());
+
+        data.forEach(item => {
+            const value = tsVal(
+                item,
+                field.valueField || "id",
+                "id",
+                "agreementId"
+            );
+
+            const text = tsVal(
+                item,
+                field.textField || "name",
+                "name",
+                "agreementName",
+                "agreementNo"
+            );
+
+            if (value !== "" && text !== "") {
+                select.add(new Option(String(text), String(value)));
+            }
+        });
+    } catch (error) {
+        tsStatus(error.message, true);
+    }
+}
+
+function tsReadHeaderValues() {
+    const values = {};
+
+    tsGetFields().forEach(field => {
+        if (field.type === "button") return;
+
+        if (field.type === "multiselect") {
+            values[field.id] = tsDepartmentsSelected();
+            return;
+        }
+
+        const element = tsEl(field.id);
+
+        values[field.id] = element ? element.value : "";
+    });
+
+    return values;
+}
+
+function tsLocalDateTime() {
+    const now = new Date();
+    const local = new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+    );
+
+    return local.toISOString().slice(0, 16);
+}
+
+function tsRenderGridHeader() {
+    const head = tsEl("tsGridHead");
+    head.innerHTML = "";
+
+    const row = document.createElement("tr");
+
+    const selectionHeader = document.createElement("th");
+    selectionHeader.className = "text-center";
+
+    const selectAll = document.createElement("input");
+    selectAll.type = "checkbox";
+    selectAll.id = "tsSelectAll";
+    selectAll.title = "Select all rows";
+
+    selectAll.addEventListener("change", event => {
+        document.querySelectorAll(".ts-row-check").forEach(checkbox => {
+            checkbox.checked = event.target.checked;
+        });
+    });
+
+    selectionHeader.appendChild(selectAll);
+    row.appendChild(selectionHeader);
+
+    (tsGridConfig.columns || []).forEach(column => {
+        const th = document.createElement("th");
+        th.textContent = column.label || column.id;
+        row.appendChild(th);
+    });
+
+    head.appendChild(row);
+}
+
+function tsRender() {
+    const body = tsEl("tsGridBody");
+    const columns = tsGridConfig.columns || [];
+
+    body.innerHTML = "";
+
+    if (!tsRows.length) {
+        const row = document.createElement("tr");
+        row.className = "ts-empty";
+
+        const cell = document.createElement("td");
+        cell.colSpan = columns.length + 1;
+        cell.textContent =
+            "No attendance records loaded. Select the details above and click Load.";
+
+        row.appendChild(cell);
+        body.appendChild(row);
+    } else {
+        tsRows.forEach((data, index) => {
+            const row = document.createElement("tr");
+
+            const selectionCell = document.createElement("td");
+            selectionCell.className = "text-center";
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "ts-row-check";
+            checkbox.dataset.index = index;
+
+            selectionCell.appendChild(checkbox);
+            row.appendChild(selectionCell);
+
+            columns.forEach(column => {
+                const cell = document.createElement("td");
+                const value = data[column.id] ?? "";
+
+                if (column.editable) {
+                    const input = document.createElement("input");
+
+                    input.type = column.type === "number"
+                        ? "number"
+                        : "text";
+
+                    input.className = "ts-grid-input";
+                    input.value = value;
+
+                    if (column.type === "number") {
+                        input.step = "any";
+                    }
+
+                    input.addEventListener("input", () => {
+                        data[column.id] = column.type === "number"
+                            ? (input.value === "" ? "" : Number(input.value))
+                            : input.value;
+                    });
+
+                    cell.appendChild(input);
+                } else {
+                    cell.textContent = value;
+                }
+
+                row.appendChild(cell);
+            });
+
+            body.appendChild(row);
+        });
+    }
+
+    tsEl("tsRecordCount").textContent =
+        `${tsRows.length} record${tsRows.length === 1 ? "" : "s"}`;
+
+    const selectAll = tsEl("tsSelectAll");
+    if (selectAll) selectAll.checked = false;
+}
+
+async function tsLoad() {
+    const values = tsReadHeaderValues();
+
+    const requiredIds = [
+        "clientId",
+        "mainFrameAgreementId",
+        "startDate",
+        "endDate"
+    ];
+
+    for (const id of requiredIds) {
+        if (!values[id]) {
+            tsStatus("Please select a client, agreement, start date and end date.", true);
+            tsEl(id)?.focus();
+            return;
+        }
+    }
+
+    if (values.startDate > values.endDate) {
+        tsStatus("Start Date cannot be later than End Date.", true);
+        return;
+    }
+
+    const button = tsEl("tsLoad");
+
+    if (button) {
+        button.disabled = true;
+        button.innerHTML =
+            '<i class="fas fa-spinner fa-spin mr-1"></i>Loading...';
+    }
+
+    try {
+        const response = await fetch(
+            '@Url.Content("~/Master/Timesheet/Load")',
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": tsToken()
+                },
+                body: JSON.stringify({
+                    clientId: Number(values.clientId),
+                    mainFrameAgreementId: Number(values.mainFrameAgreementId),
+                    startDate: values.startDate,
+                    endDate: values.endDate,
+                    departmentIds: values.departmentIds || []
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to load attendance.");
+        }
+
+        tsRows = tsItems(result);
+        tsRender();
+
+        tsStatus(`${tsRows.length} employee record(s) loaded.`);
+    } catch (error) {
+        tsStatus(error.message, true);
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.innerHTML =
+                '<i class="fas fa-sync-alt mr-1"></i>Load';
+        }
+    }
+}
+
+async function tsSave() {
+    const form = tsEl("tsForm");
+
+    if (!form.reportValidity()) return;
+
+    if (!tsRows.length) {
+        tsStatus("Load attendance records before saving.", true);
+        $("#tsSaveModal").modal("hide");
+        return;
+    }
+
+    const values = tsReadHeaderValues();
+
+    const payload = {
+        ...values,
+        id: tsCurrentId,
+        clientId: Number(values.clientId),
+        mainFrameAgreementId: Number(values.mainFrameAgreementId),
+        attendance: tsRows
+    };
+
+    try {
+        const response = await fetch(
+            '@Url.Content("~/Master/Timesheet/Save")',
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": tsToken()
+                },
+                body: JSON.stringify(payload)
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Unable to save time sheet.");
+        }
+
+        tsCurrentId = result.id ?? result.Id ?? tsCurrentId;
+
+        $("#tsSaveModal").modal("hide");
+
+        tsStatus("Time sheet saved successfully.");
+        alert("Time sheet saved successfully.");
+    } catch (error) {
+        $("#tsSaveModal").modal("hide");
+        alert(error.message);
+    }
+}
+
+function tsNew() {
+    tsEl("tsForm").reset();
+
+    tsCurrentId = null;
+    tsRows = [];
+
+    // Restore configured default values.
+    tsGetFields().forEach(field => {
+        if (field.defaultValue === "currentDateTime") {
+            const element = tsEl(field.id);
+            if (element) element.value = tsLocalDateTime();
+        }
+    });
+
+    // Clear dependent agreement selection.
+    const agreementField = tsGetFields().find(field => field.dependsOn);
+
+    if (agreementField) {
+        const agreementSelect = tsEl(agreementField.id);
+
+        if (agreementSelect) {
+            agreementSelect.innerHTML = "";
+            agreementSelect.add(new Option(
+                "-- Select " + agreementField.label + " --",
+                ""
+            ));
+        }
+    }
+
+    tsSyncDepartmentCheckboxes();
+    tsSetDepartmentDropdown(false);
+
+    tsRender();
+    tsStatus("");
+
+    [
+        "tsEdit", "tsClone", "tsUnPost",
+        "tsDelete", "tsApprove", "tsReject", "tsAuthTracker"
+    ].forEach(id => {
+        const button = tsEl(id);
+        if (button) button.disabled = true;
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Generate the header fields and attendance columns from JSON.
+    tsRenderHeader();
+    tsRenderGridHeader();
+    tsRender();
+
+    // Save confirmation.
+    tsEl("tsSave").addEventListener("click", function () {
+        if (tsEl("tsForm").reportValidity()) {
+            $("#tsSaveModal").modal("show");
+        }
+    });
+
+    tsEl("tsConfirmSave").addEventListener("click", tsSave);
+
+    // New timesheet.
+    tsEl("tsNew").addEventListener("click", tsNew);
+
+    // Print and close.
+    tsEl("tsPrint").addEventListener("click", () => window.print());
+    tsEl("tsClose").addEventListener("click", () => history.back());
+
+    // Remove selected attendance rows.
+    tsEl("tsRemoveSelected").addEventListener("click", function () {
+        const selected = Array.from(
+            document.querySelectorAll(".ts-row-check:checked")
+        ).map(checkbox => Number(checkbox.dataset.index));
+
+        if (!selected.length) {
+            alert("Select at least one employee row to remove.");
+            return;
+        }
+
+        tsRows = tsRows.filter((row, index) =>
+            !selected.includes(index)
+        );
+
+        tsRender();
+    });
+
+    // Keep the other toolbar actions as placeholders for now.
+    [
+        "tsEdit", "tsClone", "tsUnPost",
+        "tsDelete", "tsApprove", "tsReject", "tsAuthTracker"
+    ].forEach(id => {
+        tsEl(id).addEventListener("click", () => {
+            alert("This action is not connected yet.");
+        });
+    });
+});
+</script>
+}

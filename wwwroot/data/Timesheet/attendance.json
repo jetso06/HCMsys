@@ -1,0 +1,56 @@
+{
+  "records": [
+    {
+      "id": 1,
+      "employeeId": 1,
+      "date": "2026-11-01",
+      "workingDays": 1,
+      "daysWorked": 1,
+      "hoursWorked": 8,
+      "otHours": 1.5,
+      "hotHours": 0,
+      "nightOtHours": 0,
+      "weeklyPublicOffs": 0,
+      "status": "Present"
+    },
+    {
+      "id": 2,
+      "employeeId": 2,
+      "date": "2026-11-01",
+      "workingDays": 1,
+      "daysWorked": 1,
+      "hoursWorked": 8,
+      "otHours": 0,
+      "hotHours": 0,
+      "nightOtHours": 0,
+      "weeklyPublicOffs": 0,
+      "status": "Present"
+    },
+    {
+      "id": 3,
+      "employeeId": 3,
+      "date": "2026-11-01",
+      "workingDays": 1,
+      "daysWorked": 1,
+      "hoursWorked": 8,
+      "otHours": 2,
+      "hotHours": 1,
+      "nightOtHours": 0,
+      "weeklyPublicOffs": 0,
+      "status": "Present"
+    },
+    {
+      "id": 4,
+      "employeeId": 4,
+      "date": "2026-11-01",
+      "workingDays": 1,
+      "daysWorked": 0,
+      "hoursWorked": 0,
+      "otHours": 0,
+      "hotHours": 0,
+      "nightOtHours": 0,
+      "weeklyPublicOffs": 0,
+      "status": "Absent"
+    }
+  ]
+}
