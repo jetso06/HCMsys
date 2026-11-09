@@ -52,14 +52,76 @@
     .co-field textarea.form-control { min-height:72px; resize:vertical; }
     .co-field-full { grid-column:1/-1; }
     .co-required { color:#e74a3b; }
+    .co-insert-row {
+    padding: 4px 8px;
+    margin-right: 4px;
+    border: 1px solid #4e73df;
+    border-radius: 4px;
+    background: #fff;
+    color: #4e73df;
+    cursor: pointer;
+}
+
+.co-insert-row:hover {
+    background: #4e73df;
+    color: #fff;
+}
+
+.co-insert-row:disabled,
+.co-remove-row:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
     .co-remarks { display:block; margin-top:4px; color:#858796; font-size:11px; }
     .co-table-wrap { width:100%; overflow-x:auto; }
     .co-table { width:100%; margin:0; border-collapse:collapse; }
+    /* Uniform Select column for every grid */
+.co-table th.co-select-col,
+.co-table td.co-select-col {
+    width: 65px !important;
+    min-width: 65px !important;
+    max-width: 65px !important;
+    padding: 6px 4px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.co-select-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.co-select-header span {
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.co-table td.co-select-col input[type="checkbox"],
+.co-table th.co-select-col input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    cursor: pointer;
+}
     .co-table th { padding:10px 11px; background:#4e73df; border:1px solid #e3e6f0; color:#fff; text-align:left; font-size:11px; text-transform:uppercase; white-space:nowrap; }
     .co-table td { padding:7px 8px; border:1px solid #e3e6f0; vertical-align:middle; }
     .co-table tbody tr:nth-child(even) { background:#f8f9fc; }
     .co-table input:not([type=checkbox]), .co-table select { width:100%; min-width:100px; height:32px; padding:4px 7px; border:1px solid #d1d3e2; border-radius:4px; color:#6e707e; font-size:12px; }
     .co-table input[type=checkbox] { width:16px; height:16px; }
+    .co-grid-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.co-grid-actions .co-grid-action {
+    margin: 0;
+}
     .co-grid-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; color:#5a5c69; font-size:13px; font-weight:700; }
     .co-add-row { padding:5px 10px; font-size:12px; }
     .co-remove-row { padding:4px 8px; border:1px solid #e74a3b; border-radius:4px; background:#fff; color:#e74a3b; cursor:pointer; }
@@ -141,8 +203,16 @@
         <input type="hidden" asp-for="Id" />
 
         @foreach (var cardSection in config.Sections)
-        {
-            <div class="co-card">
+{
+    var sectionGridIds = cardSection.Id switch
+    {
+        "contractHeader" => new[] { "billingHeads" },
+        "personnelDetails" => new[] { "duties" },
+        "employmentTerms" => new[] { "additionalInfo", "salaryBreakdown", "benefits" },
+        _ => Array.Empty<string>()
+    };
+
+    <div class="co-card">
                 <div class="co-card-header"><span><i class="fas fa-folder-open"></i>@(cardSection.Title)</span></div>
                 <div class="co-card-body">
                     <div class="co-grid">
@@ -185,162 +255,409 @@
                     </div>
                 </div>
             </div>
-        }
+        
+@foreach (var grid in config.Grids.Where(g => sectionGridIds.Contains(g.Id)))
+{
+    <div class="co-card">
+        <div class="co-card-header">
+            <span><i class="fas fa-table"></i>@grid.Title</span>
+        </div>
+        <div class="co-card-body">
+            <div class="co-grid-heading">
+    <span>@grid.Subtitle</span>
 
-        @foreach (var grid in config.Grids)
+    <div class="co-grid-actions co-no-print">
+
+        <button type="button"
+                class="btn btn-outline-primary btn-sm co-add-row co-grid-action"
+                data-grid="@grid.Id"
+                disabled="@isReadOnly">
+            <i class="fas fa-plus mr-1"></i>Add Row
+        </button>
+
+        <button type="button"
+                class="btn btn-outline-success btn-sm co-insert-selected co-grid-action"
+                data-grid="@grid.Id"
+                disabled="@isReadOnly">
+            <i class="fas fa-level-down-alt mr-1"></i>Insert Row
+        </button>
+
+        <button type="button"
+                class="btn btn-outline-danger btn-sm co-delete-selected co-grid-action"
+                data-grid="@grid.Id"
+                disabled="@isReadOnly">
+            <i class="fas fa-trash mr-1"></i>Delete Row
+        </button>
+
+    </div>
+</div>
+
+            <div class="co-table-wrap">
+                <table class="co-table" id="grid-@grid.Id" data-property="@grid.Property">
+                    <thead>
+    <tr>
+        <th class="co-select-col">
+    <div class="co-select-header">
+        <span>Select</span>
+        <input type="checkbox"
+               class="co-select-all"
+               aria-label="Select all rows"
+               disabled="@isReadOnly" />
+    </div>
+</th>
+
+        @foreach (var col in grid.Columns)
         {
-            <div class="co-card">
-                <div class="co-card-header"><span><i class="fas fa-table"></i>@grid.Title</span></div>
-                <div class="co-card-body">
-                    <div class="co-grid-heading">
-                        <span>@grid.Subtitle</span>
-                        <button type="button" class="btn btn-outline-primary btn-sm co-add-row co-no-print" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-plus mr-1"></i>Add Row</button>
-                    </div>
-                    <div class="co-table-wrap">
-                        <table class="co-table" id="grid-@grid.Id" data-property="@grid.Property">
-                            <thead><tr>@foreach (var col in grid.Columns) { <th>@col.Label</th> }<th class="co-no-print">Action</th></tr></thead>
-                            <tbody>
-                            @{
-                                var list = Model.GetType().GetProperty(grid.Property)?.GetValue(Model) as System.Collections.IEnumerable;
-                                var rowIndex = 0;
-                            }
-                            @if (list != null)
+            <th>@col.Label</th>
+        }
+    </tr>
+</thead>
+                    <tbody>
+                        @{
+                            var list = Model.GetType().GetProperty(grid.Property)?.GetValue(Model) as System.Collections.IEnumerable;
+                            var rowIndex = 0;
+                        }
+
+                        @if (list != null)
+                        {
+                            foreach (var item in list)
                             {
-                                foreach (var item in list)
-                                {
-                                    <tr>
-                                        @foreach (var col in grid.Columns)
-                                        {
-                                            var cell = item?.GetType().GetProperty(col.Field)?.GetValue(item);
-                                            var cellValue = Convert.ToString(cell, CultureInfo.InvariantCulture) ?? "";
-                                            <td>
-                                                @if (col.Type == "select")
-                                                {
-                                                    <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly">
-                                                        <option value="">Select @col.Label</option>
-                                                        @foreach (var option in Options(col.Source)) { <option value="@option.Value" selected="@(cellValue == option.Value)">@option.Text</option> }
-                                                    </select>
-                                                }
-                                                else if (col.Type == "checkbox")
-                                                {
-                                                    <input type="checkbox" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="true" checked="@(cell is bool cb && cb)" disabled="@isReadOnly" />
-                                                    <input type="hidden" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="false" />
-                                                }
-                                                else
-                                                {
-                                                    <input type="@col.Type" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="@cellValue" step="@col.Step" maxlength="@(col.Field == "Description" ? "500" : null)" disabled="@isReadOnly" />
-                                                }
-                                            </td>
-                                        }
-                                        <td class="co-no-print"><button type="button" class="co-remove-row" title="Remove row" disabled="@isReadOnly"><i class="fas fa-trash"></i></button></td>
-                                    </tr>
-                                    rowIndex++;
-                                }
+                                <tr>
+    <td class="co-select-col">
+        <input type="checkbox"
+               class="co-row-select"
+               aria-label="Select row"
+               disabled="@isReadOnly" />
+    </td>
+
+    @foreach (var col in grid.Columns)
+                                    {
+                                        var cell = item?.GetType().GetProperty(col.Field)?.GetValue(item);
+                                        var cellValue = Convert.ToString(cell, CultureInfo.InvariantCulture) ?? "";
+
+                                        <td>
+                                            @if (col.Type == "select")
+                                            {
+                                                <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly">
+                                                    <option value="">Select @col.Label</option>
+                                                    @foreach (var option in Options(col.Source))
+                                                    {
+                                                        <option value="@option.Value" selected="@(cellValue == option.Value)">@option.Text</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else if (col.Type == "checkbox")
+                                            {
+                                                <input type="checkbox"
+                                                       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                                                       value="true"
+                                                       checked="@(cell is bool cb && cb)"
+                                                       disabled="@isReadOnly" />
+                                                <input type="hidden"
+                                                       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                                                       value="false" />
+                                            }
+                                            else
+                                            {
+                                                <input type="@col.Type"
+                                                       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                                                       value="@cellValue"
+                                                       step="@col.Step"
+                                                       maxlength="@(col.Field == "Description" ? "500" : null)"
+                                                       disabled="@isReadOnly" />
+                                            }
+                                        </td>
+                                    }
+
+                                   
+                                </tr>
+                                rowIndex++;
                             }
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                        }
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
+}
+
         }
     </form>
 </div>
 
+
 <div class="modal fade" id="coTrackerModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document"><div class="modal-content">
-        <div class="modal-header"><h5 class="modal-title">CallOff Authorization Tracker</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
-        <div class="modal-body">
-            <p><strong>Document:</strong> @Model.DocNo</p>
-            <p><strong>Status:</strong> @Model.Status</p>
-            <p><strong>Created:</strong> @(Model.CreatedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not saved")</p>
-            <p><strong>Modified:</strong> @(Model.ModifiedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not modified")</p>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CallOff Authorization Tracker</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Document:</strong> @Model.DocNo</p>
+                <p><strong>Status:</strong> @Model.Status</p>
+                <p><strong>Created:</strong> @(Model.CreatedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not saved")</p>
+                <p><strong>Modified:</strong> @(Model.ModifiedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not modified")</p>
+            </div>
         </div>
-    </div></div>
+    </div>
 </div>
 
 <script>
 (function () {
-    "use strict";
     const form = document.getElementById("callOffForm");
+
     const gridColumns = @Html.Raw(gridConfigJson);
     const lookupOptions = @Html.Raw(lookupJson);
-    const isReadOnly = @isReadOnly.ToString().ToLowerInvariant();
+    const isReadOnly = @isReadOnly.ToString().ToLower();
 
+    // Enable editing
     document.getElementById("coEdit")?.addEventListener("click", function () {
-        form.querySelectorAll("input,select,textarea,button.co-remove-row").forEach(el => {
-            if (el.type !== "hidden" && el.name !== "__RequestVerificationToken") el.disabled = false;
+        form.querySelectorAll("input:not([type='hidden']), select, textarea")
+            .forEach(el => {
+                el.disabled = false;
+                el.readOnly = false;
+            });
+
+        document.querySelectorAll(
+            ".co-grid-action, .co-select-all, .co-row-select"
+        ).forEach(el => {
+            el.disabled = false;
         });
-        document.querySelectorAll(".co-add-row").forEach(el => el.disabled = false);
-        document.getElementById("coSave").disabled = false;
+
+        const saveButton = document.getElementById("coSave");
+        if (saveButton) saveButton.disabled = false;
+
         this.disabled = true;
     });
 
+    // Update row indexes after adding, inserting or deleting
+    function updateGridIndexes(table) {
+        const property = table.dataset.property;
+
+        table.querySelectorAll("tbody tr").forEach((row, index) => {
+            row.querySelectorAll("input, select").forEach(control => {
+                if (!control.name) return;
+
+                control.name = control.name.replace(
+                    new RegExp("^" + property + "\\[\\d+\\]"),
+                    `${property}[${index}]`
+                );
+            });
+        });
+    }
+
+    // Create a new row using JSON column configuration
+    function createGridRow(table) {
+        const property = table.dataset.property;
+        const gridId = table.id.replace("grid-", "");
+        const columns = gridColumns[gridId] || [];
+
+        const tr = document.createElement("tr");
+
+        // Selection checkbox
+        const selectCell = document.createElement("td");
+        selectCell.className = "co-select-col";
+
+        const rowSelect = document.createElement("input");
+        rowSelect.type = "checkbox";
+        rowSelect.className = "co-row-select";
+        rowSelect.disabled = isReadOnly;
+
+        selectCell.appendChild(rowSelect);
+        tr.appendChild(selectCell);
+
+        columns.forEach(col => {
+            const td = document.createElement("td");
+            const inputName = `${property}[0].${col.field}`;
+
+            if (col.type === "select") {
+                const select = document.createElement("select");
+                select.name = inputName;
+                select.disabled = isReadOnly;
+
+                const empty = document.createElement("option");
+                empty.value = "";
+                empty.textContent = `Select ${col.label}`;
+                select.appendChild(empty);
+
+                (lookupOptions[col.source] || []).forEach(opt => {
+                    const option = document.createElement("option");
+                    option.value = opt.value;
+                    option.textContent = opt.text;
+                    select.appendChild(option);
+                });
+
+                td.appendChild(select);
+            }
+            else if (col.type === "checkbox") {
+                const check = document.createElement("input");
+                check.type = "checkbox";
+                check.name = inputName;
+                check.value = "true";
+                check.disabled = isReadOnly;
+
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = inputName;
+                hidden.value = "false";
+
+                td.appendChild(check);
+                td.appendChild(hidden);
+            }
+            else {
+                const input = document.createElement("input");
+                input.type = col.type;
+                input.name = inputName;
+                input.disabled = isReadOnly;
+
+                if (col.step) input.step = col.step;
+
+                td.appendChild(input);
+            }
+
+            tr.appendChild(td);
+        });
+
+        return tr;
+    }
+
+    // Add row at bottom
     document.querySelectorAll(".co-add-row").forEach(button => {
         button.addEventListener("click", function () {
             const table = document.getElementById("grid-" + this.dataset.grid);
-            const property = table.dataset.property;
-            const tbody = table.querySelector("tbody");
-            const index = tbody.querySelectorAll("tr").length;
-            const tr = document.createElement("tr");
+            if (!table) return;
 
-            (gridColumns[this.dataset.grid] || []).forEach(col => {
-                const td = document.createElement("td");
-                const name = `${property}[${index}].${col.field}`;
-                if (col.type === "select") {
-                    const select = document.createElement("select");
-                    select.name = name;
-                    const empty = document.createElement("option");
-                    empty.value = ""; empty.textContent = `Select ${col.label}`;
-                    select.appendChild(empty);
-                    (lookupOptions[col.source] || []).forEach(opt => {
-                        const option = document.createElement("option");
-                        option.value = opt.value; option.textContent = opt.text;
-                        select.appendChild(option);
-                    });
-                    td.appendChild(select);
-                } else if (col.type === "checkbox") {
-                    const check = document.createElement("input");
-                    check.type = "checkbox"; check.name = name; check.value = "true";
-                    const hidden = document.createElement("input");
-                    hidden.type = "hidden"; hidden.name = name; hidden.value = "false";
-                    td.appendChild(check); td.appendChild(hidden);
-                } else {
-                    const input = document.createElement("input");
-                    input.type = col.type; input.name = name;
-                    if (col.step) input.step = col.step;
-                    td.appendChild(input);
-                }
-                tr.appendChild(td);
-            });
-            const action = document.createElement("td");
-            action.className = "co-no-print";
-            action.innerHTML = '<button type="button" class="co-remove-row" title="Remove row"><i class="fas fa-trash"></i></button>';
-            tr.appendChild(action);
-            tbody.appendChild(tr);
+            table.querySelector("tbody").appendChild(createGridRow(table));
+
+            updateGridIndexes(table);
+            updateSelectAll(table);
         });
     });
 
-    document.addEventListener("click", event => {
-        const remove = event.target.closest(".co-remove-row");
-        if (remove) remove.closest("tr").remove();
+    // Get selected rows
+    function getSelectedRows(table) {
+        return Array.from(
+            table.querySelectorAll("tbody .co-row-select:checked")
+        ).map(cb => cb.closest("tr"));
+    }
+
+    // Select all checkbox
+    document.addEventListener("change", function (event) {
+        if (event.target.classList.contains("co-select-all")) {
+            const table = event.target.closest("table");
+
+            table.querySelectorAll(".co-row-select").forEach(cb => {
+                cb.checked = event.target.checked;
+            });
+        }
+
+        if (event.target.classList.contains("co-row-select")) {
+            updateSelectAll(event.target.closest("table"));
+        }
     });
 
+    function updateSelectAll(table) {
+        const master = table.querySelector(".co-select-all");
+        const boxes = Array.from(table.querySelectorAll(".co-row-select"));
+
+        if (!master) return;
+
+        master.checked = boxes.length > 0 && boxes.every(cb => cb.checked);
+
+        master.indeterminate =
+            boxes.some(cb => cb.checked) && !master.checked;
+    }
+
+    // Insert below selected row
+    document.querySelectorAll(".co-insert-selected").forEach(button => {
+        button.addEventListener("click", function () {
+            const table = document.getElementById("grid-" + this.dataset.grid);
+            if (!table) return;
+
+            const selected = getSelectedRows(table);
+
+            if (selected.length !== 1) {
+                alert("Please select exactly one row to insert below.");
+                return;
+            }
+
+            selected[0].after(createGridRow(table));
+
+            updateGridIndexes(table);
+            updateSelectAll(table);
+        });
+    });
+
+    // Delete selected rows
+    document.querySelectorAll(".co-delete-selected").forEach(button => {
+        button.addEventListener("click", function () {
+            const table = document.getElementById("grid-" + this.dataset.grid);
+            if (!table) return;
+
+            const selected = getSelectedRows(table);
+
+            if (selected.length === 0) {
+                alert("Please select at least one row.");
+                return;
+            }
+
+            if (!confirm(`Delete ${selected.length} selected row(s)?`)) {
+                return;
+            }
+
+            selected.forEach(row => row.remove());
+
+            updateGridIndexes(table);
+            updateSelectAll(table);
+        });
+    });
+
+    // Automatically create at least 2 rows in every grid
+    document.querySelectorAll(".co-table").forEach(table => {
+        const tbody = table.querySelector("tbody");
+
+        while (tbody.rows.length < 2) {
+            tbody.appendChild(createGridRow(table));
+        }
+
+        updateGridIndexes(table);
+        updateSelectAll(table);
+    });
+
+    // Calculate duration months
     const start = document.getElementById("CommencementDate");
     const end = document.getElementById("EndDate");
     const duration = document.getElementById("DurationMonths");
+
     function updateDuration() {
-        if (!start?.value || !end?.value) { duration.value = ""; return; }
-        const a = new Date(start.value), b = new Date(end.value);
-        let months = (b.getFullYear()-a.getFullYear())*12 + b.getMonth()-a.getMonth();
+        if (!start?.value || !end?.value || !duration) return;
+
+        const a = new Date(start.value);
+        const b = new Date(end.value);
+
+        let months =
+            (b.getFullYear() - a.getFullYear()) * 12 +
+            b.getMonth() - a.getMonth();
+
         if (b.getDate() < a.getDate()) months--;
+
         duration.value = Math.max(0, months);
     }
+
     start?.addEventListener("change", updateDuration);
     end?.addEventListener("change", updateDuration);
 
+    // Authorization tracker
     document.getElementById("coAuthTracker")?.addEventListener("click", () => {
-        if (window.jQuery && jQuery.fn.modal) jQuery("#coTrackerModal").modal("show");
-        else alert("Document: @Model.DocNo | Status: @Model.Status");
+        if (window.jQuery && jQuery.fn.modal) {
+            jQuery("#coTrackerModal").modal("show");
+        } else {
+            alert("Document: @Model.DocNo | Status: @Model.Status");
+        }
     });
+
 })();
 </script>
