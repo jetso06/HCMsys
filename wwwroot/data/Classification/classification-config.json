@@ -211,7 +211,7 @@
       },
       {
         "field": "MasterTypeName",
-        "header": "MType"
+        "header": "Product Group"
       },
       {
         "field": "Group",
@@ -238,15 +238,15 @@
       },
       {
         "field": "CreatedDateTime",
-        "header": "Created DT"
+        "header": "Created DateTime"
       },
       {
         "field": "ModifiedBy",
-        "header": "Mod By"
+        "header": "Modified By"
       },
       {
         "field": "ModifiedDateTime",
-        "header": "Mod DT"
+        "header": "Modified DateTime"
       }
     ]
   },
