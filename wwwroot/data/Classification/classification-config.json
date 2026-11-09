@@ -210,10 +210,6 @@
         "header": "Group"
       },
       {
-        "field": "MasterTypeName",
-        "header": "Product Group"
-      },
-      {
         "field": "Group",
         "header": "Grp",
         "tooltip": "Give Tooltip (Group/Child)"
