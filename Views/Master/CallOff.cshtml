@@ -1,0 +1,346 @@
+@model HCMSys.Controllers.CallOffRecord
+@using HCMSys.Controllers
+@using System.Globalization
+@using System.Text.Json
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var config = ViewBag.Config as CallOffPageConfig ?? new CallOffPageConfig();
+    var lookups = ViewBag.Lookups as Dictionary<string, List<CallOffOption>>
+                  ?? new Dictionary<string, List<CallOffOption>>(StringComparer.OrdinalIgnoreCase);
+    bool isNew = Model.Id == 0;
+    bool isReadOnly = (bool?)ViewBag.IsReadOnly == true;
+    var webJson = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    ViewData["Title"] = config.Page.Title;
+
+    string FieldValue(string name, string type)
+    {
+        var value = Model.GetType().GetProperty(name)?.GetValue(Model);
+        if (value is DateTime dt)
+            return dt.ToString(type == "datetime-local" ? "yyyy-MM-ddTHH:mm" : "yyyy-MM-dd");
+        return Convert.ToString(value, CultureInfo.InvariantCulture) ?? "";
+    }
+
+    List<CallOffOption> Options(string? source)
+    {
+        if (string.IsNullOrWhiteSpace(source)) return new();
+        return lookups.TryGetValue(source, out var values) ? values : new();
+    }
+
+    var gridConfigJson = JsonSerializer.Serialize(config.Grids.ToDictionary(x => x.Id, x => x.Columns), webJson);
+    var lookupJson = JsonSerializer.Serialize(lookups, webJson);
+}
+
+<style>
+    html { font-size:14px; }
+    .co-page { width:100%; padding:0 15px 24px; color:#5a5c69; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; font-size:13px; }
+    .co-page *, .co-page *::before, .co-page *::after { box-sizing:border-box; }
+    .co-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:12px 18px; margin-bottom:16px; background:#fff; border:1px solid #e3e6f0; border-radius:.35rem; box-shadow:0 .15rem 1rem rgba(58,59,69,.12); }
+    .co-title { display:flex; align-items:center; gap:8px; margin:0; color:#5a5c69; font-size:.85rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .co-title i { color:#4e73df; }
+    .co-toolbar { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:6px; }
+    .co-toolbar .btn { padding:5px 9px; border-radius:4px; font-size:.8rem; font-weight:700; white-space:nowrap; }
+    .co-toolbar form { margin:0; }
+    .co-card { margin-bottom:16px; overflow:hidden; background:#fff; border:1px solid #e3e6f0; border-radius:.35rem; box-shadow:0 .15rem 1rem rgba(58,59,69,.10); }
+    .co-card-header { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; background:#f8f9fc; border-bottom:1px solid #e3e6f0; color:#5a5c69; font-weight:800; }
+    .co-card-header i { color:#4e73df; margin-right:7px; }
+    .co-card-body { padding:18px; }
+    .co-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px 20px; }
+    .co-field { min-width:0; }
+    .co-field label { display:block; margin-bottom:6px; color:#5a5c69; font-size:12px; font-weight:700; }
+    .co-field .form-control, .co-field .custom-select { width:100%; min-height:36px; border:1px solid #d1d3e2; border-radius:4px; color:#6e707e; font-size:13px; box-shadow:none; }
+    .co-field textarea.form-control { min-height:72px; resize:vertical; }
+    .co-field-full { grid-column:1/-1; }
+    .co-required { color:#e74a3b; }
+    .co-remarks { display:block; margin-top:4px; color:#858796; font-size:11px; }
+    .co-table-wrap { width:100%; overflow-x:auto; }
+    .co-table { width:100%; margin:0; border-collapse:collapse; }
+    .co-table th { padding:10px 11px; background:#4e73df; border:1px solid #e3e6f0; color:#fff; text-align:left; font-size:11px; text-transform:uppercase; white-space:nowrap; }
+    .co-table td { padding:7px 8px; border:1px solid #e3e6f0; vertical-align:middle; }
+    .co-table tbody tr:nth-child(even) { background:#f8f9fc; }
+    .co-table input:not([type=checkbox]), .co-table select { width:100%; min-width:100px; height:32px; padding:4px 7px; border:1px solid #d1d3e2; border-radius:4px; color:#6e707e; font-size:12px; }
+    .co-table input[type=checkbox] { width:16px; height:16px; }
+    .co-grid-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px; color:#5a5c69; font-size:13px; font-weight:700; }
+    .co-add-row { padding:5px 10px; font-size:12px; }
+    .co-remove-row { padding:4px 8px; border:1px solid #e74a3b; border-radius:4px; background:#fff; color:#e74a3b; cursor:pointer; }
+    .co-remove-row:hover { background:#e74a3b; color:#fff; }
+    .co-status { display:inline-block; padding:4px 9px; border-radius:12px; background:#eef2ff; color:#4e73df; font-size:11px; font-weight:700; }
+    .co-message { margin-bottom:14px; padding:10px 14px; border-radius:4px; font-size:13px; }
+    .co-message.error { background:#fcebea; color:#c0392b; }
+    .co-message.success { background:#e8f5e9; color:#247a45; }
+    .co-checkbox-field { display:flex; align-items:center; gap:8px; min-height:36px; }
+    .co-checkbox-field input { width:16px; height:16px; }
+    @@media(max-width:992px) { .co-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    @@media(max-width:600px) { .co-grid { grid-template-columns:1fr; } .co-field-full { grid-column:auto; } .co-header { align-items:flex-start; } .co-toolbar { justify-content:flex-start; width:100%; } }
+    @@media print { .co-toolbar,.co-add-row,.co-remove-row,.co-no-print { display:none!important; } .co-card,.co-header { box-shadow:none; break-inside:avoid; } .co-page { padding:0; } }
+</style>
+
+<div class="co-page">
+    <div class="co-header">
+        <h5 class="co-title"><i class="fas @config.Page.Icon"></i>@config.Page.Title</h5>
+        <div class="co-toolbar">
+            @foreach (var button in config.Buttons.Form.Where(x => x.Visible))
+            {
+                switch (button.Action.ToLowerInvariant())
+                {
+                    case "new":
+                        <a href="@Url.Action("Form","CallOff")" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</a>
+                        break;
+                    case "edit":
+                        <button type="button" id="coEdit" class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button>
+                        break;
+                    case "save":
+                        <button type="submit" form="callOffForm" id="coSave" class="btn btn-@button.Style btn-sm shadow-sm" @(isReadOnly ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button>
+                        break;
+                    case "clone":
+                        <a href="@(isNew ? "#" : Url.Action("Form","CallOff",new { id=Model.Id, clone=true }))" class="btn btn-@button.Style btn-sm shadow-sm @(isNew ? "disabled" : "")"><i class="fas @button.Icon mr-1"></i>@button.Label</a>
+                        break;
+                    case "unpost":
+                        <form method="post" action="@Url.Action("UnPost","CallOff",new { id=Model.Id })" class="co-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form>
+                        break;
+                    case "print":
+                        <button type="button" onclick="window.print()" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</button>
+                        break;
+                    case "delete":
+                        <form method="post" action="@Url.Action("Delete","CallOff",new { id=Model.Id })" class="co-no-print" onsubmit="return confirm('Delete this CallOff?')">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form>
+                        break;
+                    case "approve":
+                        <form method="post" action="@Url.Action("Approve","CallOff",new { id=Model.Id })" class="co-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form>
+                        break;
+                    case "reject":
+                        <form method="post" action="@Url.Action("Reject","CallOff",new { id=Model.Id })" class="co-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form>
+                        break;
+                    case "authTracker":
+                    case "authtracker":
+                        <button type="button" id="coAuthTracker" class="btn btn-@button.Style btn-sm shadow-sm" @(isNew ? "disabled" : "")><i class="fas @button.Icon mr-1"></i>@button.Label</button>
+                        break;
+                    case "close":
+                        <a href="@Url.Action("Index","Home")" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</a>
+                        break;
+                }
+            }
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null) { <div class="co-message error">@TempData["Error"]</div> }
+    @if (TempData["Success"] != null) { <div class="co-message success">@TempData["Success"]</div> }
+
+    <div class="co-card">
+        <div class="co-card-header"><span><i class="fas fa-file-alt"></i>Document Information</span><span class="co-status">@Model.Status</span></div>
+        <div class="co-card-body">
+            <div class="co-grid">
+                <div class="co-field"><label>Record ID</label><input class="form-control" value="@(Model.Id == 0 ? "New" : Model.Id.ToString())" readonly /></div>
+                <div class="co-field"><label>Document Number</label><input class="form-control" value="@Model.DocNo" readonly /></div>
+                <div class="co-field"><label>Current Status</label><input class="form-control" value="@Model.Status" readonly /></div>
+            </div>
+        </div>
+    </div>
+
+    <form id="callOffForm" method="post" action="@Url.Action("Save","CallOff")">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        @foreach (var cardSection in config.Sections)
+        {
+            <div class="co-card">
+                <div class="co-card-header"><span><i class="fas fa-folder-open"></i>@(cardSection.Title)</span></div>
+                <div class="co-card-body">
+                    <div class="co-grid">
+                        @foreach (var field in cardSection.Fields)
+                        {
+                            var raw = Model.GetType().GetProperty(field.Field)?.GetValue(Model);
+                            var value = FieldValue(field.Field, field.Type);
+                            var fullWidth = field.Type == "textarea" || field.Type == "richtext";
+                            <div class="co-field @(fullWidth ? "co-field-full" : "")">
+                                <label for="@field.Field">@field.Label @if (field.Required) { <span class="co-required">*</span> }</label>
+                                @if (field.Type == "select")
+                                {
+                                    <select id="@field.Field" name="@field.Field" class="custom-select" required="@field.Required" disabled="@isReadOnly">
+                                        <option value="">Select @field.Label</option>
+                                        @foreach (var option in Options(field.Source))
+                                        {
+                                            <option value="@option.Value" selected="@(value == option.Value)">@option.Text</option>
+                                        }
+                                    </select>
+                                }
+                                else if (field.Type == "textarea" || field.Type == "richtext")
+                                {
+                                    <textarea id="@field.Field" name="@field.Field" class="form-control" rows="@(field.Type == "richtext" ? 5 : 3)" readonly="@isReadOnly">@value</textarea>
+                                }
+                                else if (field.Type == "checkbox")
+                                {
+                                    <div class="co-checkbox-field">
+                                        <input type="checkbox" id="@field.Field" name="@field.Field" value="true" checked="@(raw is bool checkedValue && checkedValue)" disabled="@isReadOnly" />
+                                        <input type="hidden" name="@field.Field" value="false" />
+                                        <span>@field.Label</span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <input id="@field.Field" name="@field.Field" type="@field.Type" value="@value" class="form-control" required="@field.Required" readonly="@(isReadOnly || field.Readonly || field.Field == "DurationMonths")" />
+                                }
+                                @if (!string.IsNullOrWhiteSpace(field.Remarks)) { <small class="co-remarks">@field.Remarks</small> }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @foreach (var grid in config.Grids)
+        {
+            <div class="co-card">
+                <div class="co-card-header"><span><i class="fas fa-table"></i>@grid.Title</span></div>
+                <div class="co-card-body">
+                    <div class="co-grid-heading">
+                        <span>@grid.Subtitle</span>
+                        <button type="button" class="btn btn-outline-primary btn-sm co-add-row co-no-print" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-plus mr-1"></i>Add Row</button>
+                    </div>
+                    <div class="co-table-wrap">
+                        <table class="co-table" id="grid-@grid.Id" data-property="@grid.Property">
+                            <thead><tr>@foreach (var col in grid.Columns) { <th>@col.Label</th> }<th class="co-no-print">Action</th></tr></thead>
+                            <tbody>
+                            @{
+                                var list = Model.GetType().GetProperty(grid.Property)?.GetValue(Model) as System.Collections.IEnumerable;
+                                var rowIndex = 0;
+                            }
+                            @if (list != null)
+                            {
+                                foreach (var item in list)
+                                {
+                                    <tr>
+                                        @foreach (var col in grid.Columns)
+                                        {
+                                            var cell = item?.GetType().GetProperty(col.Field)?.GetValue(item);
+                                            var cellValue = Convert.ToString(cell, CultureInfo.InvariantCulture) ?? "";
+                                            <td>
+                                                @if (col.Type == "select")
+                                                {
+                                                    <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly">
+                                                        <option value="">Select @col.Label</option>
+                                                        @foreach (var option in Options(col.Source)) { <option value="@option.Value" selected="@(cellValue == option.Value)">@option.Text</option> }
+                                                    </select>
+                                                }
+                                                else if (col.Type == "checkbox")
+                                                {
+                                                    <input type="checkbox" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="true" checked="@(cell is bool cb && cb)" disabled="@isReadOnly" />
+                                                    <input type="hidden" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="false" />
+                                                }
+                                                else
+                                                {
+                                                    <input type="@col.Type" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="@cellValue" step="@col.Step" maxlength="@(col.Field == "Description" ? "500" : null)" disabled="@isReadOnly" />
+                                                }
+                                            </td>
+                                        }
+                                        <td class="co-no-print"><button type="button" class="co-remove-row" title="Remove row" disabled="@isReadOnly"><i class="fas fa-trash"></i></button></td>
+                                    </tr>
+                                    rowIndex++;
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+<div class="modal fade" id="coTrackerModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">CallOff Authorization Tracker</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
+        <div class="modal-body">
+            <p><strong>Document:</strong> @Model.DocNo</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+            <p><strong>Created:</strong> @(Model.CreatedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not saved")</p>
+            <p><strong>Modified:</strong> @(Model.ModifiedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not modified")</p>
+        </div>
+    </div></div>
+</div>
+
+<script>
+(function () {
+    "use strict";
+    const form = document.getElementById("callOffForm");
+    const gridColumns = @Html.Raw(gridConfigJson);
+    const lookupOptions = @Html.Raw(lookupJson);
+    const isReadOnly = @isReadOnly.ToString().ToLowerInvariant();
+
+    document.getElementById("coEdit")?.addEventListener("click", function () {
+        form.querySelectorAll("input,select,textarea,button.co-remove-row").forEach(el => {
+            if (el.type !== "hidden" && el.name !== "__RequestVerificationToken") el.disabled = false;
+        });
+        document.querySelectorAll(".co-add-row").forEach(el => el.disabled = false);
+        document.getElementById("coSave").disabled = false;
+        this.disabled = true;
+    });
+
+    document.querySelectorAll(".co-add-row").forEach(button => {
+        button.addEventListener("click", function () {
+            const table = document.getElementById("grid-" + this.dataset.grid);
+            const property = table.dataset.property;
+            const tbody = table.querySelector("tbody");
+            const index = tbody.querySelectorAll("tr").length;
+            const tr = document.createElement("tr");
+
+            (gridColumns[this.dataset.grid] || []).forEach(col => {
+                const td = document.createElement("td");
+                const name = `${property}[${index}].${col.field}`;
+                if (col.type === "select") {
+                    const select = document.createElement("select");
+                    select.name = name;
+                    const empty = document.createElement("option");
+                    empty.value = ""; empty.textContent = `Select ${col.label}`;
+                    select.appendChild(empty);
+                    (lookupOptions[col.source] || []).forEach(opt => {
+                        const option = document.createElement("option");
+                        option.value = opt.value; option.textContent = opt.text;
+                        select.appendChild(option);
+                    });
+                    td.appendChild(select);
+                } else if (col.type === "checkbox") {
+                    const check = document.createElement("input");
+                    check.type = "checkbox"; check.name = name; check.value = "true";
+                    const hidden = document.createElement("input");
+                    hidden.type = "hidden"; hidden.name = name; hidden.value = "false";
+                    td.appendChild(check); td.appendChild(hidden);
+                } else {
+                    const input = document.createElement("input");
+                    input.type = col.type; input.name = name;
+                    if (col.step) input.step = col.step;
+                    td.appendChild(input);
+                }
+                tr.appendChild(td);
+            });
+            const action = document.createElement("td");
+            action.className = "co-no-print";
+            action.innerHTML = '<button type="button" class="co-remove-row" title="Remove row"><i class="fas fa-trash"></i></button>';
+            tr.appendChild(action);
+            tbody.appendChild(tr);
+        });
+    });
+
+    document.addEventListener("click", event => {
+        const remove = event.target.closest(".co-remove-row");
+        if (remove) remove.closest("tr").remove();
+    });
+
+    const start = document.getElementById("CommencementDate");
+    const end = document.getElementById("EndDate");
+    const duration = document.getElementById("DurationMonths");
+    function updateDuration() {
+        if (!start?.value || !end?.value) { duration.value = ""; return; }
+        const a = new Date(start.value), b = new Date(end.value);
+        let months = (b.getFullYear()-a.getFullYear())*12 + b.getMonth()-a.getMonth();
+        if (b.getDate() < a.getDate()) months--;
+        duration.value = Math.max(0, months);
+    }
+    start?.addEventListener("change", updateDuration);
+    end?.addEventListener("change", updateDuration);
+
+    document.getElementById("coAuthTracker")?.addEventListener("click", () => {
+        if (window.jQuery && jQuery.fn.modal) jQuery("#coTrackerModal").modal("show");
+        else alert("Document: @Model.DocNo | Status: @Model.Status");
+    });
+})();
+</script>

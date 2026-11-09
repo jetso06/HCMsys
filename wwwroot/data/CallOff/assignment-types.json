@@ -1,0 +1,22 @@
+[
+  {
+    "value": "0",
+    "text": "Permanent"
+  },
+  {
+    "value": "1",
+    "text": "Temporary"
+  },
+  {
+    "value": "2",
+    "text": "Consultancy"
+  },
+  {
+    "value": "3",
+    "text": "Training"
+  },
+  {
+    "value": "4",
+    "text": "Project Based"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "name": "Product Category"
+  },
+  {
+    "id": 1,
+    "name": "Product SubCategory"
+  },
+  {
+    "id": 2,
+    "name": "Product Brand"
+  },
+  {
+    "id": 3,
+    "name": "Supplier/Customer Category"
+  },
+  {
+    "id": 4,
+    "name": "Billing Category"
+  },
+  {
+    "id": 5,
+    "name": "Salary Category"
+  }
+]

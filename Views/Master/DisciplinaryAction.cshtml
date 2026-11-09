@@ -529,6 +529,42 @@
 .da-attachment-table .da-date-control input[type="date"] {
     min-width: 130px;
 }
+
+    /* Attachment column: small red trash icon */
+    .da-clear-file {
+        border: none;
+        background: transparent;
+        color: #dc3545;
+        font-size: 15px;
+        padding: 5px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .da-clear-file:hover {
+            color: #b02a37;
+        }
+
+    /* Action column: red square with white trash icon */
+    .da-delete-row {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        border: none;
+        border-radius: 5px;
+        background-color: #dc3545;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .da-delete-row:hover {
+            background-color: #bb2d3b;
+            color: #fff;
+        }
     @@media (max-width: 768px) {
         .da-header {
             align-items: flex-start;
@@ -549,6 +585,46 @@
         .da-page .card {
             box-shadow: none !important;
         }
+    }
+
+    /* Attachment file chooser and delete icon */
+    .da-file-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: nowrap;
+        min-width: 0;
+    }
+
+        .da-file-wrapper input[type="file"] {
+            flex: 0 1 auto;
+            min-width: 190px;
+            max-width: 220px;
+        }
+
+        .da-file-wrapper .da-clear-file {
+            flex: 0 0 38px;
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+
+    /* Action column delete icon */
+    .da-attachment-table td:last-child {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .da-attachment-table .da-delete-row {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
     }
 </style>
 
@@ -738,9 +814,9 @@ function daAddAttachmentRow(item = {}) {
             // First delete button: clear only the selected file.
             const clearFileButton = document.createElement("button");
             clearFileButton.type = "button";
-            clearFileButton.className = "btn btn-danger btn-sm da-clear-file";
-            clearFileButton.title = "Remove selected file";
-            clearFileButton.innerHTML = '<i class="fas fa-trash"></i>';
+                    clearFileButton.className = "da-clear-file";
+        clearFileButton.title = "Remove selected file";
+        clearFileButton.innerHTML = '<i class="fas fa-trash"></i>';
 
             input.addEventListener("change", function () {
                 fileName.textContent = this.files.length

@@ -1,0 +1,587 @@
+{
+  "page": {
+    "title": "Call Off",
+    "pageId": 401,
+    "icon": "fa-file-contract"
+  },
+  "buttons": {
+    "form": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "warning",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "contractHeader",
+      "title": "Contract Header",
+      "fields": [
+        {
+          "field": "DocNo",
+          "label": "Doc No",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "DocDate",
+          "label": "Doc Date",
+          "type": "date",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "CallOffNumber",
+          "label": "Call Off Number",
+          "type": "text",
+          "source": null,
+          "remarks": "Auto Number",
+          "required": false,
+          "readonly": true
+        },
+        {
+          "field": "AgreementReferenceDate",
+          "label": "Agreement Reference Date",
+          "type": "date",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ClientName",
+          "label": "Client Name",
+          "type": "select",
+          "source": "client-master.json",
+          "remarks": "Write to Project Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "SupplierName",
+          "label": "Supplier Name",
+          "type": "select",
+          "source": "supplier-master.json",
+          "remarks": "Write to Project Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "Currency",
+          "label": "Currency",
+          "type": "select",
+          "source": "currencies.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ContractNumberReference",
+          "label": "Contract Number Reference",
+          "type": "text",
+          "source": null,
+          "remarks": "Write to Project Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ContractTitleReference",
+          "label": "Contract Title Reference",
+          "type": "text",
+          "source": null,
+          "remarks": "Write to Project Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "PostDate",
+          "label": "PostDate",
+          "type": "datetime-local",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "MainFrameAgreement",
+          "label": "MainFrame Agreement",
+          "type": "select",
+          "source": "mainframe-agreements.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "WorkOrderNo",
+          "label": "WorkOrder No",
+          "type": "select",
+          "source": "work-orders.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ContractType",
+          "label": "Contract Type",
+          "type": "select",
+          "source": "contract-types.json",
+          "remarks": "Template Master",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "personnelDetails",
+      "title": "Personnel Details",
+      "fields": [
+        {
+          "field": "PersonnelName",
+          "label": "Personnel Name",
+          "type": "select",
+          "source": "candidate-master.json",
+          "remarks": "Candidate Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "PositionTitle",
+          "label": "Position Title",
+          "type": "select",
+          "source": "designation-master.json",
+          "remarks": "Designation master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "PointOfOrigin",
+          "label": "Point of Origin",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ReportingTo",
+          "label": "Reporting To",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "WorkBaseLocation",
+          "label": "Work Base Location",
+          "type": "textarea",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "assignmentDetails",
+      "title": "Assignment Details",
+      "fields": [
+        {
+          "field": "AssignmentType",
+          "label": "Assignment Type",
+          "type": "select",
+          "source": "assignment-types.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "VisaStatus",
+          "label": "Visa Status",
+          "type": "select",
+          "source": "visa-statuses.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "CommencementDate",
+          "label": "Commencement Date",
+          "type": "date",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "EndDate",
+          "label": "End Date",
+          "type": "date",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "DurationMonths",
+          "label": "Duration Months",
+          "type": "number",
+          "source": null,
+          "remarks": "Auto Calculate",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "employmentTerms",
+      "title": "Employment Terms",
+      "fields": [
+        {
+          "field": "WorkSchedule",
+          "label": "Work Schedule",
+          "type": "textarea",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "TimesheetRequired",
+          "label": "Timesheet Required",
+          "type": "checkbox",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "EndOfServiceType",
+          "label": "End Of Service Type",
+          "type": "select",
+          "source": "end-of-service-types.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "LeaveEntitlement",
+          "label": "Leave Entitlement",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ProbationPeriod",
+          "label": "Probation Period",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "NoticePeriod",
+          "label": "Notice Period",
+          "type": "text",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "OvertimeApplicable",
+          "label": "Overtime Applicable",
+          "type": "checkbox",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "OvertimeRemarks",
+          "label": "Overtime Remarks",
+          "type": "textarea",
+          "source": null,
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "additionalTerms",
+      "title": "Additional Terms",
+      "fields": [
+        {
+          "field": "AdditionalTerms",
+          "label": "Additional Terms",
+          "type": "richtext",
+          "source": null,
+          "remarks": "Supports formatting and numbered lists",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "billingHeads",
+      "title": "Contract Details",
+      "subtitle": "Billing Heads",
+      "property": "BillingHeads",
+      "columns": [
+        {
+          "field": "BillingHead",
+          "label": "Billing Heads",
+          "type": "select",
+          "source": "billing-categories.json",
+          "step": null
+        },
+        {
+          "field": "DenominationType",
+          "label": "Denomination Type",
+          "type": "select",
+          "source": "denomination-types.json",
+          "step": null
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        },
+        {
+          "field": "ServiceFeeType",
+          "label": "Service Fee Type",
+          "type": "select",
+          "source": "service-fee-types.json",
+          "step": null
+        },
+        {
+          "field": "ServiceFeeValue",
+          "label": "Service Fee Value",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        },
+        {
+          "field": "TaxPercent",
+          "label": "Tax %",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        },
+        {
+          "field": "Qty",
+          "label": "Qty",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        },
+        {
+          "field": "Remarks",
+          "label": "Remarks",
+          "type": "text",
+          "source": null,
+          "step": null
+        }
+      ]
+    },
+    {
+      "id": "duties",
+      "title": "Description of Duties",
+      "subtitle": "Duty Description",
+      "property": "Duties",
+      "columns": [
+        {
+          "field": "Main",
+          "label": "Main",
+          "type": "checkbox",
+          "source": null,
+          "step": null
+        },
+        {
+          "field": "Sub",
+          "label": "Sub",
+          "type": "checkbox",
+          "source": null,
+          "step": null
+        },
+        {
+          "field": "Description",
+          "label": "Description",
+          "type": "text",
+          "source": null,
+          "step": null
+        }
+      ]
+    },
+    {
+      "id": "additionalInfo",
+      "title": "Other Details",
+      "subtitle": "Additional Info",
+      "property": "AdditionalInfo",
+      "columns": [
+        {
+          "field": "AdditionalInfo",
+          "label": "Additional Info",
+          "type": "select",
+          "source": "additional-checks.json",
+          "step": null
+        },
+        {
+          "field": "Required",
+          "label": "Required",
+          "type": "checkbox",
+          "source": null,
+          "step": null
+        }
+      ]
+    },
+    {
+      "id": "salaryBreakdown",
+      "title": "Salary Breakdown",
+      "subtitle": "Component",
+      "property": "SalaryBreakdown",
+      "columns": [
+        {
+          "field": "Component",
+          "label": "Component",
+          "type": "select",
+          "source": "salary-categories.json",
+          "step": null
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        }
+      ]
+    },
+    {
+      "id": "benefits",
+      "title": "Other Benefits & Reimbursements",
+      "subtitle": "Benefit Type",
+      "property": "Benefits",
+      "columns": [
+        {
+          "field": "BenefitType",
+          "label": "Benefit Type",
+          "type": "select",
+          "source": "benefit-types.json",
+          "step": null
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "source": null,
+          "step": "0.001"
+        },
+        {
+          "field": "Frequency",
+          "label": "Frequency",
+          "type": "text",
+          "source": null,
+          "step": null
+        }
+      ]
+    }
+  ]
+}

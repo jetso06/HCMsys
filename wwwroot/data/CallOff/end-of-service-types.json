@@ -1,0 +1,18 @@
+[
+  {
+    "value": "0",
+    "text": "As Per Labour Law"
+  },
+  {
+    "value": "1",
+    "text": "Included In Rate"
+  },
+  {
+    "value": "2",
+    "text": "Not Applicable"
+  },
+  {
+    "value": "3",
+    "text": "Manual Entry"
+  }
+]

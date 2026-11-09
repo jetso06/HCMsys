@@ -1,0 +1,22 @@
+[
+  {
+    "value": "0",
+    "text": "Single"
+  },
+  {
+    "value": "1",
+    "text": "Family"
+  },
+  {
+    "value": "2",
+    "text": "Family + Children"
+  },
+  {
+    "value": "3",
+    "text": "Geographical Single"
+  },
+  {
+    "value": "4",
+    "text": "Not Applicable"
+  }
+]

@@ -1,0 +1,375 @@
+{
+  "page": {
+    "title": "Master Classifications",
+    "pageId": 400,
+    "sectionTitle": "General",
+    "icon": "fa-layer-group"
+  },
+  "tabs": [
+    {
+      "id": "general",
+      "label": "General"
+    }
+  ],
+  "buttons": {
+    "index": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "light",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "light",
+        "action": "close",
+        "visible": true
+      }
+    ],
+    "form": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "warning",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+
+  "table": {
+    "heading": "Classification List",
+    "columns": [
+      {
+        "field": "Name",
+        "header": "Name"
+      },
+      {
+        "field": "Code",
+        "header": "Code"
+      },
+      {
+        "field": "GroupName",
+        "header": "Group"
+      },
+      {
+        "field": "MasterTypeName",
+        "header": "MType"
+      },
+      {
+        "field": "Group",
+        "header": "Grp",
+        "tooltip": "Give Tooltip (Group/Child)"
+      },
+      {
+        "field": "Active",
+        "header": "Ave",
+        "tooltip": "Give Tooltip (Active Yes/No)"
+      },
+      {
+        "field": "ApprovalStatus",
+        "header": "AppSt",
+        "tooltip": "Give Tooltip (Approval Status Approved/Pending/Rejected)"
+      },
+      {
+        "field": "Id",
+        "header": "ID"
+      },
+      {
+        "field": "CreatedBy",
+        "header": "Creator"
+      },
+      {
+        "field": "CreatedDateTime",
+        "header": "Created DT"
+      },
+      {
+        "field": "ModifiedBy",
+        "header": "Mod By"
+      },
+      {
+        "field": "ModifiedDateTime",
+        "header": "Mod DT"
+      }
+    ]
+  },
+
+  "formFields": [
+    {
+      "field": "Name",
+      "label": "Name",
+      "type": "text",
+      "maxLength": 100,
+      "required": true
+    },
+    {
+      "field": "Code",
+      "label": "Code",
+      "type": "text",
+      "maxLength": 30,
+      "required": true
+    },
+    {
+      "field": "NameNL",
+      "label": "Name in Native Language",
+      "type": "text",
+      "maxLength": 100,
+      "required": false
+    },
+    {
+      "field": "MasterType",
+      "label": "Group Name",
+      "type": "select",
+      "required": true,
+      "optionsSource": "classification-types.json"
+    },
+    {
+      "field": "ServiceMapping",
+      "label": "Service Mapping",
+      "type": "select",
+      "required": true,
+      "options": [
+        "products",
+        "service"
+      ]
+    },
+    {
+      "field": "Comments",
+      "label": "Comments",
+      "type": "textarea",
+      "maxLength": 200,
+      "required": false
+    }
+  ],
+  "databaseFields": [
+    {
+      "key": "iMid",
+      "type": "int"
+    },
+    {
+      "key": "sName",
+      "type": "nvarchar(100)"
+    },
+    {
+      "key": "sNameNL",
+      "type": "nvarchar(100)"
+    },
+    {
+      "key": "sCode",
+      "type": "nvarchar(30)"
+    },
+    {
+      "key": "iParentId",
+      "type": "int"
+    },
+    {
+      "key": "iMasterType",
+      "type": "int"
+    },
+    {
+      "key": "bGroup",
+      "type": "bit"
+    },
+    {
+      "key": "sComments",
+      "type": "nvarchar(200)"
+    },
+    {
+      "key": "bStatus",
+      "type": "bit"
+    },
+    {
+      "key": "iCompanyId",
+      "type": "int"
+    },
+    {
+      "key": "iLocation",
+      "type": "int"
+    },
+    {
+      "key": "iDepartment",
+      "type": "int"
+    },
+    {
+      "key": "iAuth",
+      "type": "int"
+    },
+    {
+      "key": "iCreatedBy",
+      "type": "int"
+    },
+    {
+      "key": "iModifiedBy",
+      "type": "int"
+    },
+    {
+      "key": "dtCreatedDate",
+      "type": "DATETIME"
+    },
+    {
+      "key": "dtModifiedDate",
+      "type": "DATETIME"
+    },
+    {
+      "key": "iProduct",
+      "type": "int"
+    }
+  ]
+}

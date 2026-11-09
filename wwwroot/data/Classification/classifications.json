@@ -1,0 +1,72 @@
+[
+  {
+    "Id": 25,
+    "Name": "jijish ttttt",
+    "Code": "dddd",
+    "GroupName": "Assets",
+    "MasterTypeName": "Customer",
+    "GroupDisplay": "Y",
+    "ActiveDisplay": "Y",
+    "ApprovalStatus": "A",
+    "CreatedBy": "admin",
+    "CreatedDateTime": "05-11-2026 07:58",
+    "ModifiedBy": "",
+    "ModifiedDateTime": ""
+  },
+  {
+    "Id": 20,
+    "Name": "JIJISH test",
+    "Code": "TG1008",
+    "GroupName": "Assets",
+    "MasterTypeName": "Suppliers",
+    "GroupDisplay": "N",
+    "ActiveDisplay": "N",
+    "ApprovalStatus": "P",
+    "CreatedBy": "admin",
+    "CreatedDateTime": "29-10-2026 23:53",
+    "ModifiedBy": "admin",
+    "ModifiedDateTime": "02-11-2026 03:38"
+  },
+  {
+    "Id": 19,
+    "Name": "JIJISH",
+    "Code": "TG1007",
+    "GroupName": "Expenses",
+    "MasterTypeName": "Customer",
+    "GroupDisplay": "Y",
+    "ActiveDisplay": "Y",
+    "ApprovalStatus": "R",
+    "CreatedBy": "admin",
+    "CreatedDateTime": "29-10-2026 23:51",
+    "ModifiedBy": "admin",
+    "ModifiedDateTime": "05-11-2026 07:57"
+  },
+  {
+    "Id": 18,
+    "Name": "gautam",
+    "Code": "CUST006",
+    "GroupName": "Assets",
+    "MasterTypeName": "Customer/Supplier",
+    "GroupDisplay": "",
+    "ActiveDisplay": "",
+    "ApprovalStatus": "",
+    "CreatedBy": "admin",
+    "CreatedDateTime": "28-10-2026 06:28",
+    "ModifiedBy": "admin",
+    "ModifiedDateTime": "02-11-2026 03:39"
+  },
+  {
+    "Id": 16,
+    "Name": "Test Nirali Acc001",
+    "Code": "CUST004",
+    "GroupName": "",
+    "MasterTypeName": "",
+    "GroupDisplay": "",
+    "ActiveDisplay": "",
+    "ApprovalStatus": "",
+    "CreatedBy": "admin",
+    "CreatedDateTime": "28-10-2026 04:27",
+    "ModifiedBy": "",
+    "ModifiedDateTime": "28-Oct-"
+  }
+]

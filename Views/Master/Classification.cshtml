@@ -1,0 +1,632 @@
+
+@model HCMSys.Controllers.ClassificationRecord
+@using HCMSys.Controllers
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var config = ViewBag.Config as ClassificationPageConfig
+                 ?? new ClassificationPageConfig();
+
+    var types = ViewBag.Types as List<ClassificationType>
+                ?? new List<ClassificationType>();
+
+    bool isClone = (bool?)ViewBag.IsClone == true;
+    bool isNew = Model.Id == 0;
+
+    ViewData["Title"] = config.Page.Title;
+}
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .cl-page {
+        width: 100%;
+        padding: 0 15px 24px;
+        color: #5a5c69;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .cl-page *,
+    .cl-page *::before,
+    .cl-page *::after {
+        box-sizing: border-box;
+    }
+
+    .cl-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 18px;
+        margin-bottom: 16px;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1rem rgba(58,59,69,.12);
+    }
+
+    .cl-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .cl-title i {
+        color: #4e73df;
+    }
+
+    .cl-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .cl-toolbar .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .cl-card {
+        margin-bottom: 16px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: .35rem;
+        box-shadow: 0 .15rem 1rem rgba(58,59,69,.10);
+    }
+
+    .cl-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: #fff;
+        border-bottom: 1px solid #e3e6f0;
+        font-weight: 700;
+    }
+
+    .cl-card-body {
+        padding: 18px;
+    }
+
+    .cl-tabs {
+        display: flex;
+        gap: 4px;
+        border-bottom: 1px solid #e3e6f0;
+        margin-bottom: 18px;
+    }
+
+    .cl-tab {
+        padding: 10px 18px;
+        border: 1px solid transparent;
+        border-bottom: 3px solid transparent;
+        background: transparent;
+        color: #858796;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .cl-tab.active {
+        color: #4e73df;
+        border-bottom-color: #4e73df;
+    }
+
+    .cl-panel {
+        display: none;
+    }
+
+    .cl-panel.active {
+        display: block;
+    }
+
+    .cl-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px 22px;
+    }
+
+    .cl-field {
+        min-width: 0;
+    }
+
+    .cl-field label {
+        display: block;
+        margin-bottom: 6px;
+        color: #5a5c69;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .cl-field .form-control,
+    .cl-field .custom-select {
+        width: 100%;
+        height: 36px;
+        border: 1px solid #d1d3e2;
+        border-radius: 4px;
+        color: #6e707e;
+        font-size: 13px;
+        box-shadow: none;
+    }
+
+    .cl-field textarea.form-control {
+        height: auto;
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .cl-required {
+        color: #e74a3b;
+    }
+
+    .cl-message {
+        margin-bottom: 14px;
+        padding: 10px 14px;
+        border-radius: 4px;
+        font-size: 13px;
+    }
+
+    .cl-message.error {
+        background: #fcebea;
+        color: #c0392b;
+    }
+
+    .cl-message.success {
+        background: #e8f5e9;
+        color: #247a45;
+    }
+
+    .cl-group-toggle {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.cl-group-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5a5c69;
+    cursor: pointer;
+}
+
+.cl-group-toggle input {
+    width: 14px;
+    height: 14px;
+    accent-color: #4e73df;
+}
+
+    @@media(max-width: 768px) {
+        .cl-header {
+            align-items: flex-start;
+        }
+
+        .cl-toolbar {
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .cl-bottom-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media(max-width: 600px) {
+        .cl-form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media print {
+        .cl-toolbar,
+        .cl-add-row,
+        .cl-remove-row {
+            display: none !important;
+        }
+
+        .cl-card,
+        .cl-header {
+            box-shadow: none;
+        }
+    }
+</style>
+
+<div class="cl-page">
+
+    <!-- PAGE HEADER AND TOOLBAR -->
+    <div class="cl-header">
+
+        <h5 class="cl-title">
+            <i class="fas @config.Page.Icon"></i>
+            @config.Page.Title
+        </h5>
+
+        <div class="cl-toolbar">
+
+            
+@foreach (var button in config.Buttons.Form.Where(x => x.Visible))
+{
+    switch (button.Action)
+    {
+        case "new":
+            <a href="@Url.Action("Form", "Classification")"
+               class="btn btn-success btn-sm shadow-sm">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </a>
+            break;
+
+        case "edit":
+            <button type="button" id="clEdit"
+                    class="btn btn-primary btn-sm shadow-sm"
+                    @(isNew ? "disabled" : "")>
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "save":
+            <button type="submit" form="classificationForm"
+                    class="btn btn-primary btn-sm shadow-sm">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "clone":
+            <a href="@(isNew ? "#" : Url.Action("Form", "Classification",
+                       new { id = Model.Id, clone = true }))"
+               class="btn btn-info btn-sm shadow-sm @(isNew ? "disabled" : "")"
+               aria-disabled="@isNew">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </a>
+            break;
+
+        case "unpost":
+            <button type="button" id="clUnPost"
+                    class="btn btn-warning btn-sm shadow-sm" disabled>
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "print":
+            <button type="button" onclick="window.print()"
+                    class="btn btn-secondary btn-sm shadow-sm">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "delete":
+            <button type="submit" form="classificationDeleteForm"
+                    class="btn btn-danger btn-sm shadow-sm"
+                    @(isNew ? "disabled" : "")
+                    onclick="return confirm('Delete this classification?')">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "approve":
+            <button type="button" id="clApprove"
+                    class="btn btn-success btn-sm shadow-sm" disabled>
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "reject":
+            <button type="button" id="clReject"
+                    class="btn btn-danger btn-sm shadow-sm" disabled>
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "authTracker":
+            <button type="button" id="clAuthTracker"
+                    class="btn btn-info btn-sm shadow-sm" disabled>
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </button>
+            break;
+
+        case "close":
+            <a href="@Url.Action("Index", "Classification")"
+               class="btn btn-secondary btn-sm shadow-sm">
+                <i class="fas @button.Icon mr-1"></i>
+                @button.Label
+            </a>
+            break;
+    }
+}
+
+
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="cl-message error">
+            <i class="fas fa-exclamation-circle mr-1"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="cl-message success">
+            <i class="fas fa-check-circle mr-1"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    <!-- DELETE FORM -->
+    @if (!isNew)
+    {
+        <form id="classificationDeleteForm"
+              method="post"
+              action="@Url.Action("Delete", "Classification",
+                        new { id = Model.Id })"
+              hidden>
+            @Html.AntiForgeryToken()
+        </form>
+    }
+
+    <!-- MAIN FORM -->
+    <form id="classificationForm"
+          method="post"
+          action="@Url.Action("Save", "Classification")">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+
+        <div class="cl-card">
+
+            <div class="cl-card-body">
+
+                <!-- TABS -->
+                <div class="cl-tabs">
+
+                    @for (int i = 0; i < config.Tabs.Count; i++)
+{
+    var tab = config.Tabs[i];
+
+    <button type="button"
+            class="cl-tab @(i == 0 ? "active" : "")"
+            data-tab="@tab.Id">
+        @tab.Label
+    </button>
+}
+
+                </div>
+
+               <!-- GENERAL TAB -->
+<section class="cl-panel active" id="general">
+
+    <!-- GROUP CHECKBOX -->
+    <div class="cl-group-toggle">
+        <label>
+            <input type="checkbox"
+                   name="Group"
+                   value="true"
+                   @(Model.Group ? "checked" : "") />
+            Group
+        </label>
+    </div>
+
+    <!-- HEADER FIELDS -->
+    <div class="cl-form-grid">
+
+                        @foreach (var field in config.FormFields)
+                        {
+                            var value = field.Field switch
+                            {
+                                "Name" => Model.Name,
+                                "Code" => Model.Code,
+                                "NameNL" => Model.NameNL ?? "",
+                                "MasterType" => Model.MasterType.ToString(),
+                                "ServiceMapping" => Model.ServiceMapping,
+                                _ => ""
+                            };
+
+                            <div class="cl-field">
+
+                                <label for="@field.Field">
+                                    @field.Label
+
+                                    @if (field.Required)
+                                    {
+                                        <span class="cl-required">*</span>
+                                    }
+                                </label>
+
+                                @if (field.Field == "MasterType")
+                                {
+                                    <select id="MasterType"
+                                            name="MasterType"
+                                            class="custom-select"
+                                            required="@field.Required">
+
+                                        <option value="">Select Master Type</option>
+
+                                        @foreach (var type in types)
+{
+    <option value="@type.Id"
+            selected="@(Model.MasterType == type.Id)">
+        @type.Id - @type.Name
+    </option>
+}
+
+                                    </select>
+                                }
+                                else if (field.Field == "ServiceMapping")
+                                {
+                                    <select id="ServiceMapping"
+                                            name="ServiceMapping"
+                                            class="custom-select"
+                                            required="@field.Required">
+
+                                        <option value="">Select Service Mapping</option>
+
+                                        @foreach (var option in field.Options ?? new List<string>())
+                                        {
+                                            <option value="@option"
+                                                    selected="@(Model.ServiceMapping == option)">
+                                                @option
+                                            </option>
+                                        }
+
+                                    </select>
+                                }
+                                else
+                                {
+                                    <input type="text"
+                                           id="@field.Field"
+                                           name="@field.Field"
+                                           value="@value"
+                                           maxlength="@field.MaxLength"
+                                           required="@field.Required"
+                                           class="form-control" />
+                                }
+
+                            </div>
+                        }
+
+                    </div>
+
+                </section>
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+(function () {
+    "use strict";
+
+    const form = document.getElementById("classificationForm");
+    const editButton = document.getElementById("clEdit");
+
+        rows.forEach((row, index) => {
+            row.querySelectorAll("input").forEach((input, column) => {
+                input.name = column === 0
+                    ? `KeyValues[${index}].Key`
+                    : `KeyValues[${index}].Value`;
+            });
+        });
+
+        emptyMessage.style.display = rows.length === 0 ? "" : "none";
+    }
+
+    function addRow(key = "", value = "") {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>
+                <input type="text"
+                       maxlength="100"
+                       placeholder="Enter key"
+                       value="${escapeHtml(key)}" />
+            </td>
+            <td>
+                <input type="text"
+                       maxlength="200"
+                       placeholder="Enter value"
+                       value="${escapeHtml(value)}" />
+            </td>
+            <td>
+                <button type="button"
+                        class="cl-remove-row"
+                        title="Remove row">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>`;
+
+        body.appendChild(row);
+        updateIndexes();
+    }
+
+    addButton.addEventListener("click", function () {
+        addRow();
+    });
+
+    body.addEventListener("click", function (event) {
+        const button = event.target.closest(".cl-remove-row");
+
+        if (!button) return;
+
+        button.closest("tr").remove();
+        updateIndexes();
+    });
+
+    // Tabs are ready for additional tabs in the future.
+    document.querySelectorAll(".cl-tab").forEach(button => {
+        button.addEventListener("click", function () {
+            document.querySelectorAll(".cl-tab")
+                .forEach(tab => tab.classList.remove("active"));
+
+            document.querySelectorAll(".cl-panel")
+                .forEach(panel => panel.classList.remove("active"));
+
+            this.classList.add("active");
+
+            const panel = document.getElementById(
+                this.dataset.tab
+            );
+
+            if (panel) panel.classList.add("active");
+        });
+    });
+
+    // Existing records open in edit mode.
+    // This button toggles the form controls between read-only and editable.
+    if (editButton) {
+        editButton.addEventListener("click", function () {
+            const controls = form.querySelectorAll(
+                "input:not([type=hidden]), select, textarea"
+            );
+
+            const currentlyReadOnly =
+                [...controls].every(control =>
+                    control.disabled || control.readOnly
+                );
+
+            controls.forEach(control => {
+                control.disabled = !currentlyReadOnly;
+            });
+
+            this.classList.toggle("active", currentlyReadOnly);
+            this.innerHTML = currentlyReadOnly
+                ? '<i class="fas fa-check mr-1"></i> Editing'
+                : '<i class="fas fa-edit mr-1"></i> Edit';
+        });
+    }
+})();
+</script>
