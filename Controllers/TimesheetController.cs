@@ -84,17 +84,27 @@ namespace HCMSys.Controllers
             return View("~/Views/Master/Timesheet.cshtml");
         }
 
+
         [HttpGet("/Master/TimesheetIndex")]
         public IActionResult TimesheetIndex()
         {
+            // Read list column configuration
+            ViewData["TimesheetListConfig"] =
+                ReadJson("timesheet-list-config.json");
+
+            // Read actual timesheet records
             var records = ReadRecords("timesheets.json")
                 .Select(x => x?.DeepClone())
                 .Where(x => x != null)
                 .Cast<JsonNode>()
                 .ToList();
 
-            return View("~/Views/Master/TimesheetIndex.cshtml", records);
+            return View(
+                "~/Views/Master/TimesheetIndex.cshtml",
+                records
+            );
         }
+
 
         // Get agreements belonging to selected client
         [HttpGet("GetAgreements")]

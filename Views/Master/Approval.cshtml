@@ -23,6 +23,13 @@
     /* =========================
        HEADER
        ========================= */
+       .page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
+}
 
     .page-title-bar .page-title-text {
     font-size: 0.85rem;
@@ -56,11 +63,13 @@
     }
 
     .btn-group-actions {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
 
     .btn-group-actions .btn {
         font-size: .75rem;
@@ -252,6 +261,15 @@
        ========================= */
 
     @@media (max-width: 768px) {
+        .page-title-bar {
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.btn-group-actions {
+    justify-content: flex-end;
+    width: 100%;
+}
 
         .approval-form-grid {
             grid-template-columns: 1fr;

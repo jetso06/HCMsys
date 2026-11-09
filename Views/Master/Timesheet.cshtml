@@ -99,9 +99,19 @@
                     ATTENDANCE DETAILS
                 </span>
 
-                <button type="button" class="btn btn-danger btn-sm" id="tsRemoveSelected">
-                    <i class="fas fa-trash mr-1"></i>Remove Selected
-                </button>
+                <div class="d-flex align-items-center flex-wrap" style="gap: 6px;">
+    <button type="button" class="btn btn-success btn-sm" id="tsAddRow">
+        <i class="fas fa-plus mr-1"></i>Add Row
+    </button>
+
+    <button type="button" class="btn btn-primary btn-sm" id="tsInsertRow">
+        <i class="fas fa-level-down-alt mr-1"></i>Insert Row
+    </button>
+
+    <button type="button" class="btn btn-danger btn-sm" id="tsDeleteRow">
+        <i class="fas fa-trash mr-1"></i>Delete Row
+    </button>
+</div>
             </div>
 
             <div class="card-body ts-grid-body">
@@ -603,9 +613,11 @@
     @@media print {
         .ts-buttons,
         .ts-load-row,
-        #tsRemoveSelected {
-            display: none !important;
-        }
+        #tsAddRow,
+#tsInsertRow,
+#tsDeleteRow {
+    display: none !important;
+}
 
         .ts-page > .card {
             box-shadow: none !important;
@@ -630,7 +642,10 @@ const tsDepartments = @Html.Raw(departmentsJson);
 const tsConfig = @Html.Raw(timesheetConfigJson);
 const tsGridConfig = @Html.Raw(gridConfigJson);
 
-let tsRows = [];
+let tsRows = [
+    tsCreateBlankRow(),
+    tsCreateBlankRow()
+];
 let tsCurrentId = null;
 
 const tsEl = id => document.getElementById(id);
@@ -664,7 +679,15 @@ function tsGetFields() {
 function tsGetField(id) {
     return tsGetFields().find(field => field.id === id);
 }
+function tsCreateBlankRow() {
+    const row = {};
 
+    (tsGridConfig.columns || []).forEach(column => {
+        row[column.id] = "";
+    });
+
+    return row;
+}
 function tsToken() {
     return document.querySelector(
         '#tsForm input[name="__RequestVerificationToken"]'
@@ -1222,6 +1245,42 @@ function tsRender() {
     const selectAll = tsEl("tsSelectAll");
     if (selectAll) selectAll.checked = false;
 }
+function tsAddRow() {
+    tsRows.push(tsCreateBlankRow());
+    tsRender();
+}
+
+function tsInsertRow() {
+    const selected = Array.from(
+        document.querySelectorAll(".ts-row-check:checked")
+    ).map(cb => Number(cb.dataset.index));
+
+    const index = selected.length
+        ? Math.min(...selected)
+        : tsRows.length;
+
+    tsRows.splice(index, 0, tsCreateBlankRow());
+    tsRender();
+}
+
+function tsDeleteRow() {
+    const selected = Array.from(
+        document.querySelectorAll(".ts-row-check:checked")
+    ).map(cb => Number(cb.dataset.index));
+
+    if (!selected.length) {
+        alert("Please select at least one row.");
+        return;
+    }
+
+    if (!confirm("Delete selected rows?")) return;
+
+    tsRows = tsRows.filter(
+        (row, index) => !selected.includes(index)
+    );
+
+    tsRender();
+}
 
 async function tsLoad() {
     const values = tsReadHeaderValues();
@@ -1279,7 +1338,11 @@ async function tsLoad() {
             throw new Error(result.message || "Unable to load attendance.");
         }
 
-        tsRows = tsItems(result);
+        tsRows = [
+    ...tsItems(result),
+    tsCreateBlankRow(),
+    tsCreateBlankRow()
+];
         tsRender();
 
         tsStatus(`${tsRows.length} employee record(s) loaded.`);
@@ -1350,7 +1413,10 @@ function tsNew() {
     tsEl("tsForm").reset();
 
     tsCurrentId = null;
-    tsRows = [];
+    tsRows = [
+    tsCreateBlankRow(),
+    tsCreateBlankRow()
+];
 
     // Restore configured default values.
     tsGetFields().forEach(field => {
@@ -1413,22 +1479,10 @@ document.addEventListener("DOMContentLoaded", function () {
     tsEl("tsClose").addEventListener("click", () => history.back());
 
     // Remove selected attendance rows.
-    tsEl("tsRemoveSelected").addEventListener("click", function () {
-        const selected = Array.from(
-            document.querySelectorAll(".ts-row-check:checked")
-        ).map(checkbox => Number(checkbox.dataset.index));
-
-        if (!selected.length) {
-            alert("Select at least one employee row to remove.");
-            return;
-        }
-
-        tsRows = tsRows.filter((row, index) =>
-            !selected.includes(index)
-        );
-
-        tsRender();
-    });
+    // Attendance grid row operations.
+tsEl("tsAddRow").addEventListener("click", tsAddRow);
+tsEl("tsInsertRow").addEventListener("click", tsInsertRow);
+tsEl("tsDeleteRow").addEventListener("click", tsDeleteRow);
 
     // Keep the other toolbar actions as placeholders for now.
     [

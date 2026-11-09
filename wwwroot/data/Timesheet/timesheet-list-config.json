@@ -1,0 +1,51 @@
+{
+  "heading": "Timesheet Records",
+  "searchPlaceholder": "Search timesheets...",
+  "columns": [
+    {
+      "field": "batchNo",
+      "header": "Batch No"
+    },
+    {
+      "field": "agreementName",
+      "fallbackField": "mainFrameAgreementId",
+      "header": "Mainframe"
+    },
+    {
+      "field": "payMonth",
+      "header": "Pay Month"
+    },
+    {
+      "field": "iStatus",
+      "header": "Ave",
+      "tooltip": "Give Tooltip (Active Yes/No)",
+      "displayType": "active"
+    },
+    {
+      "field": "approvalStatus",
+      "header": "AppSt",
+      "tooltip": "Give Tooltip (Approval Status Approved/Pending/Rejected)",
+      "displayType": "approval"
+    },
+    {
+      "field": "id",
+      "header": "ID"
+    },
+    {
+      "field": "createdBy",
+      "header": "Created By"
+    },
+    {
+      "field": "createdDateTime",
+      "header": "Created DateTime"
+    },
+    {
+      "field": "modifiedBy",
+      "header": "Modified By"
+    },
+    {
+      "field": "modifiedDateTime",
+      "header": "Modified DateTime"
+    }
+  ]
+}

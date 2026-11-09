@@ -8,6 +8,17 @@
 
     var timesheets = Model ?? new List<JsonNode>();
     var total = timesheets.Count;
+    var listConfig = ViewData["TimesheetListConfig"] as JsonObject
+                 ?? new JsonObject();
+
+var columns = listConfig["columns"] as JsonArray
+              ?? new JsonArray();
+
+var listHeading = listConfig["heading"]?.ToString()
+                  ?? "Timesheet Records";
+
+var searchPlaceholder = listConfig["searchPlaceholder"]?.ToString()
+                        ?? "Search timesheets...";
 }
 
 <div class="container-fluid candidate-index">
@@ -142,7 +153,7 @@
         <div class="card-header ci-records-header">
             <h6>
                 <i class="fas fa-table"></i>
-                Timesheet Records
+                @listHeading
             </h6>
             <span class="badge badge-primary" id="ciRecordCount">
                 @total Records
@@ -154,8 +165,8 @@
                 <div class="ci-page-size">
                     <span>Show</span>
                     <select id="ciPageSize" class="form-control form-control-sm">
-                        <option value="10">10</option>
-                        <option value="25">25</option>
+                        <option value="20">20</option>
+                        <option value="35">35</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
@@ -165,160 +176,153 @@
                 <input type="text"
                        id="ciSearch"
                        class="form-control form-control-sm ci-search"
-                       placeholder="Search timesheets..." />
+                       placeholder="@searchPlaceholder" />
             </div>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-hover"
                        id="ciTable">
-                    <thead>
-                        <tr>
-                            <th class="ci-control-column">Select</th>
-                            <th class="ci-action-column">Action</th>
-                            <th>Batch No</th>
-                            <th>Date</th>
-                            <th>Post Date</th>
-                            <th>Mainframe</th>
-                            <th>Pay Month</th>
-                            <th>Active</th>
-                            <th>Approval Status</th>
-                            <th>ID</th>
-                            <th>Created By</th>
-                            <th>Created DateTime</th>
-                            <th>Modified By</th>
-                            <th>Modified DateTime</th>
-                        </tr>
-                    </thead>
+                    
+<thead>
+    <tr>
+        <th class="ci-control-column">Select</th>
+        <th class="ci-action-column">Action</th>
 
-                    <tbody id="ciTableBody">
-                        @if (timesheets.Count > 0)
+        @foreach (var column in columns)
+        {
+            var header = column?["header"]?.ToString() ?? "";
+            var tooltip = column?["tooltip"]?.ToString();
+
+            <th>
+                @header
+
+                @if (!string.IsNullOrWhiteSpace(tooltip))
+                {
+                    <i class="fas fa-info-circle ml-1 text-primary"
+                       title="@tooltip"
+                       style="cursor: help;"></i>
+                }
+            </th>
+        }
+    </tr>
+</thead>
+
+<tbody id="ciTableBody">
+    @if (timesheets.Count > 0)
+    {
+        foreach (var item in timesheets)
+        {
+            var id = item["id"]?.ToString() ?? "";
+
+            <tr data-id="@id">
+
+                <!-- Select checkbox -->
+                <td class="text-center ci-control-column">
+                    <input type="checkbox"
+                           class="ci-checkbox"
+                           value="@id" />
+                </td>
+
+                <!-- Row actions -->
+                <td class="text-center ci-action-column">
+                    <button type="button"
+                            class="ci-row-edit"
+                            title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+
+                    <button type="button"
+                            class="ci-row-delete"
+                            title="Delete">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+
+                <!-- Generate record values using JSON configuration -->
+                @foreach (var column in columns)
+                {
+                    var fieldName = column?["field"]?.ToString() ?? "";
+
+                    var fallbackField =
+                        column?["fallbackField"]?.ToString();
+
+                    var displayType =
+                        column?["displayType"]?.ToString();
+
+                    var value = item[fieldName]?.ToString() ?? "";
+
+                    if (string.IsNullOrWhiteSpace(value) &&
+                        !string.IsNullOrWhiteSpace(fallbackField))
+                    {
+                        value = item[fallbackField]?.ToString() ?? "";
+                    }
+
+                    <td>
+                        @if (displayType == "active")
                         {
-                            foreach (var item in timesheets)
+                            bool isActive =
+                                value == "1" ||
+                                value.Equals("true",
+                                    StringComparison.OrdinalIgnoreCase) ||
+                                value.Equals("active",
+                                    StringComparison.OrdinalIgnoreCase);
+
+                            if (isActive)
                             {
-                                var id = item["id"]?.ToString() ?? "";
+                                <span class="badge badge-success">Y</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-danger">N</span>
+                            }
+                        }
+                        else if (displayType == "approval")
+                        {
+                            var approvalLabel = value switch
+                            {
+                                "1" => "Y",
+                                "2" => "N",
+                                _ => "P"
+                            };
 
-                                var batchNo = item["batchNo"]?.ToString() ?? "";
-                                var date = item["date"]?.ToString() ?? "";
-                                var postDate = item["postDate"]?.ToString() ?? "";
-
-                                var mainFrame =
-                                    item["agreementName"]?.ToString()
-                                    ?? item["mainFrameAgreementId"]?.ToString()
-                                    ?? "";
-
-                                var payMonth = item["payMonth"]?.ToString() ?? "";
-
-                                var statusValue =
-                                    item["iStatus"]?.ToString()
-                                    ?? item["status"]?.ToString()
-                                    ?? "0";
-
-                                var isActive =
-                                    statusValue == "1" ||
-                                    statusValue.Equals(
-                                        "true",
-                                        StringComparison.OrdinalIgnoreCase
-                                    ) ||
-                                    statusValue.Equals(
-                                        "active",
-                                        StringComparison.OrdinalIgnoreCase
-                                    );
-
-                                var approvalValue =
-                                    item["approvalStatus"]?.ToString() ?? "0";
-
-                                var approvalLabel = approvalValue switch
-                                {
-                                    "1" => "Approved",
-                                    "2" => "Rejected",
-                                    _ => "Pending"
-                                };
-
-                                var createdBy = item["createdBy"]?.ToString() ?? "";
-                                var createdDateTime =
-                                    item["createdDateTime"]?.ToString() ?? "";
-
-                                var modifiedBy = item["modifiedBy"]?.ToString() ?? "";
-                                var modifiedDateTime =
-                                    item["modifiedDateTime"]?.ToString() ?? "";
-
-                                <tr data-id="@id"
-                                    data-search="@($"{batchNo} {date} {postDate} {mainFrame} {payMonth} {statusValue} {approvalLabel} {id} {createdBy} {createdDateTime} {modifiedBy} {modifiedDateTime}")">
-
-                                    <!-- Checkbox -->
-                                    <td class="text-center ci-control-column">
-                                        <input type="checkbox"
-                                               class="ci-checkbox"
-                                               value="@id" />
-                                    </td>
-
-                                    <!-- Actions -->
-                                    <td class="text-center ci-action-column">
-                                        <button type="button"
-                                                class="ci-row-edit"
-                                                title="Edit">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-
-                                        <button type="button"
-                                                class="ci-row-delete"
-                                                title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </td>
-
-                                    <!-- Timesheet fields -->
-                                    <td>@batchNo</td>
-                                    <td>@date</td>
-                                    <td>@postDate</td>
-                                    <td>@mainFrame</td>
-                                    <td>@payMonth</td>
-
-                                    <!-- Active -->
-                                    <td>
-                                        @if (isActive)
-                                        {
-                                            <span class="badge badge-success">YES</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-danger">NO</span>
-                                        }
-                                    </td>
-
-                                    <!-- Approval Status -->
-                                    <td>
-                                        @if (approvalLabel == "Approved")
-                                        {
-                                            <span class="badge badge-success">Approved</span>
-                                        }
-                                        else if (approvalLabel == "Rejected")
-                                        {
-                                            <span class="badge badge-danger">Rejected</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-warning">Pending</span>
-                                        }
-                                    </td>
-
-                                    <td>@id</td>
-                                    <td>@createdBy</td>
-                                    <td>@createdDateTime</td>
-                                    <td>@modifiedBy</td>
-                                    <td>@modifiedDateTime</td>
-                                </tr>
+                            if (approvalLabel == "Y")
+                            {
+                                <span class="badge badge-success">
+                                    Y
+                                </span>
+                            }
+                            else if (approvalLabel == "N")
+                            {
+                                <span class="badge badge-danger">
+                                    N
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">
+                                    P
+                                </span>
                             }
                         }
                         else
                         {
-                            <tr class="ci-no-data">
-                                <td colspan="14" class="ci-empty">
-                                    No timesheet records found.
-                                </td>
-                            </tr>
+                            @value
                         }
-                    </tbody>
+                    </td>
+                }
+            </tr>
+        }
+    }
+    else
+    {
+        <tr class="ci-no-data">
+            <td colspan="@(columns.Count + 2)" class="ci-empty">
+                No timesheet records found.
+            </td>
+        </tr>
+    }
+</tbody>
+
                 </table>
             </div>
 
