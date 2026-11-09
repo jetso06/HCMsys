@@ -659,6 +659,88 @@
     text-overflow: ellipsis;
 }
 
+/* Classification table: compact column layout */
+#ciTable {
+    width: 100%;
+    table-layout: fixed;
+    margin-bottom: 0;
+}
+
+/* Select */
+#ciTable th:nth-child(1),
+#ciTable td:nth-child(1) { width: 5%; }
+
+/* Action */
+#ciTable th:nth-child(2),
+#ciTable td:nth-child(2) { width: 7%; }
+
+/* Name */
+#ciTable th:nth-child(3),
+#ciTable td:nth-child(3) { width: 11%; }
+
+/* Code */
+#ciTable th:nth-child(4),
+#ciTable td:nth-child(4) { width: 7%; }
+
+/* Group */
+#ciTable th:nth-child(5),
+#ciTable td:nth-child(5) { width: 8%; }
+
+/* Grp */
+#ciTable th:nth-child(6),
+#ciTable td:nth-child(6) { width: 4%; }
+
+/* Ave */
+#ciTable th:nth-child(7),
+#ciTable td:nth-child(7) { width: 4%; }
+
+/* AppSt */
+#ciTable th:nth-child(8),
+#ciTable td:nth-child(8) { width: 5%; }
+
+/* ID */
+#ciTable th:nth-child(9),
+#ciTable td:nth-child(9) { width: 4%; }
+
+/* Creator */
+#ciTable th:nth-child(10),
+#ciTable td:nth-child(10) { width: 7%; }
+
+/* Created DateTime */
+#ciTable th:nth-child(11),
+#ciTable td:nth-child(11) { width: 12%; }
+
+/* Modified By */
+#ciTable th:nth-child(12),
+#ciTable td:nth-child(12) { width: 8%; }
+
+/* Modified DateTime */
+#ciTable th:nth-child(13),
+#ciTable td:nth-child(13) { width: 18%; }
+
+/* Center compact columns */
+#ciTable th:nth-child(1),
+#ciTable td:nth-child(1),
+#ciTable th:nth-child(6),
+#ciTable td:nth-child(6),
+#ciTable th:nth-child(7),
+#ciTable td:nth-child(7),
+#ciTable th:nth-child(8),
+#ciTable td:nth-child(8),
+#ciTable th:nth-child(9),
+#ciTable td:nth-child(9) {
+    text-align: center;
+}
+
+/* Keep contents tidy */
+#ciTable th,
+#ciTable td {
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
     @@media print {
         .ci-buttons,
         .ci-table-tools,
