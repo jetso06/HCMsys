@@ -74,7 +74,28 @@
 }
     .co-remarks { display:block; margin-top:4px; color:#858796; font-size:11px; }
     .co-table-wrap { width:100%; overflow-x:auto; }
-    .co-table { width:100%; margin:0; border-collapse:collapse; }
+    .co-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+/* Keep MAIN and SUB narrow */
+.co-table th.co-choice-col,
+.co-table td.co-choice-col {
+    width: 65px !important;
+    min-width: 65px !important;
+    max-width: 65px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Description takes the remaining space */
+.co-table th.co-description-col,
+.co-table td.co-description-col {
+    width: auto;
+}
     /* Uniform Select column for every grid */
 .co-table th.co-select-col,
 .co-table td.co-select-col {
@@ -84,6 +105,13 @@
     padding: 6px 4px !important;
     text-align: center !important;
     vertical-align: middle !important;
+}
+.co-table input.co-duty-choice {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    margin: 0;
+    cursor: pointer;
 }
 
 .co-select-header {
@@ -109,8 +137,40 @@
     .co-table th { padding:10px 11px; background:#4e73df; border:1px solid #e3e6f0; color:#fff; text-align:left; font-size:11px; text-transform:uppercase; white-space:nowrap; }
     .co-table td { padding:7px 8px; border:1px solid #e3e6f0; vertical-align:middle; }
     .co-table tbody tr:nth-child(even) { background:#f8f9fc; }
-    .co-table input:not([type=checkbox]), .co-table select { width:100%; min-width:100px; height:32px; padding:4px 7px; border:1px solid #d1d3e2; border-radius:4px; color:#6e707e; font-size:12px; }
-    .co-table input[type=checkbox] { width:16px; height:16px; }
+    /* Normal grid inputs and dropdowns */
+.co-table input:not([type="checkbox"]):not([type="radio"]),
+.co-table select {
+    width: 100%;
+    min-width: 100px;
+    height: 36px;
+    padding: 6px 10px;
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #6e707e;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+/* Bootstrap-style dropdown appearance */
+.co-table select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 30px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%236e707e' d='M3.2 5.5 8 10.3l4.8-4.8 1.1 1.1L8 12.5 2.1 6.6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 12px;
+}
+
+/* Keep selection controls small */
+.co-table input[type="checkbox"],
+.co-table input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    margin: 0;
+}
     .co-grid-actions {
     display: flex;
     align-items: center;
@@ -307,9 +367,14 @@
 </th>
 
         @foreach (var col in grid.Columns)
-        {
-            <th>@col.Label</th>
-        }
+{
+    var isChoiceColumn = col.Field == "Main" || col.Field == "Sub";
+    var isDescriptionColumn = col.Field == "Description";
+
+    <th class="@(isChoiceColumn ? "co-choice-col" : isDescriptionColumn ? "co-description-col" : "")">
+        @col.Label
+    </th>
+}
     </tr>
 </thead>
                     <tbody>
@@ -346,17 +411,34 @@
                                                     }
                                                 </select>
                                             }
-                                            else if (col.Type == "checkbox")
-                                            {
-                                                <input type="checkbox"
-                                                       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
-                                                       value="true"
-                                                       checked="@(cell is bool cb && cb)"
-                                                       disabled="@isReadOnly" />
-                                                <input type="hidden"
-                                                       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
-                                                       value="false" />
-                                            }
+                                            else if (col.Field == "Main" || col.Field == "Sub")
+{
+    var isChecked = cell is bool choiceValue && choiceValue;
+
+    <input type="radio"
+           class="co-duty-choice"
+           name="duty-choice-@rowIndex"
+           value="@col.Field"
+           data-field="@col.Field"
+           checked="@isChecked"
+           disabled="@isReadOnly" />
+
+    <input type="hidden"
+           class="co-duty-value"
+           name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+           value="@isChecked.ToString().ToLower()" />
+}
+else if (col.Type == "checkbox")
+{
+    <input type="checkbox"
+           name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+           value="true"
+           checked="@(cell is bool cb && cb)"
+           disabled="@isReadOnly" />
+    <input type="hidden"
+           name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+           value="false" />
+}
                                             else
                                             {
                                                 <input type="@col.Type"
@@ -456,6 +538,7 @@
         const columns = gridColumns[gridId] || [];
 
         const tr = document.createElement("tr");
+        const choiceGroupName = `duty-choice-${Date.now()}-${Math.random()}`;
 
         // Selection checkbox
         const selectCell = document.createElement("td");
@@ -492,6 +575,24 @@
 
                 td.appendChild(select);
             }
+            else if (col.field === "Main" || col.field === "Sub") {
+    const radio = document.createElement("input");
+    radio.type = "radio";
+    radio.className = "co-duty-choice";
+    radio.name = choiceGroupName;
+    radio.value = col.field;
+    radio.dataset.field = col.field;
+    radio.disabled = isReadOnly;
+
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.className = "co-duty-value";
+    hidden.name = inputName;
+    hidden.value = "false";
+
+    td.appendChild(radio);
+    td.appendChild(hidden);
+}
             else if (col.type === "checkbox") {
                 const check = document.createElement("input");
                 check.type = "checkbox";
@@ -523,7 +624,25 @@
 
         return tr;
     }
+    // Keep MAIN and SUB mutually exclusive and update their Boolean values
+document.addEventListener("change", function (event) {
+    if (!event.target.classList.contains("co-duty-choice")) return;
 
+    const radio = event.target;
+    const row = radio.closest("tr");
+
+    row.querySelectorAll(".co-duty-choice").forEach(choice => {
+        const field = choice.dataset.field;
+
+        const hidden = row.querySelector(
+            `.co-duty-value[name$=".${field}"]`
+        );
+
+        if (hidden) {
+            hidden.value = choice.checked ? "true" : "false";
+        }
+    });
+});
     // Add row at bottom
     document.querySelectorAll(".co-add-row").forEach(button => {
         button.addEventListener("click", function () {

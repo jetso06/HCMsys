@@ -1,0 +1,1334 @@
+@using System.Text.Json
+@using System.Text.Json.Nodes
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var config = ViewData["Config"] as JsonObject ?? new JsonObject();
+    var invoice = ViewData["Invoice"] as JsonObject ?? new JsonObject();
+    var clients = ViewData["Clients"] as JsonArray ?? new JsonArray();
+    var departments = ViewData["Departments"] as JsonArray ?? new JsonArray();
+    var lookups = ViewData["Lookups"] as JsonObject ?? new JsonObject();
+
+    var configJson = config.ToJsonString();
+    var invoiceJson = invoice.ToJsonString();
+    var clientsJson = clients.ToJsonString();
+    var departmentsJson = departments.ToJsonString();
+    var lookupsJson = lookups.ToJsonString();
+}
+
+<div class="container-fluid ip-page">
+    <div class="card shadow mb-3">
+        <div class="card-header ip-toolbar">
+            <h6 class="ip-title">
+                <i class="fas fa-clock mr-2"></i>
+                INVOICE PROCESSING
+                <span class="ip-badge">600</span>
+            </h6>
+            <div class="ip-buttons" id="ipButtons"></div>
+        </div>
+    </div>
+
+    <form id="ipForm">
+        @Html.AntiForgeryToken()
+
+        <div class="card shadow mb-3">
+            <div class="card-header ip-section-title">
+                <span>
+                    <i class="fas fa-file-alt mr-2"></i>
+                    INVOICE DETAILS
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="row" id="ipHeaderFields"></div>
+
+                <div class="ip-load-row">
+                    <button type="button" class="btn btn-primary btn-sm" id="ipLoad">
+                        <i class="fas fa-download mr-1"></i>Load
+                    </button>
+                    <span id="ipMessage" class="ip-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow mb-3">
+            <div class="card-header ip-section-title">
+                <span>
+                    <i class="fas fa-table mr-2"></i>
+                    ATTENDANCE DETAILS
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="ip-grid-toolbar">
+    <button type="button" class="btn btn-success btn-sm" id="ipAddRow">
+        <i class="fas fa-plus mr-1"></i>Add Row
+    </button>
+
+    <button type="button" class="btn btn-primary btn-sm" id="ipInsertRow">
+        <i class="fas fa-level-down-alt mr-1"></i>Insert Row
+    </button>
+
+    <button type="button" class="btn btn-danger btn-sm" id="ipDeleteRow">
+        <i class="fas fa-trash mr-1"></i>Delete Row
+    </button>
+</div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover ip-table">
+                        <thead id="ipGridHead"></thead>
+                        <tbody id="ipGridBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="ip-grid-footer" id="ipGridCount">0 records</div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .ip-page {
+        width: 100%;
+        max-width: none;
+        padding: 18px 0 25px;
+        margin: 0;
+        box-sizing: border-box;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+        .ip-page > .card {
+            width: 100%;
+            max-width: none;
+            margin-bottom: 24px !important;
+            border: 1px solid #e1e6ed;
+            border-radius: 6px;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(58, 59, 69, 0.14) !important;
+        }
+
+    /* Toolbar */
+
+    .ip-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px 18px !important;
+        background: #eef0f3 !important;
+        border: none !important;
+        border-bottom: 1px solid #e3e6f0 !important;
+    }
+
+    .ip-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+        .ip-title i,
+        .ip-section-title i {
+            color: #4e73df;
+        }
+
+    .ip-badge {
+        margin-left: 4px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        border: 1px solid #ccd3db;
+        font-size: 0.68rem;
+        letter-spacing: normal;
+    }
+
+    .ip-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+        .ip-buttons .btn {
+            padding: 5px 9px;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.08);
+            transition: filter 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .ip-buttons .btn:hover {
+                filter: brightness(0.96);
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            }
+
+            .ip-buttons .btn:disabled {
+                opacity: 0.55;
+                cursor: not-allowed;
+            }
+
+    /* Section headers */
+
+    .ip-section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 16px;
+        background: #eef0f3 !important;
+        color: #4e73df;
+        border-bottom: 1px solid #e1e6ed;
+        font-size: 0.9rem;
+        font-weight: 800;
+        letter-spacing: 0.035em;
+    }
+
+    .ip-page .card-body {
+        padding: 20px 16px;
+        background: #ffffff;
+    }
+
+    /* Form fields */
+
+    .ip-field {
+        margin-bottom: 20px;
+    }
+
+        .ip-field label {
+            display: block;
+            margin-bottom: 5px;
+            color: #596579;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 0.055em;
+        }
+
+        .ip-field .form-control {
+            width: 100%;
+            height: 36px;
+            padding: 6px 10px;
+            box-sizing: border-box;
+            border: 1px solid #d2d0cb;
+            border-radius: 5px;
+            background: #ffffff;
+            color: #4d596b;
+            font-family: inherit;
+            font-size: 0.83rem;
+            box-shadow: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+            .ip-field .form-control:focus {
+                border-color: #7d9fe5;
+                outline: none;
+                box-shadow: 0 0 0 0.18rem rgba(78, 115, 223, 0.14);
+            }
+
+        .ip-field textarea.form-control {
+            height: auto;
+            min-height: 82px;
+            resize: vertical;
+        }
+
+        .ip-field .form-control[readonly] {
+            background: #e9ecef;
+            cursor: not-allowed;
+        }
+
+    /* Department multi-select dropdown */
+
+    .ip-multiselect {
+        position: relative;
+        width: 100%;
+    }
+
+    .ip-multiselect-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-align: left;
+        cursor: pointer;
+    }
+
+        .ip-multiselect-trigger::after {
+            content: "";
+            float: right;
+            margin-top: 7px;
+            border-top: 5px solid #68758a;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+        }
+
+    .ip-multiselect-menu {
+        display: none;
+        position: absolute;
+        z-index: 1050;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        max-height: 190px;
+        overflow-y: auto;
+        padding: 8px;
+        background: #ffffff;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.14);
+    }
+
+    .ip-multiselect.open .ip-multiselect-menu {
+        display: block;
+    }
+
+    .ip-multiselect-option {
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+        padding: 7px;
+        margin: 0 !important;
+        border-radius: 3px;
+        color: #4d596b;
+        font-size: 0.82rem !important;
+        font-weight: 400 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        cursor: pointer;
+    }
+
+        .ip-multiselect-option:hover {
+            background: #f1f4fb;
+        }
+
+        .ip-multiselect-option input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: #4e73df;
+        }
+
+    /* Load button */
+
+    .ip-load-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding-top: 2px;
+    }
+
+        .ip-load-row .btn,
+        .ip-grid-toolbar .btn {
+            padding: 5px 9px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+    .ip-message {
+        font-size: 0.8rem;
+        color: #596579;
+    }
+
+    /* Attendance grid */
+
+    .ip-grid-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+    .ip-table {
+        width: 100%;
+        margin: 0;
+        color: #5a5c69;
+        font-size: 0.78rem;
+        white-space: nowrap;
+    }
+
+        .ip-table thead th {
+            padding: 10px 8px;
+            vertical-align: middle;
+            text-align: center;
+            background: #4e73df;
+            color: #ffffff;
+            border-color: #3d5cbe;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.035em;
+        }
+
+        .ip-table tbody td {
+            padding: 7px 8px;
+            vertical-align: middle;
+            border-color: #e3e6f0;
+        }
+
+        .ip-table tbody tr:nth-child(even) {
+            background: #f8f9fc;
+        }
+
+        .ip-table input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            vertical-align: middle;
+        }
+
+    .ip-grid-input {
+        min-width: 82px;
+        width: 100%;
+        height: 30px;
+        padding: 4px 6px;
+        border: 1px solid #d2d0cb;
+        border-radius: 4px;
+        color: #4d596b;
+        font: inherit;
+    }
+
+        .ip-grid-input:focus {
+            outline: none;
+            border-color: #7d9fe5;
+            box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.12);
+        }
+
+        .ip-grid-input[readonly] {
+            background: #f1f3f6;
+        }
+
+    .ip-grid-footer {
+        padding-top: 10px;
+        text-align: right;
+        color: #858796;
+        font-size: 0.75rem;
+    }
+
+    /* Responsive */
+
+    @@media (max-width: 768px) {
+        .ip-page {
+            padding: 12px 0 20px;
+        }
+
+        .ip-toolbar {
+            align-items: flex-start;
+        }
+
+        .ip-buttons {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        .ip-page .card-body {
+            padding: 16px 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .ip-title {
+            font-size: 0.78rem;
+        }
+
+        .ip-buttons {
+            gap: 5px;
+        }
+
+            .ip-buttons .btn {
+                font-size: 0.75rem;
+                padding: 5px 7px;
+            }
+
+        .ip-load-row {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    /* Print */
+
+    @@media print {
+        .ip-buttons,
+        .ip-grid-toolbar,
+        .ip-load-row {
+            display: none !important;
+        }
+
+        .ip-page > .card {
+            box-shadow: none !important;
+            margin-bottom: 12px !important;
+        }
+
+        .ip-page {
+            padding: 0;
+        }
+
+        .ip-table {
+            font-size: 9px;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        const ipConfig = @Html.Raw(configJson);
+        const ipInvoice = @Html.Raw(invoiceJson);
+        const ipClients = @Html.Raw(clientsJson);
+        const ipDepartments = @Html.Raw(departmentsJson);
+        const ipLookups = @Html.Raw(lookupsJson);
+
+        let ipRows = Array.isArray(ipInvoice.attendanceRows)
+            ? ipInvoice.attendanceRows
+            : [];
+
+        let ipCurrentId = ipInvoice.id || null;
+
+        const ipEl = id => document.getElementById(id);
+
+        const ipItems = data =>
+            Array.isArray(data)
+                ? data
+                : (data?.$values || data?.records || []);
+
+        function ipValue(obj, key) {
+            if (!obj) return "";
+
+            const upper = key.charAt(0).toUpperCase() + key.slice(1);
+
+            return obj[key] ?? obj[upper] ?? "";
+        }
+
+        function ipToken() {
+            return document.querySelector(
+                '#ipForm input[name="__RequestVerificationToken"]'
+            )?.value || "";
+        }
+
+        function ipMessage(message, error = false) {
+            ipEl("ipMessage").textContent = message;
+
+            ipEl("ipMessage").style.color =
+                error ? "#e74a3b" : "#1cc88a";
+        }
+
+        function ipFields() {
+            return ipConfig.headerFields || [];
+        }
+
+        function ipCreateOptions(select, data, valueField, textField, placeholder) {
+            select.innerHTML = "";
+
+            if (placeholder) {
+                select.add(new Option(placeholder, ""));
+            }
+
+            ipItems(data).forEach(item => {
+                const value = ipValue(item, valueField || "id");
+                const text = ipValue(item, textField || "name");
+
+                if (value !== "" && text !== "") {
+                    select.add(new Option(String(text), String(value)));
+                }
+            });
+        }
+
+        function ipCreateField(field) {
+            const wrapper = document.createElement("div");
+
+            let columnClass =
+                field.columnClass ||
+                "col-xl-3 col-lg-4 col-md-6 col-12";
+
+            if (field.id === "departmentIds" || field.id === "comments") {
+                columnClass = "col-xl-6 col-lg-6 col-md-6 col-12";
+            }
+
+            wrapper.className = columnClass + " ip-field";
+
+            const label = document.createElement("label");
+            label.htmlFor = field.id;
+            label.textContent = field.label || field.id;
+
+            if (field.required) {
+                label.textContent += " *";
+            }
+
+            wrapper.appendChild(label);
+
+            let control;
+
+            if (field.type === "textarea") {
+                control = document.createElement("textarea");
+                control.rows = 3;
+            }
+            else if (
+                field.type === "select" ||
+                field.type === "dropdown" ||
+                field.type === "multiselect"
+            ) {
+                control = document.createElement("select");
+
+                if (field.type !== "multiselect") {
+                    control.add(
+                        new Option(
+                            `-- Select ${field.label || "Option"} --`,
+                            ""
+                        )
+                    );
+                }
+
+                if (field.id === "clientId") {
+                    ipCreateOptions(
+                        control,
+                        ipClients,
+                        field.valueField || "id",
+                        field.textField || "name"
+                    );
+                }
+                else if (field.id === "departmentIds") {
+                    // Department options are rendered as checkboxes below.
+                }
+                else if (Array.isArray(field.options)) {
+                    field.options.forEach((option, index) => {
+                        if (typeof option === "object") {
+                            control.add(
+                                new Option(
+                                    option.text ?? option.label ?? option.value,
+                                    option.value ?? index
+                                )
+                            );
+                        }
+                        else {
+                            const value =
+                                field.id === "invoiceType" ||
+                                field.id === "timeSheetType"
+                                    ? String(index)
+                                    : String(option);
+
+                            control.add(new Option(String(option), value));
+                        }
+                    });
+                }
+                else if (
+                    field.optionsSource &&
+                    ipLookups[field.optionsSource]
+                ) {
+                    ipItems(ipLookups[field.optionsSource]).forEach(option => {
+                        control.add(
+                            new Option(option.text, option.value)
+                        );
+                    });
+                }
+            }
+            else {
+                control = document.createElement("input");
+
+                control.type =
+                    field.type === "datetime"
+                        ? "datetime-local"
+                        : (field.type || "text");
+
+                if (field.maxLength) {
+                    control.maxLength = field.maxLength;
+                }
+            }
+
+            control.id = field.id;
+            control.name = field.id;
+            control.classList.add("form-control");
+
+            if (field.required) {
+                control.required = true;
+            }
+
+            if (field.readonly || field.readOnly) {
+                control.readOnly = true;
+            }
+
+            if (field.type === "multiselect") {
+                control.required = false;
+            }
+
+            if (field.defaultValue === "currentDateTime") {
+                const now = new Date();
+
+                const pad = n => String(n).padStart(2, "0");
+
+                control.value =
+                    `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}` +
+                    `T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+            }
+
+            if (field.type === "multiselect" && field.id === "departmentIds") {
+                const dropdown = document.createElement("div");
+                dropdown.className = "ip-multiselect";
+                dropdown.id = "departmentIdsDropdown";
+
+                const trigger = document.createElement("button");
+                trigger.type = "button";
+                trigger.id = "departmentIds";
+                trigger.className = "form-control ip-multiselect-trigger";
+                trigger.textContent = "Select Department(s)";
+                trigger.setAttribute("aria-expanded", "false");
+
+                const menu = document.createElement("div");
+                menu.className = "ip-multiselect-menu";
+
+                ipItems(ipDepartments).forEach(item => {
+                    const value = ipValue(item, field.valueField || "id");
+                    const text = ipValue(item, field.textField || "name");
+
+                    if (value === "" || text === "") return;
+
+                    const optionLabel = document.createElement("label");
+                    optionLabel.className = "ip-multiselect-option";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.value = String(value);
+                    checkbox.className = "ip-department-option";
+
+                    checkbox.addEventListener(
+                        "change",
+                        ipUpdateDepartmentText
+                    );
+
+                    const optionText = document.createElement("span");
+                    optionText.textContent = String(text);
+
+                    optionLabel.append(checkbox, optionText);
+                    menu.appendChild(optionLabel);
+                });
+
+                trigger.addEventListener("click", () => {
+                    const isOpen = dropdown.classList.toggle("open");
+
+                    trigger.setAttribute(
+                        "aria-expanded",
+                        String(isOpen)
+                    );
+                });
+
+                dropdown.append(trigger, menu);
+                wrapper.appendChild(dropdown);
+
+                return wrapper;
+            }
+
+            wrapper.appendChild(control);
+
+            return wrapper;
+        }
+
+        function ipUpdateDepartmentText() {
+            const selected = Array.from(
+                document.querySelectorAll(".ip-department-option:checked")
+            );
+
+            const trigger = ipEl("departmentIds");
+
+            if (!trigger) return;
+
+            trigger.textContent = selected.length
+                ? selected.map(x =>
+                    x.parentElement.querySelector("span").textContent
+                ).join(", ")
+                : "Select Department(s)";
+        }
+
+        function ipRenderHeader() {
+            const container = ipEl("ipHeaderFields");
+
+            container.innerHTML = "";
+
+            ipFields().forEach(field => {
+                if (field.id === "load") return;
+
+                const element = ipCreateField(field);
+                container.appendChild(element);
+            });
+
+            // The Load button already exists once in the markup.
+
+            ipFields().filter(field => field.dependsOn).forEach(field => {
+                const parent = ipEl(field.dependsOn);
+
+                if (parent) {
+                    parent.addEventListener("change", () => {
+                        ipLoadDependentSelect(field, parent.value);
+                    });
+                }
+            });
+
+            ipRestoreInvoice();
+        }
+
+        async function ipLoadDependentSelect(field, parentValue) {
+            const select = ipEl(field.id);
+
+            if (!select) return;
+
+            select.innerHTML = "";
+
+            select.add(
+                new Option(`-- Select ${field.label} --`, "")
+            );
+
+            if (!parentValue) return;
+
+            try {
+                const response = await fetch(
+                    '@Url.Content("~/Master/InvoiceProcessing/GetAgreements")' +
+                    '?clientId=' + encodeURIComponent(parentValue)
+                );
+
+                if (!response.ok) {
+                    throw new Error("Unable to load agreements.");
+                }
+
+                const items = ipItems(await response.json());
+
+                items.forEach(item => {
+                    const value = ipValue(item, field.valueField || "id");
+                    const text = ipValue(item, field.textField || "name");
+
+                    if (value !== "" && text !== "") {
+                        select.add(
+                            new Option(String(text), String(value))
+                        );
+                    }
+                });
+            }
+            catch (error) {
+                ipMessage(error.message, true);
+            }
+        }
+
+        function ipReadHeader() {
+            const values = {};
+
+            ipFields().forEach(field => {
+                if (field.type === "button") return;
+
+                const control = ipEl(field.id);
+
+                if (!control) return;
+
+                values[field.id] =
+                    field.type === "multiselect"
+                        ? Array.from(
+                            document.querySelectorAll(
+                                ".ip-department-option:checked"
+                            )
+                        ).map(option => option.value)
+                        : control.value;
+            });
+
+            return values;
+        }
+
+        function ipRestoreInvoice() {
+            ipFields().forEach(field => {
+                const control = ipEl(field.id);
+
+                if (!control || ipInvoice[field.id] == null) return;
+
+                if (field.type === "multiselect") {
+                    const selected = (
+                        Array.isArray(ipInvoice[field.id])
+                            ? ipInvoice[field.id]
+                            : []
+                    ).map(String);
+
+                    document.querySelectorAll(
+                        ".ip-department-option"
+                    ).forEach(option => {
+                        option.checked = selected.includes(option.value);
+                    });
+
+                    ipUpdateDepartmentText();
+                }
+                else if (!field.dependsOn) {
+                    control.value = ipInvoice[field.id];
+                }
+            });
+
+            const agreementField = ipFields().find(
+                field => field.dependsOn
+            );
+
+            if (
+                agreementField &&
+                ipEl(agreementField.dependsOn)?.value
+            ) {
+                ipLoadDependentSelect(
+                    agreementField,
+                    ipEl(agreementField.dependsOn).value
+                ).then(() => {
+                    ipEl(agreementField.id).value =
+                        ipInvoice[agreementField.id] || "";
+                });
+            }
+        }
+
+        function ipRenderButtons() {
+            const container = ipEl("ipButtons");
+
+            container.innerHTML = "";
+
+            (ipConfig.buttons?.form || []).forEach(button => {
+                const element = document.createElement("button");
+
+                element.type = "button";
+                element.id = button.id;
+
+                element.className =
+                    `btn btn-${button.style || "secondary"} btn-sm shadow-sm`;
+
+                const icon = document.createElement("i");
+                icon.className = `fas ${button.icon || ""} mr-1`;
+
+                element.append(
+                    icon,
+                    document.createTextNode(button.text || "")
+                );
+
+                element.addEventListener(
+                    "click",
+                    () => ipButtonAction(button.id)
+                );
+
+                container.appendChild(element);
+            });
+        }
+
+        function ipButtonAction(id) {
+            switch (id) {
+                case "btnHome":
+                case "btnClose":
+                    window.location.href = ipConfig.page.indexRoute;
+                    break;
+
+                case "btnNew":
+                    window.location.href = ipConfig.page.formRoute;
+                    break;
+
+                case "btnSave":
+                    ipSave();
+                    break;
+
+                case "btnDelete":
+                    ipDelete();
+                    break;
+
+                case "btnPrint":
+                    window.print();
+                    break;
+
+                case "btnClone":
+                    ipCurrentId = null;
+                    ipMessage("Invoice is ready to be cloned.");
+                    break;
+
+                case "btnEdit":
+                    ipMessage("Invoice fields are editable.");
+                    break;
+
+                default:
+                    ipMessage(
+                        `${id.replace("btn", "")} is not connected yet.`,
+                        true
+                    );
+                    break;
+            }
+        }
+
+        const ipColumns = [
+            { field: "payMonth", header: "PayMonth" },
+            { field: "batchNo", header: "Batch No" },
+            { field: "empCode", header: "EmpCode" },
+            { field: "empName", header: "EmpName" },
+            { field: "contractType", header: "Contract Type" },
+            { field: "workingDaysHrs", header: "WorkingDays/Hrs" },
+            { field: "daysHrsWorked", header: "Days/Hrs Worked" },
+            { field: "otHrs", header: "OT Hrs" },
+            { field: "hotHrs", header: "HOT Hrs" },
+            { field: "nightOtHrs", header: "Night OT Hrs" },
+            { field: "weeklyPublicOffs", header: "Weekly & Public Offs" },
+            { field: "approvedLeaves", header: "Approved Leaves" },
+            { field: "menaClaim", header: "Mena Claim" },
+            { field: "reimbursableClaim1", header: "Reimbursable Claim-1" },
+            { field: "reimbursableClaim2", header: "Reimbursable Claim-2" },
+            { field: "startDate", header: "Start Date" },
+            { field: "endDate", header: "End Date" },
+            { field: "remarks", header: "Remarks", editable: true }
+        ];
+    
+        function ipCreateBlankRow() {
+    const row = {};
+
+    ipColumns.forEach(column => {
+        row[column.field] = "";
+    });
+
+    return row;
+}
+
+        function ipRenderGrid() {
+            const head = ipEl("ipGridHead");
+            const body = ipEl("ipGridBody");
+
+            head.innerHTML = "";
+            body.innerHTML = "";
+
+            const headerRow = document.createElement("tr");
+
+            const selectHeader = document.createElement("th");
+            const selectAll = document.createElement("input");
+
+            selectAll.type = "checkbox";
+            selectAll.id = "ipSelectAll";
+
+            selectHeader.appendChild(selectAll);
+            headerRow.appendChild(selectHeader);
+
+            ipColumns.forEach(column => {
+                const th = document.createElement("th");
+                th.textContent = column.header;
+                headerRow.appendChild(th);
+            });
+
+            head.appendChild(headerRow);
+
+            if (!ipRows.length) {
+                const row = document.createElement("tr");
+                const cell = document.createElement("td");
+
+                cell.colSpan = ipColumns.length + 1;
+                cell.className = "text-center";
+                cell.textContent = "No attendance records loaded.";
+
+                row.appendChild(cell);
+                body.appendChild(row);
+            }
+
+            ipRows.forEach((data, index) => {
+                const row = document.createElement("tr");
+                row.dataset.index = index;
+
+                const selectCell = document.createElement("td");
+                selectCell.className = "text-center";
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "ip-row-check";
+
+                selectCell.appendChild(checkbox);
+                row.appendChild(selectCell);
+
+                ipColumns.forEach(column => {
+                    const cell = document.createElement("td");
+                    const value = data[column.field] ?? "";
+
+                    if (column.editable) {
+                        const input = document.createElement("input");
+
+                        input.type = "text";
+                        input.className = "ip-grid-input";
+                        input.value = value;
+                        input.dataset.field = column.field;
+
+                        cell.appendChild(input);
+                    }
+                    else {
+                        cell.textContent =
+                            value == null ? "" : String(value);
+                    }
+
+                    row.appendChild(cell);
+                });
+
+                body.appendChild(row);
+            });
+
+            selectAll.addEventListener("change", () => {
+                document.querySelectorAll(".ip-row-check").forEach(check => {
+                    check.checked = selectAll.checked;
+                });
+            });
+
+            ipEl("ipGridCount").textContent =
+                `${ipRows.length} record(s)`;
+        }
+
+        function ipCollectGrid() {
+            document.querySelectorAll(
+                "#ipGridBody tr[data-index]"
+            ).forEach(row => {
+                const index = Number(row.dataset.index);
+
+                row.querySelectorAll(".ip-grid-input").forEach(input => {
+                    ipRows[index][input.dataset.field] = input.value;
+                });
+            });
+        }
+
+        // Add a new blank row at the bottom
+function ipAddRow() {
+    ipCollectGrid();
+
+    ipRows.push(ipCreateBlankRow());
+
+    ipRenderGrid();
+    ipMessage("New row added.");
+}
+
+
+// Insert a blank row above the selected row
+function ipInsertRow() {
+    ipCollectGrid();
+
+    const selected = Array.from(
+        document.querySelectorAll(".ip-row-check:checked")
+    ).map(check =>
+        Number(check.closest("tr").dataset.index)
+    );
+
+    const index = selected.length
+        ? Math.min(...selected)
+        : ipRows.length;
+
+    ipRows.splice(index, 0, ipCreateBlankRow());
+
+    ipRenderGrid();
+    ipMessage("New row inserted.");
+}
+
+
+// Delete selected rows
+function ipDeleteRow() {
+    const selected = Array.from(
+        document.querySelectorAll(".ip-row-check:checked")
+    ).map(check =>
+        Number(check.closest("tr").dataset.index)
+    );
+
+    if (!selected.length) {
+        ipMessage("Please select at least one row.", true);
+        return;
+    }
+
+    if (!confirm("Delete selected rows?")) {
+        return;
+    }
+
+    ipCollectGrid();
+
+    ipRows = ipRows.filter(
+        (row, index) => !selected.includes(index)
+    );
+
+    ipRenderGrid();
+    ipMessage("Selected rows deleted.");
+}
+
+        async function ipLoad() {
+            const values = ipReadHeader();
+
+            const required = [
+                "batchNo",
+                "date",
+                "clientId",
+                "mainFrameAgreementId",
+                "payMonth",
+                "invoiceType",
+                "timeSheetType"
+            ];
+
+            for (const id of required) {
+                if (!values[id]) {
+                    ipMessage(
+                        "Please complete all required fields before loading.",
+                        true
+                    );
+
+                    ipEl(id)?.focus();
+                    return;
+                }
+            }
+
+            const button = ipEl("ipLoad");
+            button.disabled = true;
+
+            try {
+                const response = await fetch(
+                    '@Url.Content("~/Master/InvoiceProcessing/Load")',
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": ipToken()
+                        },
+                        body: JSON.stringify({
+                            batchNo: values.batchNo,
+                            date: values.date,
+                            clientId: Number(values.clientId),
+                            mainFrameAgreementId:
+                                Number(values.mainFrameAgreementId),
+                            payMonth: values.payMonth,
+                            timeSheetType: values.timeSheetType,
+                            departmentIds: values.departmentIds || []
+                        })
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Unable to load attendance."
+                    );
+                }
+
+                ipRows = result.attendanceRows || [];
+
+                ipRenderGrid();
+
+                ipMessage(
+                    `${ipRows.length} attendance row(s) loaded ` +
+                    `(${result.startDate} to ${result.endDate}).`
+                );
+            }
+            catch (error) {
+                ipMessage(error.message, true);
+            }
+            finally {
+                button.disabled = false;
+            }
+        }
+
+        async function ipSave() {
+            const form = ipEl("ipForm");
+
+            if (!form.reportValidity()) return;
+
+            if (!ipRows.length) {
+                ipMessage("Load attendance records before saving.", true);
+                return;
+            }
+
+            ipCollectGrid();
+
+            const payload = {
+                ...ipReadHeader(),
+                id: ipCurrentId,
+                attendanceRows: ipRows
+            };
+
+            try {
+                const response = await fetch(
+                    '@Url.Content("~/Master/InvoiceProcessing/Save")',
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "RequestVerificationToken": ipToken()
+                        },
+                        body: JSON.stringify(payload)
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Unable to save invoice."
+                    );
+                }
+
+                ipCurrentId = result.id;
+
+                ipMessage(
+                    result.message || "Invoice saved successfully."
+                );
+            }
+            catch (error) {
+                ipMessage(error.message, true);
+            }
+        }
+
+        async function ipDelete() {
+            if (!ipCurrentId) {
+                ipMessage("Save the invoice before deleting it.", true);
+                return;
+            }
+
+            if (!confirm("Are you sure you want to delete this invoice?")) {
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    '@Url.Content("~/Master/InvoiceProcessing/Delete/")' +
+                    ipCurrentId,
+                    {
+                        method: "POST",
+                        headers: {
+                            "RequestVerificationToken": ipToken()
+                        }
+                    }
+                );
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.message || "Unable to delete invoice."
+                    );
+                }
+
+                window.location.href = ipConfig.page.indexRoute;
+            }
+            catch (error) {
+                ipMessage(error.message, true);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            ipRenderButtons();
+            ipRenderHeader();
+
+            // Attendance grid row operations
+ipEl("ipAddRow").addEventListener("click", ipAddRow);
+ipEl("ipInsertRow").addEventListener("click", ipInsertRow);
+ipEl("ipDeleteRow").addEventListener("click", ipDeleteRow);
+
+            document.addEventListener("click", event => {
+                const dropdown = ipEl("departmentIdsDropdown");
+
+                if (dropdown && !dropdown.contains(event.target)) {
+                    dropdown.classList.remove("open");
+
+                    ipEl("departmentIds")?.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+                }
+            });
+
+            ipRenderGrid();
+        });
+    </script>
+}

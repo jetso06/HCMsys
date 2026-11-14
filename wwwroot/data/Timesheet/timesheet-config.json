@@ -81,6 +81,17 @@
           "info": "End date for attendance filtering"
         },
         {
+          "id": "timeSheetType",
+          "label": "TimeSheet Type",
+          "type": "select",
+          "options": [
+            "Attendance & OT",
+            "OT Only"
+          ],
+          "required": true
+        },
+
+        {
           "id": "departmentIds",
           "label": "Department",
           "type": "multiselect",

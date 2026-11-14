@@ -1,0 +1,26 @@
+{
+  "clients": [],
+  "mainFrameAgreements": [],
+  "payMonths": [],
+  "departments": [],
+  "invoiceTypes": [
+    {
+      "value": "0",
+      "text": "Single Emp Invoice"
+    },
+    {
+      "value": "1",
+      "text": "Multiple Emp Invoice"
+    }
+  ],
+  "timeSheetTypes": [
+    {
+      "value": "0",
+      "text": "Attendance & OT"
+    },
+    {
+      "value": "1",
+      "text": "OT Only"
+    }
+  ]
+}

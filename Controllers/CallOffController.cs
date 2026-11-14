@@ -119,8 +119,13 @@ namespace HCMSys.Controllers
 
         private static CallOffRecord Copy(CallOffRecord x) => new()
         {
-            Id=x.Id, DocNo=x.DocNo, DocDate=x.DocDate, CallOffNumber=x.CallOffNumber,
-            AgreementReferenceDate=x.AgreementReferenceDate, ClientName=x.ClientName, SupplierName=x.SupplierName,
+            Id = x.Id,
+            DocNo = x.DocNo,
+            DocDate = x.DocDate,
+            CallOffNumber = x.CallOffNumber,
+            RecruitmentType = x.RecruitmentType,
+            CalloffType = x.CalloffType,
+            AgreementReferenceDate =x.AgreementReferenceDate, ClientName=x.ClientName, SupplierName=x.SupplierName,
             Currency=x.Currency, ContractNumberReference=x.ContractNumberReference, ContractTitleReference=x.ContractTitleReference,
             PostDate=x.PostDate, MainFrameAgreement=x.MainFrameAgreement, WorkOrderNo=x.WorkOrderNo, ContractType=x.ContractType,
             PersonnelName=x.PersonnelName, PositionTitle=x.PositionTitle, PointOfOrigin=x.PointOfOrigin,
@@ -207,7 +212,10 @@ namespace HCMSys.Controllers
     public class CallOffRecord
     {
         public int Id {get;set;} public string? DocNo {get;set;} public DateTime? DocDate {get;set;}
-        public string? CallOffNumber {get;set;} public DateTime? AgreementReferenceDate {get;set;}
+        public string? CallOffNumber { get; set; }
+        public string? RecruitmentType { get; set; }
+        public string? CalloffType { get; set; }
+        public DateTime? AgreementReferenceDate { get; set; }
         public string? ClientName {get;set;} public string? SupplierName {get;set;} public string? Currency {get;set;}
         public string? ContractNumberReference {get;set;} public string? ContractTitleReference {get;set;}
         public DateTime? PostDate {get;set;} public string? MainFrameAgreement {get;set;} public string? WorkOrderNo {get;set;}

@@ -1,6 +1,6 @@
 {
   "page": {
-    "title": "Call Off",
+    "title": "Call Off / PO / Work Order",
     "pageId": 401,
     "icon": "fa-file-contract"
   },
@@ -215,6 +215,24 @@
           "type": "select",
           "source": "contract-types.json",
           "remarks": "Template Master",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "RecruitmentType",
+          "label": "Recruitment Type",
+          "type": "select",
+          "source": "recruitment-types.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "CalloffType",
+          "label": "Calloff Type",
+          "type": "select",
+          "source": "calloff-types.json",
+          "remarks": "",
           "required": false,
           "readonly": false
         }

@@ -1,0 +1,387 @@
+{
+  "page": {
+    "name": "Invoice Processing",
+    "title": "Invoice Processing",
+    "indexRoute": "/Master/InvoiceProcessingIndex",
+    "formRoute": "/Master/InvoiceProcessing"
+  },
+  "buttons": {
+    "index": [
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "primary"
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "success"
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning"
+      },
+      {
+        "id": "btnSave",
+        "text": "Save",
+        "icon": "fa-save",
+        "style": "primary"
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info"
+      },
+      {
+        "id": "btnUnPost",
+        "text": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary"
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "info"
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger"
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success"
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger"
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info"
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary"
+      }
+    ],
+    "form": [
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "primary"
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "success"
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning"
+      },
+      {
+        "id": "btnSave",
+        "text": "Save",
+        "icon": "fa-save",
+        "style": "primary"
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info"
+      },
+      {
+        "id": "btnUnPost",
+        "text": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary"
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "info"
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger"
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success"
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger"
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info"
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary"
+      }
+    ]
+  },
+  "headerFields": [
+    {
+      "id": "batchNo",
+      "label": "Batch No",
+      "type": "text",
+      "dataType": "nvarchar",
+      "maxLength": 60,
+      "required": true
+    },
+    {
+      "id": "date",
+      "label": "Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "postDate",
+      "label": "Post Date",
+      "type": "datetime-local",
+      "required": true,
+      "readonly": true,
+      "defaultValue": "currentDateTime"
+    },
+    {
+      "id": "clientId",
+      "label": "Client",
+      "type": "select",
+      "source": "clients.json",
+      "valueField": "id",
+      "textField": "name",
+      "required": true
+    },
+    {
+      "id": "mainFrameAgreementId",
+      "label": "Main Frame Agreement",
+      "type": "select",
+      "source": "main-frame-agreements.json",
+      "valueField": "id",
+      "textField": "name",
+      "dependsOn": "clientId",
+      "required": true
+    },
+    {
+      "id": "payMonth",
+      "label": "PayMonth",
+      "type": "select",
+      "options": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "required": true
+    },
+    {
+      "id": "invoiceType",
+      "label": "Invoice Type",
+      "type": "select",
+      "options": [
+        "Single Emp Invoice",
+        "Multiple Emp Invoice"
+      ],
+      "required": true
+    },
+    {
+      "id": "timeSheetType",
+      "label": "TimeSheet Type",
+      "type": "select",
+      "options": [
+        "Attendance & OT",
+        "OT Only"
+      ],
+      "required": true
+    },
+    {
+      "id": "departmentIds",
+      "label": "Department",
+      "type": "multiselect",
+      "source": "departments.json",
+      "valueField": "id",
+      "textField": "name",
+      "purpose": "filter"
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "type": "textarea",
+      "dataType": "nvarchar",
+      "maxLength": 200
+    }
+  ],
+  "grid": {
+    "id": "attendanceGrid",
+    "title": "Attendance",
+    "dataSource": "attendanceRows",
+    "selection": {
+      "enabled": true,
+      "checkbox": true,
+      "selectAll": true,
+      "allowMultiple": true
+    },
+    "toolbar": [
+      {
+        "id": "btnRemoveSelected",
+        "text": "Remove Selected",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "removeSelected"
+      }
+    ],
+    "columns": [
+      {
+        "field": "payMonth",
+        "header": "PayMonth",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "batchNo",
+        "header": "Batch No",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "empCode",
+        "header": "EmpCode",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "empName",
+        "header": "EmpName",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "contractType",
+        "header": "Contract Type",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "workingDaysHrs",
+        "header": "WorkingDays/Hrs",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "daysHrsWorked",
+        "header": "Days/Hrs Worked",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "otHrs",
+        "header": "OT Hrs",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "hotHrs",
+        "header": "HOT Hrs",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "nightOtHrs",
+        "header": "Night OT Hrs",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "weeklyPublicOffs",
+        "header": "Weekly & Public Offs",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "approvedLeaves",
+        "header": "Approved Leaves",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "menaClaim",
+        "header": "Mena Claim",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "reimbursableClaim1",
+        "header": "Reimbursable Claim-1",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "reimbursableClaim2",
+        "header": "Reimbursable Claim-2",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "startDate",
+        "header": "Start Date",
+        "type": "date",
+        "readOnly": true
+      },
+      {
+        "field": "endDate",
+        "header": "End Date",
+        "type": "date",
+        "readOnly": true
+      },
+      {
+        "field": "remarks",
+        "header": "Remarks",
+        "type": "text",
+        "readOnly": false
+      }
+    ]
+  }
+}

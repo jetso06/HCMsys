@@ -1,1 +1,108 @@
-[]
+[
+  {
+    "id": 1,
+    "docNo": "CO-00001",
+    "docDate": null,
+    "callOffNumber": "CO-00001",
+    "agreementReferenceDate": null,
+    "clientName": null,
+    "supplierName": null,
+    "currency": null,
+    "contractNumberReference": null,
+    "contractTitleReference": null,
+    "postDate": null,
+    "mainFrameAgreement": null,
+    "workOrderNo": null,
+    "contractType": null,
+    "personnelName": null,
+    "positionTitle": null,
+    "pointOfOrigin": null,
+    "reportingTo": null,
+    "workBaseLocation": null,
+    "assignmentType": "0",
+    "visaStatus": "1",
+    "commencementDate": "2026-01-01T00:00:00",
+    "endDate": "2026-12-31T00:00:00",
+    "durationMonths": 11,
+    "workSchedule": null,
+    "timesheetRequired": false,
+    "endOfServiceType": null,
+    "leaveEntitlement": null,
+    "probationPeriod": null,
+    "noticePeriod": null,
+    "overtimeApplicable": false,
+    "overtimeRemarks": null,
+    "additionalTerms": null,
+    "billingHeads": [
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": null,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": null,
+        "remarks": null
+      }
+    ],
+    "duties": [
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      }
+    ],
+    "additionalInfo": [
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      }
+    ],
+    "salaryBreakdown": [
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      }
+    ],
+    "benefits": [
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      }
+    ],
+    "status": "Pending",
+    "createdBy": "admin",
+    "createdDateTime": "2026-11-13T10:24:09.7975366+04:00",
+    "modifiedBy": null,
+    "modifiedDateTime": null
+  }
+]
