@@ -1,0 +1,14 @@
+[
+  {
+    "value": "Monthly",
+    "text": "Monthly"
+  },
+  {
+    "value": "Annual",
+    "text": "Annual"
+  },
+  {
+    "value": "One Time",
+    "text": "One Time"
+  }
+]

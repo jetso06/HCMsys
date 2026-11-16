@@ -1,0 +1,15 @@
+{
+  "clients": [],
+  "mainFrameAgreements": [],
+  "payMonths": ["January","February","March","April","May","June","July","August","September","October","November","December"],
+  "currencies": [{"value":"OMR","text":"OMR"},{"value":"USD","text":"USD"},{"value":"EUR","text":"EUR"},{"value":"INR","text":"INR"}],
+  "printTemplates": [
+    {"value":"1","text":"Expense Reimbursement"},{"value":"2","text":"Salary Consolidated"},{"value":"3","text":"Management Fee"},{"value":"4","text":"Unit Rate"},{"value":"5","text":"Monthly Rate"},{"value":"6","text":"Day Rate"},{"value":"7","text":"PDO Salary"},{"value":"8","text":"PDO Overtime"},{"value":"9","text":"PDO SPF"},{"value":"10","text":"Custom"}
+  ],
+  "attentionPersons": [], "paymentTerms": [], "businessTypes": [], "invoiceBatches": [],
+  "invoiceTypes": [{"value":"0","text":"Single Emp Invoice"},{"value":"1","text":"Multiple Emp Invoice"}],
+  "timeSheetTypes": [{"value":"0","text":"Attendance & OT"},{"value":"1","text":"OT Only"}],
+  "timesheetBatches": [], "billingHeads": [],
+  "denominationTypes": [{"value":"1","text":"Hours"},{"value":"2","text":"Days"},{"value":"3","text":"Fixed"}],
+  "serviceFeeTypes": []
+}

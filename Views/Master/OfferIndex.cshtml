@@ -1,0 +1,63 @@
+@model List<HCMSys.Controllers.OfferRecord>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Offer";
+}
+<style>
+ .oi-page{padding:0 15px 24px;color:#5a5c69;font-size:13px}
+ .oi-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.1);padding:16px;margin-bottom:16px}
+ .oi-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+ .oi-title{font-size:.9rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+ .oi-table{width:100%;border-collapse:collapse}
+ .oi-table th{background:#4e73df;color:#fff;padding:10px;border:1px solid #e3e6f0;font-size:11px;text-transform:uppercase;white-space:nowrap}
+ .oi-table td{padding:9px;border:1px solid #e3e6f0}
+ .oi-table tr:nth-child(even){background:#f8f9fc}
+ .oi-search{max-width:320px;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;padding:6px 10px}
+ .oi-status{font-weight:700;color:#4e73df}
+</style>
+<div class="oi-page">
+ <div class="oi-card oi-toolbar">
+  <div class="oi-title"><i class="fas fa-file-signature mr-2"></i>Offer Index</div>
+  <div class="d-flex flex-wrap" style="gap:6px">
+   <a class="btn btn-primary btn-sm" href="@Url.Action("Form","Offer")"><i class="fas fa-plus mr-1"></i>New</a>
+   <button class="btn btn-warning btn-sm" type="button" id="oiEdit" disabled><i class="fas fa-edit mr-1"></i>Edit</button>
+   <button class="btn btn-info btn-sm" type="button" id="oiClone" disabled><i class="fas fa-copy mr-1"></i>Clone</button>
+   <button class="btn btn-secondary btn-sm" type="button" onclick="window.print()"><i class="fas fa-print mr-1"></i>Print</button>
+   <button class="btn btn-danger btn-sm" type="button" id="oiDelete" disabled><i class="fas fa-trash mr-1"></i>Delete</button>
+  </div>
+ </div>
+ <div class="oi-card">
+  <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap:10px">
+   <div><strong>Total Offers:</strong> @Model.Count</div>
+   <input id="oiSearch" class="oi-search" placeholder="Search offer number, client, calloff..." />
+  </div>
+  <div class="table-responsive">
+   <table class="oi-table" id="oiTable">
+    <thead><tr><th>Select</th><th>ID</th><th>Offer No</th><th>Offer Date</th><th>Client</th><th>CallOff No</th><th>Contract Type</th><th>Nationality</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+    @foreach(var x in Model){
+     <tr data-id="@x.Id">
+      <td><input type="checkbox" class="oi-select" /></td>
+      <td>@x.Id</td><td>@x.OfferNo</td><td>@x.OfferDate?.ToString("dd-MM-yyyy")</td><td>@x.ClientName</td>
+      <td>@x.CallOffNumber</td><td>@x.ContractType</td><td>@x.NationalityType</td><td class="oi-status">@x.Status</td>
+      <td><a class="btn btn-sm btn-outline-primary" href="@Url.Action("Form","Offer",new{id=x.Id})">Open</a></td>
+     </tr>
+    }
+    </tbody>
+   </table>
+  </div>
+ </div>
+</div>
+<script>
+(function(){
+ const rows=[...document.querySelectorAll("#oiTable tbody tr")];
+ const selected=()=>rows.filter(r=>r.querySelector(".oi-select").checked);
+ function update(){const s=selected();document.getElementById("oiEdit").disabled=s.length!==1;document.getElementById("oiClone").disabled=s.length!==1;document.getElementById("oiDelete").disabled=s.length!==1;}
+ document.querySelectorAll(".oi-select").forEach(x=>x.addEventListener("change",update));
+ document.getElementById("oiSearch").addEventListener("input",e=>{const q=e.target.value.toLowerCase();rows.forEach(r=>r.hidden=!r.innerText.toLowerCase().includes(q));});
+ document.getElementById("oiEdit").onclick=()=>{const s=selected();if(s.length===1)location.href="@Url.Action("Form","Offer")?id="+s[0].dataset.id;};
+ document.getElementById("oiClone").onclick=()=>{const s=selected();if(s.length===1)location.href="@Url.Action("Form","Offer")?id="+s[0].dataset.id+"&clone=true";};
+ document.getElementById("oiDelete").onclick=()=>{const s=selected();if(s.length!==1)return;if(!confirm("Delete selected Offer?"))return;const f=document.createElement("form");f.method="post";f.action="@Url.Action("Delete","Offer")/"+s[0].dataset.id;const token=document.querySelector('input[name="__RequestVerificationToken"]');if(token){const h=document.createElement("input");h.type="hidden";h.name="__RequestVerificationToken";h.value=token.value;f.appendChild(h);}document.body.appendChild(f);f.submit();};
+})();
+</script>
+<form style="display:none">@Html.AntiForgeryToken()</form>

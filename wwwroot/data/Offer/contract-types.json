@@ -1,0 +1,30 @@
+[
+  {
+    "value": "Day Rate",
+    "text": "Day Rate"
+  },
+  {
+    "value": "Hourly Rate",
+    "text": "Hourly Rate"
+  },
+  {
+    "value": "Flat Rate - Expat",
+    "text": "Flat Rate - Expat"
+  },
+  {
+    "value": "Flat Rate - Omani",
+    "text": "Flat Rate - Omani"
+  },
+  {
+    "value": "Unit Rate",
+    "text": "Unit Rate"
+  },
+  {
+    "value": "Training",
+    "text": "Training"
+  },
+  {
+    "value": "Consulting",
+    "text": "Consulting"
+  }
+]

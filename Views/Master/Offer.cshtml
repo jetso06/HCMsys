@@ -1,0 +1,245 @@
+@model HCMSys.Controllers.OfferRecord
+@using HCMSys.Controllers
+@using System.Globalization
+@using System.Text.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var config = ViewBag.Config as OfferPageConfig ?? new OfferPageConfig();
+    var lookups = ViewBag.Lookups as Dictionary<string, List<OfferOption>> ?? new Dictionary<string, List<OfferOption>>();
+    bool isNew = Model.Id == 0;
+    bool isReadOnly = (bool?)ViewBag.IsReadOnly == true;
+    var webJson = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    ViewData["Title"] = config.Page.Title;
+    string FieldValue(string name, string type) {
+        var value = Model.GetType().GetProperty(name)?.GetValue(Model);
+        if (value is DateTime dt) return dt.ToString(type == "datetime-local" ? "yyyy-MM-ddTHH:mm" : "yyyy-MM-dd");
+        return Convert.ToString(value, CultureInfo.InvariantCulture) ?? "";
+    }
+    List<OfferOption> Options(string? source) =>
+        !string.IsNullOrWhiteSpace(source) && lookups.TryGetValue(source, out var values) ? values : new();
+    var gridConfigJson = JsonSerializer.Serialize(config.Grids.ToDictionary(x => x.Id, x => x.Columns), webJson);
+    var lookupJson = JsonSerializer.Serialize(lookups, webJson);
+}
+<style>
+html{font-size:14px}
+.of-page{width:100%;padding:0 15px 24px;color:#5a5c69;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:13px}
+.of-page *,.of-page *:before,.of-page *:after{box-sizing:border-box}
+.of-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 18px;margin-bottom:16px;background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.12)}
+.of-title{display:flex;align-items:center;gap:8px;margin:0;color:#5a5c69;font-size:.85rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.of-title i,.of-card-header i{color:#4e73df}
+.of-toolbar{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px}
+.of-toolbar .btn{padding:5px 9px;border-radius:4px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.of-toolbar form{margin:0}
+.of-card{margin-bottom:16px;overflow:hidden;background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10)}
+.of-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;color:#5a5c69;font-weight:800}
+.of-card-header i{margin-right:7px}
+.of-card-body{padding:18px}
+.of-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 20px}
+.of-field{min-width:0}.of-field label,.of-grid-comments label{display:block;margin-bottom:6px;color:#5a5c69;font-size:12px;font-weight:700}
+.of-field .form-control,.of-field .custom-select{width:100%;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px;box-shadow:none}
+.of-field textarea.form-control{min-height:72px;resize:vertical}
+.of-field-full{grid-column:1/-1}.of-required{color:#e74a3b}
+.of-checkbox-field{display:flex;align-items:center;gap:8px;min-height:36px}.of-checkbox-field input{width:16px;height:16px}
+.of-remarks{display:block;margin-top:4px;color:#858796;font-size:11px}
+.of-table-wrap{width:100%;overflow-x:auto}
+.of-table{width:100%;margin:0;border-collapse:collapse;table-layout:fixed}
+.of-table th{padding:10px 11px;background:#4e73df;border:1px solid #e3e6f0;color:#fff;text-align:left;font-size:11px;text-transform:uppercase;white-space:nowrap}
+.of-table td{padding:7px 8px;border:1px solid #e3e6f0;vertical-align:middle}
+.of-table tbody tr:nth-child(even){background:#f8f9fc}
+.of-table th.of-select-col,.of-table td.of-select-col{width:65px;min-width:65px;max-width:65px;padding:6px 4px;text-align:center;vertical-align:middle}
+.of-select-header{display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.of-select-header span{font-size:10px;font-weight:700}
+.of-table input[type=checkbox],.of-table input[type=radio]{width:16px;height:16px;min-width:16px;margin:0}
+.of-table input:not([type=checkbox]):not([type=radio]),.of-table select{width:100%;min-width:100px;height:36px;padding:6px 10px;border:1px solid #d1d3e2;border-radius:4px;background:#fff;color:#6e707e;font-size:13px}
+.of-grid-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;color:#5a5c69;font-size:13px;font-weight:700}
+.of-grid-actions{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:10px}
+.of-grid-comments{margin-top:18px}
+.of-grid-comments textarea{width:100%;min-height:110px;padding:10px 12px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px;resize:vertical}
+.of-editor{border:1px solid #d1d3e2;border-radius:4px;overflow:hidden;background:#fff}
+.of-editor-toolbar{display:flex;gap:4px;padding:6px;background:#f8f9fc;border-bottom:1px solid #d1d3e2}
+.of-editor-toolbar button{padding:4px 9px;border:1px solid #d1d3e2;border-radius:3px;background:#fff;color:#5a5c69}
+.of-editor-content{min-height:115px;padding:10px;outline:none}
+.of-status{display:inline-block;padding:4px 9px;border-radius:12px;background:#eef2ff;color:#4e73df;font-size:11px;font-weight:700}
+.of-message{margin-bottom:14px;padding:10px 14px;border-radius:4px;font-size:13px}.of-message.success{background:#e8f5e9;color:#247a45}.of-message.error{background:#fcebea;color:#c0392b}
+@@media(max-width:992px){.of-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@@media(max-width:600px){.of-grid{grid-template-columns:1fr}.of-field-full{grid-column:auto}.of-header{align-items:flex-start}.of-toolbar{justify-content:flex-start;width:100%}}
+@@media print{.of-toolbar,.of-grid-actions,.of-no-print{display:none!important}.of-card,.of-header{box-shadow:none;break-inside:avoid}.of-page{padding:0}}
+</style>
+
+<div class="of-page">
+ <div class="of-header">
+  <h5 class="of-title"><i class="fas @config.Page.Icon"></i>@config.Page.Title</h5>
+  <div class="of-toolbar">
+  @foreach(var button in config.Buttons.Form.Where(x=>x.Visible)){
+   switch(button.Action.ToLowerInvariant()){
+    case "new": <a href="@Url.Action("Form","Offer")" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</a> break;
+    case "edit": <button type="button" id="ofEdit" class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button> break;
+    case "save": <button type="submit" form="offerForm" id="ofSave" class="btn btn-@button.Style btn-sm shadow-sm" @(isReadOnly?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button> break;
+    case "clone": <a href="@(isNew?"#":Url.Action("Form","Offer",new{id=Model.Id,clone=true}))" class="btn btn-@button.Style btn-sm shadow-sm @(isNew?"disabled":"")"><i class="fas @button.Icon mr-1"></i>@button.Label</a> break;
+    case "unpost": <form method="post" action="@Url.Action("UnPost","Offer",new{id=Model.Id})" class="of-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form> break;
+    case "print": <button type="button" onclick="window.print()" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</button> break;
+    case "delete": <form method="post" action="@Url.Action("Delete","Offer",new{id=Model.Id})" class="of-no-print" onsubmit="return confirm('Delete this Offer?')">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form> break;
+    case "approve": <form method="post" action="@Url.Action("Approve","Offer",new{id=Model.Id})" class="of-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form> break;
+    case "reject": <form method="post" action="@Url.Action("Reject","Offer",new{id=Model.Id})" class="of-no-print">@Html.AntiForgeryToken()<button class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button></form> break;
+    case "authtracker": <button type="button" id="ofAuthTracker" class="btn btn-@button.Style btn-sm shadow-sm" @(isNew?"disabled":"")><i class="fas @button.Icon mr-1"></i>@button.Label</button> break;
+    case "close": <a href="@Url.Action("Index","Home")" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</a> break;
+   }
+  }
+  </div>
+ </div>
+ @if(TempData["Error"]!=null){<div class="of-message error">@TempData["Error"]</div>}
+ @if(TempData["Success"]!=null){<div class="of-message success">@TempData["Success"]</div>}
+ <div class="of-card">
+  <div class="of-card-header"><span><i class="fas fa-file-alt"></i>Document Information</span><span class="of-status">@Model.Status</span></div>
+  <div class="of-card-body"><div class="of-grid">
+   <div class="of-field"><label>Record ID</label><input class="form-control" value="@(Model.Id==0?"New":Model.Id.ToString())" readonly /></div>
+   <div class="of-field"><label>Offer Number</label><input class="form-control" value="@Model.OfferNo" readonly /></div>
+   <div class="of-field"><label>Current Status</label><input class="form-control" value="@Model.Status" readonly /></div>
+  </div></div>
+ </div>
+
+ <form id="offerForm" method="post" action="@Url.Action("Save","Offer")">
+ @Html.AntiForgeryToken()
+ <input type="hidden" asp-for="Id" />
+ @foreach(var cardSection in config.Sections){
+  var gridIds = cardSection.Id switch {
+   "offerInformation" => Array.Empty<string>(),
+   "descriptionDuties" => new[]{"duties"},
+   "salarySection" => new[]{"salaryBreakdown"},
+   "benefitsSection" => new[]{"benefits"},
+   "medicalInsurance" => new[]{"medicalInsuranceGrid"},
+   "travelBenefits" => new[]{"travelBenefitsGrid"},
+   "complianceSection" => new[]{"compliance"},
+   _ => Array.Empty<string>()
+  };
+  <div class="of-card">
+   <div class="of-card-header"><span><i class="fas fa-folder-open"></i>@(cardSection.Title)</span></div>
+   <div class="of-card-body"><div class="of-grid">
+   @foreach(var field in cardSection.Fields){
+    var raw=Model.GetType().GetProperty(field.Field)?.GetValue(Model);
+    var value=FieldValue(field.Field,field.Type);
+    var fullWidth=field.Type=="textarea"||field.Type=="richtext";
+    <div class="of-field @(fullWidth?"of-field-full":"")">
+     <label for="@field.Field">@field.Label @if(field.Required){<span class="of-required">*</span>}</label>
+     @if(field.Type=="select"){
+      <select id="@field.Field" name="@field.Field" class="custom-select" required="@field.Required" disabled="@isReadOnly"><option value="">Select @field.Label</option>@foreach(var option in Options(field.Source)){<option value="@option.Value" selected="@(value==option.Value)">@option.Text</option>}</select>
+     }else if(field.Type=="checkbox"){
+      <div class="of-checkbox-field"><input type="checkbox" id="@field.Field" name="@field.Field" value="true" checked="@(raw is bool bv&&bv)" disabled="@isReadOnly"/><input type="hidden" name="@field.Field" value="false"/><span>@field.Label</span></div>
+     }else if(field.Type=="richtext"){
+      <div class="of-editor" data-editor="@field.Field">
+       <div class="of-editor-toolbar of-no-print"><button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-command="insertUnorderedList">• List</button><button type="button" data-command="insertOrderedList">1. List</button></div>
+       <div class="of-editor-content" contenteditable="@(!isReadOnly)" data-content="@field.Field">@Html.Raw(value)</div><textarea hidden name="@field.Field" data-hidden-editor="@field.Field">@value</textarea>
+      </div>
+     }else if(field.Type=="textarea"){
+      <textarea id="@field.Field" name="@field.Field" class="form-control" rows="3" readonly="@isReadOnly">@value</textarea>
+     }else{
+      <input id="@field.Field" name="@field.Field" type="@field.Type" value="@value" class="form-control" step="@field.Step" required="@field.Required" readonly="@(isReadOnly||field.Readonly)"/>
+     }
+    </div>
+   }
+   </div></div>
+  </div>
+  @foreach(var grid in config.Grids.Where(g=>gridIds.Contains(g.Id))){
+   var list=Model.GetType().GetProperty(grid.Property)?.GetValue(Model) as System.Collections.IEnumerable;
+   var comment=config.Comments.FirstOrDefault(x=>x.Grid==grid.Id);
+   var commentValue=comment==null?"":Convert.ToString(Model.GetType().GetProperty(comment.Id)?.GetValue(Model))??"";
+   <div class="of-card">
+    <div class="of-card-header"><span><i class="fas fa-table"></i>@grid.Title</span></div>
+    <div class="of-card-body">
+     <div class="of-grid-heading"><span>@grid.Subtitle</span><div class="of-grid-actions of-no-print">
+      <button type="button" class="btn btn-outline-primary btn-sm of-add-row" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-plus mr-1"></i>Add Row</button>
+      <button type="button" class="btn btn-outline-success btn-sm of-insert-row" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-level-down-alt mr-1"></i>Insert Row</button>
+      <button type="button" class="btn btn-outline-danger btn-sm of-delete-row" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-trash mr-1"></i>Delete Row</button>
+     </div></div>
+     <div class="of-table-wrap"><table class="of-table" id="grid-@grid.Id" data-property="@grid.Property">
+      <thead><tr><th class="of-select-col"><div class="of-select-header"><span>Select</span><input type="checkbox" class="of-select-all" disabled="@isReadOnly"/></div></th>@foreach(var col in grid.Columns){<th>@col.Label</th>}</tr></thead>
+      <tbody>
+      @{
+       var rowIndex=0;
+       if(list!=null){foreach(var item in list){
+        <tr><td class="of-select-col"><input type="checkbox" class="of-row-select" disabled="@isReadOnly"/></td>
+        @foreach(var col in grid.Columns){
+         var cell=item?.GetType().GetProperty(col.Field)?.GetValue(item);
+         var cellValue=Convert.ToString(cell,CultureInfo.InvariantCulture)??"";
+         <td>
+          @if(col.Type=="select"){
+           <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly"><option value="">Select @col.Label</option>@foreach(var option in Options(col.Source)){<option value="@option.Value" selected="@(cellValue==option.Value)">@option.Text</option>}</select>
+          }else if(col.Type=="checkbox"){
+           <input type="checkbox" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="true" checked="@(cell is bool cb&&cb)" disabled="@isReadOnly"/><input type="hidden" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="false"/>
+          }else{
+           <input type="@col.Type"
+       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+       value="@cellValue"
+       step="@col.Step"
+       maxlength="@(col.Field == "Description" ? 500 : null)"
+       disabled="@isReadOnly"/> value="@cellValue" step="@col.Step" disabled="@isReadOnly"/>
+          }
+         </td>
+        }
+        </tr>
+        rowIndex++;
+       }}
+      }
+      </tbody>
+     </table></div>
+     @if(comment!=null){
+      <div class="of-grid-comments"><label>@comment.Label</label>
+       <div class="of-editor" data-editor="@comment.Id">
+        <div class="of-editor-toolbar of-no-print"><button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-command="insertUnorderedList">• List</button><button type="button" data-command="insertOrderedList">1. List</button></div>
+        <div class="of-editor-content" contenteditable="@(!isReadOnly)" data-content="@comment.Id">@Html.Raw(commentValue)</div><textarea hidden name="@comment.Id" data-hidden-editor="@comment.Id">@commentValue</textarea>
+       </div>
+      </div>
+     }
+    </div>
+   </div>
+  }
+ }
+ </form>
+</div>
+
+<div class="modal fade" id="ofTrackerModal" tabindex="-1" role="dialog" aria-hidden="true"><div class="modal-dialog" role="document"><div class="modal-content">
+ <div class="modal-header"><h5 class="modal-title">Offer Authorization Tracker</h5><button type="button" class="close" data-dismiss="modal"><span>&times;</span></button></div>
+ <div class="modal-body"><p><strong>Document:</strong> @Model.OfferNo</p><p><strong>Status:</strong> @Model.Status</p><p><strong>Created:</strong> @(Model.CreatedDateTime?.ToString("dd-MM-yyyy HH:mm")??"Not saved")</p><p><strong>Modified:</strong> @(Model.ModifiedDateTime?.ToString("dd-MM-yyyy HH:mm")??"Not modified")</p></div>
+</div></div></div>
+
+<script>
+(function(){
+ const form=document.getElementById("offerForm");
+ const gridColumns=@Html.Raw(gridConfigJson), lookupOptions=@Html.Raw(lookupJson);
+ const isReadOnly=@isReadOnly.ToString().ToLower();
+ document.getElementById("ofEdit")?.addEventListener("click",function(){
+  form.querySelectorAll("input:not([type=hidden]),select,textarea").forEach(x=>{x.disabled=false;x.readOnly=false;});
+  form.querySelectorAll(".of-grid-actions button,.of-select-all,.of-row-select").forEach(x=>x.disabled=false);
+  form.querySelectorAll("[contenteditable]").forEach(x=>x.contentEditable="true");
+  const save=document.getElementById("ofSave");if(save)save.disabled=false;this.disabled=true;
+ });
+ document.querySelectorAll(".of-editor").forEach(ed=>{
+  const content=ed.querySelector(".of-editor-content"),hidden=ed.querySelector("[data-hidden-editor]");
+  ed.querySelectorAll("[data-command]").forEach(btn=>btn.addEventListener("click",()=>{content.focus();document.execCommand(btn.dataset.command,false,null);hidden.value=content.innerHTML;}));
+  content.addEventListener("input",()=>hidden.value=content.innerHTML);
+ });
+ form.addEventListener("submit",()=>form.querySelectorAll(".of-editor").forEach(ed=>ed.querySelector("[data-hidden-editor]").value=ed.querySelector(".of-editor-content").innerHTML));
+ function reindex(table){const prop=table.dataset.property;table.querySelectorAll("tbody tr").forEach((row,i)=>row.querySelectorAll("input,select").forEach(x=>{if(x.name)x.name=x.name.replace(new RegExp("^"+prop+"\\[\\d+\\]"),`${prop}[${i}]`);}));}
+ function createRow(table){
+  const prop=table.dataset.property,id=table.id.replace("grid-",""),tr=document.createElement("tr"),selTd=document.createElement("td");
+  selTd.className="of-select-col";const chk=document.createElement("input");chk.type="checkbox";chk.className="of-row-select";chk.disabled=isReadOnly;selTd.appendChild(chk);tr.appendChild(selTd);
+  (gridColumns[id]||[]).forEach(c=>{const td=document.createElement("td"),name=`${prop}[0].${c.field}`;
+   if(c.type==="select"){const s=document.createElement("select");s.name=name;s.disabled=isReadOnly;const e=document.createElement("option");e.value="";e.textContent=`Select ${c.label}`;s.appendChild(e);(lookupOptions[c.source]||[]).forEach(o=>{const op=document.createElement("option");op.value=o.value;op.textContent=o.text;s.appendChild(op);});td.appendChild(s);}
+   else if(c.type==="checkbox"){const x=document.createElement("input");x.type="checkbox";x.name=name;x.value="true";x.disabled=isReadOnly;const h=document.createElement("input");h.type="hidden";h.name=name;h.value="false";td.append(x,h);}
+   else{const x=document.createElement("input");x.type=c.type;x.name=name;x.disabled=isReadOnly;if(c.step)x.step=c.step;td.appendChild(x);}
+   tr.appendChild(td);
+  });return tr;
+ }
+ function selected(table){return [...table.querySelectorAll(".of-row-select:checked")].map(x=>x.closest("tr"));}
+ function updateAll(table){const master=table.querySelector(".of-select-all"),boxes=[...table.querySelectorAll(".of-row-select")];if(master){master.checked=boxes.length>0&&boxes.every(x=>x.checked);master.indeterminate=boxes.some(x=>x.checked)&&!master.checked;}}
+ document.querySelectorAll(".of-add-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid);t.tBodies[0].appendChild(createRow(t));reindex(t);updateAll(t);}));
+ document.querySelectorAll(".of-insert-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid),s=selected(t);if(s.length!==1){alert("Please select exactly one row to insert below.");return;}s[0].after(createRow(t));reindex(t);updateAll(t);}));
+ document.querySelectorAll(".of-delete-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid),s=selected(t);if(!s.length){alert("Please select at least one row.");return;}if(!confirm(`Delete ${s.length} selected row(s)?`))return;s.forEach(r=>r.remove());reindex(t);updateAll(t);}));
+ document.addEventListener("change",e=>{if(e.target.classList.contains("of-select-all"))e.target.closest("table").querySelectorAll(".of-row-select").forEach(x=>x.checked=e.target.checked);if(e.target.classList.contains("of-row-select"))updateAll(e.target.closest("table"));});
+ document.querySelectorAll(".of-table").forEach(t=>{while(t.tBodies[0].rows.length<2)t.tBodies[0].appendChild(createRow(t));reindex(t);updateAll(t);});
+ const start=document.getElementById("CommencementDate"),end=document.getElementById("EndDate"),duration=document.getElementById("DurationMonths");
+ function updateDuration(){if(!start?.value||!end?.value||!duration)return;const a=new Date(start.value),b=new Date(end.value);let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;duration.value=Math.max(0,m)+1;}
+ start?.addEventListener("change",updateDuration);end?.addEventListener("change",updateDuration);
+ document.getElementById("ofAuthTracker")?.addEventListener("click",()=>{if(window.jQuery&&jQuery.fn.modal)jQuery("#ofTrackerModal").modal("show");else alert("Offer: @Model.OfferNo | Status: @Model.Status");});
+})();
+</script>

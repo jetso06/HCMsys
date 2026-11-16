@@ -136,6 +136,21 @@
 }
     .co-table th { padding:10px 11px; background:#4e73df; border:1px solid #e3e6f0; color:#fff; text-align:left; font-size:11px; text-transform:uppercase; white-space:nowrap; }
     .co-table td { padding:7px 8px; border:1px solid #e3e6f0; vertical-align:middle; }
+        /* Keep Required checkbox column compact */
+        .co-table th.co-required-col,
+        .co-table td.co-required-col {
+            width: 90px !important;
+            min-width: 90px !important;
+            max-width: 90px !important;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            .co-table td.co-required-col input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                margin: 0;
+            }
     .co-table tbody tr:nth-child(even) { background:#f8f9fc; }
     /* Normal grid inputs and dropdowns */
 .co-table input:not([type="checkbox"]):not([type="radio"]),
@@ -192,6 +207,28 @@
     .co-message.success { background:#e8f5e9; color:#247a45; }
     .co-checkbox-field { display:flex; align-items:center; gap:8px; min-height:36px; }
     .co-checkbox-field input { width:16px; height:16px; }
+    .co-grid-comments {
+        margin-top: 18px;
+    }
+
+        .co-grid-comments label {
+            display: block;
+            margin-bottom: 7px;
+            color: #5a5c69;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .co-grid-comments textarea {
+            width: 100%;
+            min-height: 110px;
+            padding: 10px 12px;
+            border: 1px solid #d1d3e2;
+            border-radius: 4px;
+            color: #6e707e;
+            font-size: 13px;
+            resize: vertical;
+        }
     @@media(max-width:992px) { .co-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @@media(max-width:600px) { .co-grid { grid-template-columns:1fr; } .co-field-full { grid-column:auto; } .co-header { align-items:flex-start; } .co-toolbar { justify-content:flex-start; width:100%; } }
     @@media print { .co-toolbar,.co-add-row,.co-remove-row,.co-no-print { display:none!important; } .co-card,.co-header { box-shadow:none; break-inside:avoid; } .co-page { padding:0; } }
@@ -368,12 +405,13 @@
 
         @foreach (var col in grid.Columns)
 {
-    var isChoiceColumn = col.Field == "Main" || col.Field == "Sub";
-    var isDescriptionColumn = col.Field == "Description";
+                                        var isChoiceColumn = col.Field == "Main" || col.Field == "Sub";
+                                        var isDescriptionColumn = col.Field == "Description";
+                                        var isRequiredColumn = col.Label == "Required";
 
-    <th class="@(isChoiceColumn ? "co-choice-col" : isDescriptionColumn ? "co-description-col" : "")">
-        @col.Label
-    </th>
+                                        <th class="@(isChoiceColumn ? "co-choice-col" : isDescriptionColumn ? "co-description-col" : isRequiredColumn ? "co-required-col" : "")">
+                                            @col.Label
+                                        </th>
 }
     </tr>
 </thead>
@@ -400,7 +438,7 @@
                                         var cell = item?.GetType().GetProperty(col.Field)?.GetValue(item);
                                         var cellValue = Convert.ToString(cell, CultureInfo.InvariantCulture) ?? "";
 
-                                        <td>
+                                                <td class="@(col.Label == "Required" ? "co-required-col" : "")">
                                             @if (col.Type == "select")
                                             {
                                                 <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly">
@@ -458,7 +496,22 @@ else if (col.Type == "checkbox")
                         }
                     </tbody>
                 </table>
+                        </div>
+
+            <!-- Grid Comments -->
+            <div class="co-grid-comments">
+                <label for="@(grid.Id)Comments">
+                    @grid.Title Comments
+                </label>
+
+                <textarea id="@(grid.Id)Comments"
+                          name="@(grid.Id)Comments"
+                          class="form-control"
+                          rows="5"
+                          placeholder="Enter @grid.Title comments..."
+                          readonly="@isReadOnly"></textarea>
             </div>
+
         </div>
     </div>
 }
@@ -608,16 +661,22 @@ else if (col.Type == "checkbox")
                 td.appendChild(check);
                 td.appendChild(hidden);
             }
-            else {
-                const input = document.createElement("input");
-                input.type = col.type;
-                input.name = inputName;
-                input.disabled = isReadOnly;
+                else {
+        const input = document.createElement("input");
+        input.type = col.type;
+        input.name = inputName;
+        input.disabled = isReadOnly;
 
-                if (col.step) input.step = col.step;
+        // Default Qty to 1, but allow the user to edit it.
+        if (col.field.toLowerCase() === "qty") {
+            input.value = "1";
+            input.min = "1";
+        }
 
-                td.appendChild(input);
-            }
+        if (col.step) input.step = col.step;
+
+        td.appendChild(input);
+    }
 
             tr.appendChild(td);
         });
@@ -763,7 +822,7 @@ document.addEventListener("change", function (event) {
 
         if (b.getDate() < a.getDate()) months--;
 
-        duration.value = Math.max(0, months);
+            duration.value = Math.max(0, months) + 1;
     }
 
     start?.addEventListener("change", updateDuration);
