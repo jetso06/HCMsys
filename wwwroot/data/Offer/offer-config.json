@@ -418,6 +418,7 @@
       ]
     },
 
+
     {
       "id": "travelBenefits",
       "title": "Travel Benefits",
@@ -584,10 +585,11 @@
       ]
     }
 ,
+
     {
       "id": "travelBenefitsGrid",
       "title": "Travel Benefits Details",
-      "subtitle": "Travel Benefits Details",
+      "subtitle": "Travel Benefits",
       "property": "TravelBenefits",
       "columns": [
         {
@@ -620,7 +622,8 @@
           "type": "number",
           "required": false,
           "readonly": false,
-          "step": "1"
+          "step": "1",
+          "default": 1
         },
         {
           "field": "ServiceDays",
@@ -628,7 +631,8 @@
           "type": "number",
           "required": false,
           "readonly": false,
-          "step": "1"
+          "step": "1",
+          "default": 365
         }
       ]
     },
@@ -654,7 +658,32 @@
           "readonly": false
         }
       ]
+    },
+
+    {
+      "id": "otherDetailsGrid",
+      "title": "Other Details",
+      "subtitle": "Other Details",
+      "property": "OtherDetails",
+      "columns": [
+        {
+          "field": "AdditionalInfo",
+          "label": "Additional Info",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "additional-checks.json"
+        },
+        {
+          "field": "Required",
+          "label": "Required",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        }
+      ]
     }
+
   ],
   "comments": [
     {

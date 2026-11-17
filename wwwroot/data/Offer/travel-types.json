@@ -1,14 +1,10 @@
 [
   {
-    "value": "Annual Leave",
-    "text": "Annual Leave"
+    "value": "0",
+    "text": "One Way"
   },
   {
-    "value": "Mobilization",
-    "text": "Mobilization"
-  },
-  {
-    "value": "Demobilization",
-    "text": "Demobilization"
+    "value": "1",
+    "text": "Two Way"
   }
 ]

@@ -1,14 +1,14 @@
 [
   {
-    "value": "Economy",
+    "value": "1",
     "text": "Economy"
   },
   {
-    "value": "Business",
+    "value": "2",
     "text": "Business"
   },
   {
-    "value": "First",
+    "value": "0",
     "text": "First"
   }
 ]

@@ -155,7 +155,12 @@ namespace HCMSys.Controllers
         public async Task<IActionResult> Save(OfferRecord model)
         {
             model.Duties ??= new(); model.SalaryBreakdown ??= new(); model.Benefits ??= new();
-            model.MedicalInsuranceRows ??= new(); model.TravelBenefits ??= new(); model.ComplianceConditions ??= new();
+            model.MedicalInsuranceRows ??= new(); model.TravelBenefits ??= new(); model.ComplianceConditions ??= new(); model.OtherDetails ??= new();
+            foreach (var duty in model.Duties)
+            {
+                if (duty.Main && duty.Sub) duty.Sub = false;
+                if (duty.Description?.Length > 500) duty.Description = duty.Description.Substring(0, 500);
+            }
             var rows = await Records();
             if (model.Id == 0)
             {
@@ -187,11 +192,14 @@ namespace HCMSys.Controllers
             return RedirectToAction(nameof(Form));
         }
 
-        [HttpPost("Approve/{id:int}")] [ValidateAntiForgeryToken]
+        [HttpPost("Approve/{id:int}")]
+        [ValidateAntiForgeryToken]
         public Task<IActionResult> Approve(int id) => SetStatus(id, "Approved");
-        [HttpPost("Reject/{id:int}")] [ValidateAntiForgeryToken]
+        [HttpPost("Reject/{id:int}")]
+        [ValidateAntiForgeryToken]
         public Task<IActionResult> Reject(int id) => SetStatus(id, "Rejected");
-        [HttpPost("UnPost/{id:int}")] [ValidateAntiForgeryToken]
+        [HttpPost("UnPost/{id:int}")]
+        [ValidateAntiForgeryToken]
         public Task<IActionResult> UnPost(int id) => SetStatus(id, "Pending");
 
         private async Task<IActionResult> SetStatus(int id, string status)
@@ -219,38 +227,68 @@ namespace HCMSys.Controllers
 
     public class OfferRecord
     {
-        public int Id { get; set; } public string? OfferNo { get; set; } public DateTime? OfferDate { get; set; }
-        public string? OfferType { get; set; } public string? ClientName { get; set; } public string? SupplierName { get; set; }
-        public string? Currency { get; set; } public string? CallOffNumber { get; set; } public DateTime? PostDate { get; set; }
-        public string? MainFrameAgreement { get; set; } public string? WorkOrderNo { get; set; } public string? ContractType { get; set; }
-        public string? RecruitmentType { get; set; } public string? NationalityType { get; set; } public string? EmploymentStatus { get; set; }
-        public string? PersonnelName { get; set; } public string? ReportingTo { get; set; }
+        public int Id { get; set; }
+        public string? OfferNo { get; set; }
+        public DateTime? OfferDate { get; set; }
+        public string? OfferType { get; set; }
+        public string? ClientName { get; set; }
+        public string? SupplierName { get; set; }
+        public string? Currency { get; set; }
+        public string? CallOffNumber { get; set; }
+        public DateTime? PostDate { get; set; }
+        public string? MainFrameAgreement { get; set; }
+        public string? WorkOrderNo { get; set; }
+        public string? ContractType { get; set; }
+        public string? RecruitmentType { get; set; }
+        public string? NationalityType { get; set; }
+        public string? EmploymentStatus { get; set; }
+        public string? PersonnelName { get; set; }
+        public string? ReportingTo { get; set; }
         public string? WorkBaseLocation { get; set; }
         public string? Department { get; set; }
         public string? PositionTitle { get; set; }
-        public string? AssignmentType { get; set; } public string? VisaStatus { get; set; } public DateTime? CommencementDate { get; set; }
-        public DateTime? EndDate { get; set; } public decimal? DurationMonths { get; set; }
+        public string? AssignmentType { get; set; }
+        public string? VisaStatus { get; set; }
+        public DateTime? CommencementDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public decimal? DurationMonths { get; set; }
         public List<OfferDutyRow> Duties { get; set; } = new(); public string? DutiesComments { get; set; }
         public List<OfferSalaryRow> SalaryBreakdown { get; set; } = new(); public string? SalaryBreakdownComments { get; set; }
         public List<OfferBenefitRow> Benefits { get; set; } = new();
-        public string? WorkSchedule { get; set; } public bool TimesheetRequired { get; set; } public string? EndOfServiceType { get; set; }
-        public string? LeaveEntitlement { get; set; } public string? ProbationPeriod { get; set; } public string? NoticePeriod { get; set; }
-        public bool OvertimeApplicable { get; set; } public string? OvertimeRemarks { get; set; } public string? AnnualLeaveDays { get; set; }
-        public decimal? WeeklyWorkingHours { get; set; } public decimal? WorkingDaysPerWeek { get; set; }
-        public bool MedicalInsuranceApplicable { get; set; } public DateTime? CoverageStartDate { get; set; }
-        public string? CoveragePerson { get; set; } public int? NoOfPersonCovered { get; set; }
+        public string? WorkSchedule { get; set; }
+        public bool TimesheetRequired { get; set; }
+        public string? EndOfServiceType { get; set; }
+        public string? LeaveEntitlement { get; set; }
+        public string? ProbationPeriod { get; set; }
+        public string? NoticePeriod { get; set; }
+        public bool OvertimeApplicable { get; set; }
+        public string? OvertimeRemarks { get; set; }
+        public string? AnnualLeaveDays { get; set; }
+        public decimal? WeeklyWorkingHours { get; set; }
+        public decimal? WorkingDaysPerWeek { get; set; }
+        public bool MedicalInsuranceApplicable { get; set; }
+        public bool CoverageStartAfterProbation { get; set; }
+        public DateTime? CoverageStartDate { get; set; }
+        public string? CoveragePerson { get; set; }
+        public int? NoOfPersonCovered { get; set; }
         public List<OfferMedicalRow> MedicalInsuranceRows { get; set; } = new(); public string? MedicalInsuranceComments { get; set; }
-        public bool MobilizationTicket { get; set; } public bool DemobilizationTicket { get; set; } public bool AnnualLeaveTravelAllowance { get; set; }
+        public bool MobilizationTicket { get; set; }
+        public bool DemobilizationTicket { get; set; }
+        public bool AnnualLeaveTravelAllowance { get; set; }
         public List<OfferTravelRow> TravelBenefits { get; set; } = new(); public string? TravelBenefitsComments { get; set; }
         public List<OfferComplianceRow> ComplianceConditions { get; set; } = new(); public string? ComplianceComments { get; set; }
-        public string? AdditionalTerms { get; set; } public string Status { get; set; } = "Pending";
+        public List<OfferOtherDetailRow> OtherDetails { get; set; } = new();
+        public string? AdditionalTerms { get; set; }
+        public string Status { get; set; } = "Pending";
         public string CreatedBy { get; set; } = "admin"; public DateTime? CreatedDateTime { get; set; }
-        public string? ModifiedBy { get; set; } public DateTime? ModifiedDateTime { get; set; }
+        public string? ModifiedBy { get; set; }
+        public DateTime? ModifiedDateTime { get; set; }
     }
     public class OfferDutyRow { public bool Main { get; set; } public bool Sub { get; set; } public string? Description { get; set; } }
     public class OfferSalaryRow { public string? Component { get; set; } public decimal? Amount { get; set; } }
     public class OfferBenefitRow { public string? BenefitType { get; set; } public decimal? Amount { get; set; } public string? Frequency { get; set; } }
-    public class OfferMedicalRow { public string? Remarks { get; set; } }
+    public class OfferMedicalRow { public string? CoveragePerson { get; set; } public int? NoOfPersonCovered { get; set; } public string? Remarks { get; set; } }
     public class OfferTravelRow { public string? Covered { get; set; } public string? TravelClass { get; set; } public string? TravelType { get; set; } public int? NoOfTickets { get; set; } public int? ServiceDays { get; set; } }
     public class OfferComplianceRow { public string? AdditionalInfo { get; set; } public bool Required { get; set; } }
+    public class OfferOtherDetailRow { public string? AdditionalInfo { get; set; } public bool Required { get; set; } }
 }

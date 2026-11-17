@@ -1,10 +1,26 @@
 [
   {
-    "value": "Yes",
-    "text": "Yes"
+    "value": "0",
+    "text": "Self"
   },
   {
-    "value": "No",
-    "text": "No"
+    "value": "1",
+    "text": "Spouse"
+  },
+  {
+    "value": "2",
+    "text": "Dependent"
+  },
+  {
+    "value": "3",
+    "text": "Adult"
+  },
+  {
+    "value": "4",
+    "text": "Child"
+  },
+  {
+    "value": "5",
+    "text": "Infant"
   }
 ]

@@ -58,9 +58,35 @@ html{font-size:14px}
 .of-editor{border:1px solid #d1d3e2;border-radius:4px;overflow:hidden;background:#fff}
 .of-editor-toolbar{display:flex;gap:4px;padding:6px;background:#f8f9fc;border-bottom:1px solid #d1d3e2}
 .of-editor-toolbar button{padding:4px 9px;border:1px solid #d1d3e2;border-radius:3px;background:#fff;color:#5a5c69}
-.of-editor-content{min-height:115px;padding:10px;outline:none}
+.of-editor-content{display:block;min-height:115px;padding:10px;outline:none;cursor:text;white-space:pre-wrap;overflow-wrap:anywhere}.of-editor-content[contenteditable="true"]:focus{outline:2px solid rgba(78,115,223,.18);outline-offset:-2px}.of-editor-content[contenteditable="false"]{background:#f8f9fc;cursor:pointer}
 .of-status{display:inline-block;padding:4px 9px;border-radius:12px;background:#eef2ff;color:#4e73df;font-size:11px;font-weight:700}
 .of-message{margin-bottom:14px;padding:10px 14px;border-radius:4px;font-size:13px}.of-message.success{background:#e8f5e9;color:#247a45}.of-message.error{background:#fcebea;color:#c0392b}
+/* Keep checkbox columns compact */
+.of-table th.of-checkbox-col,
+.of-table td.of-checkbox-col {
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
+    padding: 6px 4px !important;
+    text-align: center;
+}
+
+/* Keep selection columns compact too */
+.of-table th.of-select-col,
+.of-table td.of-select-col {
+    width: 65px !important;
+    min-width: 65px !important;
+    max-width: 65px !important;
+    text-align: center;
+}
+
+/* Prevent checkbox inputs from stretching */
+.of-table input[type="checkbox"] {
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    margin: 0 auto !important;
+}
 @@media(max-width:992px){.of-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @@media(max-width:600px){.of-grid{grid-template-columns:1fr}.of-field-full{grid-column:auto}.of-header{align-items:flex-start}.of-toolbar{justify-content:flex-start;width:100%}}
 @@media print{.of-toolbar,.of-grid-actions,.of-no-print{display:none!important}.of-card,.of-header{box-shadow:none;break-inside:avoid}.of-page{padding:0}}
@@ -110,6 +136,7 @@ html{font-size:14px}
    "medicalInsurance" => new[]{"medicalInsuranceGrid"},
    "travelBenefits" => new[]{"travelBenefitsGrid"},
    "complianceSection" => new[]{"compliance"},
+"otherDetails" => new[] { "otherDetailsGrid" },
    _ => Array.Empty<string>()
   };
   @if (cardSection.Fields.Any())
@@ -133,7 +160,7 @@ html{font-size:14px}
      }else if(field.Type=="richtext"){
       <div class="of-editor" data-editor="@field.Field">
        <div class="of-editor-toolbar of-no-print"><button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-command="insertUnorderedList">• List</button><button type="button" data-command="insertOrderedList">1. List</button></div>
-       <div class="of-editor-content" contenteditable="@(!isReadOnly)" data-content="@field.Field">@Html.Raw(value)</div><textarea hidden name="@field.Field" data-hidden-editor="@field.Field">@value</textarea>
+       <div class="of-editor-content" contenteditable="@(isReadOnly ? "false" : "true")" tabindex="0" role="textbox" aria-multiline="true" data-content="@field.Field">@Html.Raw(value)</div><textarea hidden name="@field.Field" data-hidden-editor="@field.Field">@value</textarea>
       </div>
      }else if(field.Type=="textarea"){
       <textarea id="@field.Field" name="@field.Field" class="form-control" rows="3" readonly="@isReadOnly">@value</textarea>
@@ -159,7 +186,7 @@ html{font-size:14px}
       <button type="button" class="btn btn-outline-danger btn-sm of-delete-row" data-grid="@grid.Id" disabled="@isReadOnly"><i class="fas fa-trash mr-1"></i>Delete Row</button>
      </div></div>
      <div class="of-table-wrap"><table class="of-table" id="grid-@grid.Id" data-property="@grid.Property">
-      <thead><tr><th class="of-select-col"><div class="of-select-header"><span>Select</span><input type="checkbox" class="of-select-all" disabled="@isReadOnly"/></div></th>@foreach(var col in grid.Columns){<th>@col.Label</th>}</tr></thead>
+      <thead><tr><th class="of-select-col"><div class="of-select-header"><span>Select</span><input type="checkbox" class="of-select-all" disabled="@isReadOnly"/></div></th>@foreach(var col in grid.Columns){<th class="@(col.Type=="checkbox"?"of-checkbox-col":"")">@col.Label</th>}</tr></thead>
       <tbody>
       @{
        var rowIndex=0;
@@ -201,7 +228,7 @@ html{font-size:14px}
       <div class="of-grid-comments"><label>@comment.Label</label>
        <div class="of-editor" data-editor="@comment.Id">
         <div class="of-editor-toolbar of-no-print"><button type="button" data-command="bold"><b>B</b></button><button type="button" data-command="italic"><i>I</i></button><button type="button" data-command="underline"><u>U</u></button><button type="button" data-command="insertUnorderedList">• List</button><button type="button" data-command="insertOrderedList">1. List</button></div>
-        <div class="of-editor-content" contenteditable="@(!isReadOnly)" data-content="@comment.Id">@Html.Raw(commentValue)</div><textarea hidden name="@comment.Id" data-hidden-editor="@comment.Id">@commentValue</textarea>
+        <div class="of-editor-content" contenteditable="@(isReadOnly ? "false" : "true")" tabindex="0" role="textbox" aria-multiline="true" data-content="@comment.Id">@Html.Raw(commentValue)</div><textarea hidden name="@comment.Id" data-hidden-editor="@comment.Id">@commentValue</textarea>
        </div>
       </div>
      }
@@ -229,9 +256,55 @@ html{font-size:14px}
   const save=document.getElementById("ofSave");if(save)save.disabled=false;this.disabled=true;
  });
  document.querySelectorAll(".of-editor").forEach(ed=>{
-  const content=ed.querySelector(".of-editor-content"),hidden=ed.querySelector("[data-hidden-editor]");
-  ed.querySelectorAll("[data-command]").forEach(btn=>btn.addEventListener("click",()=>{content.focus();document.execCommand(btn.dataset.command,false,null);hidden.value=content.innerHTML;}));
-  content.addEventListener("input",()=>hidden.value=content.innerHTML);
+  const content=ed.querySelector(".of-editor-content");
+  const hidden=ed.querySelector("[data-hidden-editor]");
+  if(!content || !hidden) return;
+
+  let savedRange=null;
+  function saveSelection(){
+   const selection=window.getSelection();
+   if(selection && selection.rangeCount){
+    const range=selection.getRangeAt(0);
+    if(content.contains(range.commonAncestorContainer)) savedRange=range.cloneRange();
+   }
+  }
+  function restoreSelection(){
+   content.focus();
+   const selection=window.getSelection();
+   if(savedRange && selection){
+    selection.removeAllRanges();
+    selection.addRange(savedRange);
+   }
+  }
+
+  content.addEventListener("keyup",saveSelection);
+  content.addEventListener("mouseup",saveSelection);
+  content.addEventListener("input",()=>{
+   hidden.value=content.innerHTML;
+   saveSelection();
+  });
+
+  // Existing records open read-only. Clicking an editor activates the page's Edit mode.
+  content.addEventListener("click",()=>{
+   if(content.getAttribute("contenteditable")==="false"){
+    const editButton=document.getElementById("ofEdit");
+    if(editButton && !editButton.disabled){
+     editButton.click();
+     content.focus();
+    }
+   }
+  });
+
+  ed.querySelectorAll("[data-command]").forEach(btn=>{
+   btn.addEventListener("mousedown",e=>e.preventDefault());
+   btn.addEventListener("click",()=>{
+    if(content.getAttribute("contenteditable")!=="true") return;
+    restoreSelection();
+    document.execCommand(btn.dataset.command,false,null);
+    hidden.value=content.innerHTML;
+    saveSelection();
+   });
+  });
  });
  form.addEventListener("submit",function(e){
   const descriptions=form.querySelectorAll('#grid-duties input[name*=".Description"]');
