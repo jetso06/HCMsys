@@ -112,9 +112,14 @@ html{font-size:14px}
    "complianceSection" => new[]{"compliance"},
    _ => Array.Empty<string>()
   };
-  <div class="of-card">
-   <div class="of-card-header"><span><i class="fas fa-folder-open"></i>@(cardSection.Title)</span></div>
-   <div class="of-card-body"><div class="of-grid">
+  @if (cardSection.Fields.Any())
+{
+    <div class="of-card">
+        <div class="of-card-header">
+            <span><i class="fas fa-folder-open"></i>@cardSection.Title</span>
+        </div>
+        <div class="of-card-body">
+            <div class="of-grid">
    @foreach(var field in cardSection.Fields){
     var raw=Model.GetType().GetProperty(field.Field)?.GetValue(Model);
     var value=FieldValue(field.Field,field.Type);
@@ -137,8 +142,10 @@ html{font-size:14px}
      }
     </div>
    }
-   </div></div>
-  </div>
+               </div>
+        </div>
+    </div>
+}
   @foreach(var grid in config.Grids.Where(g=>gridIds.Contains(g.Id))){
    var list=Model.GetType().GetProperty(grid.Property)?.GetValue(Model) as System.Collections.IEnumerable;
    var comment=config.Comments.FirstOrDefault(x=>x.Grid==grid.Id);
@@ -165,14 +172,22 @@ html{font-size:14px}
           @if(col.Type=="select"){
            <select name="@($"{grid.Property}[{rowIndex}].{col.Field}")" disabled="@isReadOnly"><option value="">Select @col.Label</option>@foreach(var option in Options(col.Source)){<option value="@option.Value" selected="@(cellValue==option.Value)">@option.Text</option>}</select>
           }else if(col.Type=="checkbox"){
-           <input type="checkbox" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="true" checked="@(cell is bool cb&&cb)" disabled="@isReadOnly"/><input type="hidden" name="@($"{grid.Property}[{rowIndex}].{col.Field}")" value="false"/>
+           <input type="checkbox"
+                  name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                  value="true"
+                  data-exclusive-group="@(col.Field == "Main" || col.Field == "Sub" ? "duty-type" : "")"
+                  checked="@(cell is bool cb && cb)"
+                  disabled="@isReadOnly" />
+           <input type="hidden"
+                  name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                  value="false" />
           }else{
            <input type="@col.Type"
-       name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
-       value="@cellValue"
-       step="@col.Step"
-       maxlength="@(col.Field == "Description" ? 500 : null)"
-       disabled="@isReadOnly"/> value="@cellValue" step="@col.Step" disabled="@isReadOnly"/>
+                  name="@($"{grid.Property}[{rowIndex}].{col.Field}")"
+                  value="@cellValue"
+                  step="@col.Step"
+                  maxlength="@(col.Field == "Description" ? 500 : null)"
+                  disabled="@isReadOnly" />
           }
          </td>
         }
@@ -218,24 +233,93 @@ html{font-size:14px}
   ed.querySelectorAll("[data-command]").forEach(btn=>btn.addEventListener("click",()=>{content.focus();document.execCommand(btn.dataset.command,false,null);hidden.value=content.innerHTML;}));
   content.addEventListener("input",()=>hidden.value=content.innerHTML);
  });
- form.addEventListener("submit",()=>form.querySelectorAll(".of-editor").forEach(ed=>ed.querySelector("[data-hidden-editor]").value=ed.querySelector(".of-editor-content").innerHTML));
+ form.addEventListener("submit",function(e){
+  const descriptions=form.querySelectorAll('#grid-duties input[name*=".Description"]');
+  for(const input of descriptions){
+   if(input.value.length>500){
+    e.preventDefault();
+    alert("Duty Description cannot exceed 500 characters.");
+    input.focus();
+    return;
+   }
+  }
+  form.querySelectorAll(".of-editor").forEach(ed=>{
+   ed.querySelector("[data-hidden-editor]").value=ed.querySelector(".of-editor-content").innerHTML;
+  });
+ });
  function reindex(table){const prop=table.dataset.property;table.querySelectorAll("tbody tr").forEach((row,i)=>row.querySelectorAll("input,select").forEach(x=>{if(x.name)x.name=x.name.replace(new RegExp("^"+prop+"\\[\\d+\\]"),`${prop}[${i}]`);}));}
  function createRow(table){
   const prop=table.dataset.property,id=table.id.replace("grid-",""),tr=document.createElement("tr"),selTd=document.createElement("td");
-  selTd.className="of-select-col";const chk=document.createElement("input");chk.type="checkbox";chk.className="of-row-select";chk.disabled=isReadOnly;selTd.appendChild(chk);tr.appendChild(selTd);
-  (gridColumns[id]||[]).forEach(c=>{const td=document.createElement("td"),name=`${prop}[0].${c.field}`;
-   if(c.type==="select"){const s=document.createElement("select");s.name=name;s.disabled=isReadOnly;const e=document.createElement("option");e.value="";e.textContent=`Select ${c.label}`;s.appendChild(e);(lookupOptions[c.source]||[]).forEach(o=>{const op=document.createElement("option");op.value=o.value;op.textContent=o.text;s.appendChild(op);});td.appendChild(s);}
-   else if(c.type==="checkbox"){const x=document.createElement("input");x.type="checkbox";x.name=name;x.value="true";x.disabled=isReadOnly;const h=document.createElement("input");h.type="hidden";h.name=name;h.value="false";td.append(x,h);}
-   else{const x=document.createElement("input");x.type=c.type;x.name=name;x.disabled=isReadOnly;if(c.step)x.step=c.step;td.appendChild(x);}
+  selTd.className="of-select-col";
+  const chk=document.createElement("input");
+  chk.type="checkbox";chk.className="of-row-select";chk.disabled=isReadOnly;
+  selTd.appendChild(chk);tr.appendChild(selTd);
+
+  (gridColumns[id]||[]).forEach(c=>{
+   const td=document.createElement("td"),name=`${prop}[0].${c.field}`;
+
+   if(c.type==="select"){
+    const select=document.createElement("select");
+    select.name=name;select.disabled=isReadOnly;
+    const empty=document.createElement("option");
+    empty.value="";empty.textContent=`Select ${c.label}`;
+    select.appendChild(empty);
+    (lookupOptions[c.source]||[]).forEach(o=>{
+     const option=document.createElement("option");
+     option.value=o.value;option.textContent=o.text;
+     select.appendChild(option);
+    });
+    td.appendChild(select);
+   }
+   else if(c.type==="checkbox"){
+    const input=document.createElement("input");
+    input.type="checkbox";input.name=name;input.value="true";
+    input.disabled=isReadOnly;
+    if(c.field==="Main" || c.field==="Sub"){
+     input.dataset.exclusiveGroup="duty-type";
+    }
+    const hidden=document.createElement("input");
+    hidden.type="hidden";hidden.name=name;hidden.value="false";
+    td.append(input,hidden);
+   }
+   else{
+    const input=document.createElement("input");
+    input.type=c.type;input.name=name;input.disabled=isReadOnly;
+    if(c.field==="Description") input.maxLength=500;
+    if(c.step) input.step=c.step;
+    td.appendChild(input);
+   }
    tr.appendChild(td);
-  });return tr;
+  });
+  return tr;
  }
  function selected(table){return [...table.querySelectorAll(".of-row-select:checked")].map(x=>x.closest("tr"));}
  function updateAll(table){const master=table.querySelector(".of-select-all"),boxes=[...table.querySelectorAll(".of-row-select")];if(master){master.checked=boxes.length>0&&boxes.every(x=>x.checked);master.indeterminate=boxes.some(x=>x.checked)&&!master.checked;}}
  document.querySelectorAll(".of-add-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid);t.tBodies[0].appendChild(createRow(t));reindex(t);updateAll(t);}));
  document.querySelectorAll(".of-insert-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid),s=selected(t);if(s.length!==1){alert("Please select exactly one row to insert below.");return;}s[0].after(createRow(t));reindex(t);updateAll(t);}));
  document.querySelectorAll(".of-delete-row").forEach(b=>b.addEventListener("click",()=>{const t=document.getElementById("grid-"+b.dataset.grid),s=selected(t);if(!s.length){alert("Please select at least one row.");return;}if(!confirm(`Delete ${s.length} selected row(s)?`))return;s.forEach(r=>r.remove());reindex(t);updateAll(t);}));
- document.addEventListener("change",e=>{if(e.target.classList.contains("of-select-all"))e.target.closest("table").querySelectorAll(".of-row-select").forEach(x=>x.checked=e.target.checked);if(e.target.classList.contains("of-row-select"))updateAll(e.target.closest("table"));});
+ document.addEventListener("change",function(e){
+  const target=e.target;
+
+  if(target.classList.contains("of-select-all")){
+   target.closest("table").querySelectorAll(".of-row-select").forEach(x=>x.checked=target.checked);
+  }
+
+  if(target.classList.contains("of-row-select")){
+   updateAll(target.closest("table"));
+  }
+
+  // Main and Sub are mutually exclusive within the same Duty Description row.
+  if(target.type==="checkbox" &&
+     target.dataset.exclusiveGroup==="duty-type" &&
+     target.checked){
+   const row=target.closest("tr");
+   if(row){
+    row.querySelectorAll('input[type="checkbox"][data-exclusive-group="duty-type"]')
+       .forEach(other=>{if(other!==target) other.checked=false;});
+   }
+  }
+ });
  document.querySelectorAll(".of-table").forEach(t=>{while(t.tBodies[0].rows.length<2)t.tBodies[0].appendChild(createRow(t));reindex(t);updateAll(t);});
  const start=document.getElementById("CommencementDate"),end=document.getElementById("EndDate"),duration=document.getElementById("DurationMonths");
  function updateDuration(){if(!start?.value||!end?.value||!duration)return;const a=new Date(start.value),b=new Date(end.value);let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;duration.value=Math.max(0,m)+1;}

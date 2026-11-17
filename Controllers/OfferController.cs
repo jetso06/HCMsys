@@ -224,7 +224,10 @@ namespace HCMSys.Controllers
         public string? Currency { get; set; } public string? CallOffNumber { get; set; } public DateTime? PostDate { get; set; }
         public string? MainFrameAgreement { get; set; } public string? WorkOrderNo { get; set; } public string? ContractType { get; set; }
         public string? RecruitmentType { get; set; } public string? NationalityType { get; set; } public string? EmploymentStatus { get; set; }
-        public string? PersonnelName { get; set; } public string? PositionTitle { get; set; }
+        public string? PersonnelName { get; set; } public string? ReportingTo { get; set; }
+        public string? WorkBaseLocation { get; set; }
+        public string? Department { get; set; }
+        public string? PositionTitle { get; set; }
         public string? AssignmentType { get; set; } public string? VisaStatus { get; set; } public DateTime? CommencementDate { get; set; }
         public DateTime? EndDate { get; set; } public decimal? DurationMonths { get; set; }
         public List<OfferDutyRow> Duties { get; set; } = new(); public string? DutiesComments { get; set; }

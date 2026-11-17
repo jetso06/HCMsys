@@ -396,6 +396,7 @@
         }
       ]
     },
+
     {
       "id": "medicalInsurance",
       "title": "Medical Insurance",
@@ -408,30 +409,15 @@
           "readonly": false
         },
         {
-          "field": "CoverageStartDate",
-          "label": "Coverage Start Date",
-          "type": "date",
+          "field": "CoverageStartAfterProbation",
+          "label": "Coverage Start After Probation",
+          "type": "checkbox",
           "required": false,
           "readonly": false
-        },
-        {
-          "field": "CoveragePerson",
-          "label": "Coverage Person",
-          "type": "select",
-          "required": false,
-          "readonly": false,
-          "source": "coverage-persons.json"
-        },
-        {
-          "field": "NoOfPersonCovered",
-          "label": "No of Person Covered",
-          "type": "number",
-          "required": false,
-          "readonly": false,
-          "step": "1"
         }
       ]
     },
+
     {
       "id": "travelBenefits",
       "title": "Travel Benefits",
@@ -564,12 +550,30 @@
         }
       ]
     },
+
     {
       "id": "medicalInsuranceGrid",
       "title": "Medical Insurance Details",
       "subtitle": "Medical Insurance Details",
       "property": "MedicalInsuranceRows",
       "columns": [
+        {
+          "field": "CoveragePerson",
+          "label": "Coverage Person",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "coverage-persons.json"
+        },
+        {
+          "field": "NoOfPersonCovered",
+          "label": "No of Person Covered",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "1",
+          "default": 1
+        },
         {
           "field": "Remarks",
           "label": "Remarks",
@@ -578,7 +582,8 @@
           "readonly": false
         }
       ]
-    },
+    }
+,
     {
       "id": "travelBenefitsGrid",
       "title": "Travel Benefits Details",
