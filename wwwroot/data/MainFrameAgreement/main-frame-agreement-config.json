@@ -1,0 +1,306 @@
+{
+  "page": {
+    "name": "Main Frame Agreement",
+    "route": "/Master/MainFrameAgreement",
+    "documentPrefix": "MFA",
+    "initialDocumentNumber": 500
+  },
+  "buttons": [
+    {
+      "id": "new",
+      "label": "New",
+      "icon": "fa-plus",
+      "style": "success",
+      "action": "new"
+    },
+    {
+      "id": "edit",
+      "label": "Edit",
+      "icon": "fa-edit",
+      "style": "primary",
+      "action": "edit"
+    },
+    {
+      "id": "save",
+      "label": "Save",
+      "icon": "fa-save",
+      "style": "primary",
+      "action": "save"
+    },
+    {
+      "id": "clone",
+      "label": "Clone",
+      "icon": "fa-copy",
+      "style": "info",
+      "action": "clone"
+    },
+    {
+      "id": "unpost",
+      "label": "UnPost",
+      "icon": "fa-undo",
+      "style": "warning",
+      "action": "unpost"
+    },
+    {
+      "id": "print",
+      "label": "Print",
+      "icon": "fa-print",
+      "style": "secondary",
+      "action": "print"
+    },
+    {
+      "id": "delete",
+      "label": "Delete",
+      "icon": "fa-trash",
+      "style": "danger",
+      "action": "delete"
+    },
+    {
+      "id": "approve",
+      "label": "Approve",
+      "icon": "fa-check",
+      "style": "success",
+      "action": "approve"
+    },
+    {
+      "id": "reject",
+      "label": "Reject",
+      "icon": "fa-times",
+      "style": "danger",
+      "action": "reject"
+    },
+    {
+      "id": "authTracker",
+      "label": "Auth Tracker",
+      "icon": "fa-route",
+      "style": "info",
+      "action": "authTracker"
+    },
+    {
+      "id": "close",
+      "label": "Close",
+      "icon": "fa-times-circle",
+      "style": "secondary",
+      "action": "close"
+    }
+  ],
+  "sections": [
+    {
+      "id": "contractDetails",
+      "title": "Contract Details",
+      "icon": "fa-file-alt",
+      "fields": [
+        {
+          "field": "documentNo",
+          "label": "Document No.",
+          "type": "text",
+          "required": false,
+          "readonly": true,
+          "default": "AUTO"
+        },
+        {
+          "field": "date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "postDate",
+          "label": "PostDate",
+          "type": "datetime-local",
+          "required": true
+        },
+        {
+          "field": "client",
+          "label": "Client",
+          "type": "select",
+          "required": true,
+          "lookup": "clients",
+          "placeholder": "Select Client"
+        },
+        {
+          "field": "contractName",
+          "label": "Contract Name",
+          "type": "text",
+          "required": true,
+          "maxLength": 150
+        },
+        {
+          "field": "tenderNumber",
+          "label": "Tender Number",
+          "type": "text",
+          "required": false,
+          "maxLength": 80
+        },
+        {
+          "field": "contractReference",
+          "label": "Contract Reference",
+          "type": "text",
+          "required": false,
+          "maxLength": 60
+        },
+        {
+          "field": "startDate",
+          "label": "Start Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "endDate",
+          "label": "End Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "currency",
+          "label": "Currency",
+          "type": "select",
+          "required": true,
+          "lookup": "currencies",
+          "placeholder": "Select Currency"
+        },
+        {
+          "field": "contractValue",
+          "label": "Contract Value",
+          "type": "number",
+          "required": false,
+          "min": 0,
+          "step": "0.001",
+          "placeholder": "0.000"
+        },
+        {
+          "field": "paymentTerms",
+          "label": "Payment Terms",
+          "type": "select",
+          "required": false,
+          "lookup": "paymentTerms",
+          "placeholder": "Select Payment Terms"
+        },
+        {
+          "field": "contractOwner",
+          "label": "Contract Owner",
+          "type": "text",
+          "required": false,
+          "maxLength": 100
+        },
+        {
+          "field": "financeContact",
+          "label": "Finance Contact (Client Side)",
+          "type": "text",
+          "required": false,
+          "maxLength": 100
+        },
+        {
+          "field": "menaAdministrator",
+          "label": "MENA Administrator",
+          "type": "select",
+          "required": false,
+          "lookup": "employees",
+          "placeholder": "Select MENA Administrator"
+        },
+        {
+          "field": "designatedBank",
+          "label": "Designated Bank",
+          "type": "select",
+          "required": false,
+          "lookup": "banks",
+          "placeholder": "Select Designated Bank"
+        },
+        {
+          "field": "projectNo",
+          "label": "Project No.",
+          "type": "select",
+          "required": false,
+          "lookup": "projects",
+          "placeholder": "Select Project"
+        }
+      ]
+    },
+    {
+      "id": "terms",
+      "title": "Narration / Terms & Conditions",
+      "icon": "fa-align-left",
+      "fields": [
+        {
+          "field": "terms",
+          "label": "Narration / Terms & Conditions",
+          "type": "richtext",
+          "required": false,
+          "placeholder": "Enter narration, terms and conditions..."
+        }
+      ]
+    }
+  ],
+  "attachmentGrid": {
+    "id": "attachments",
+    "title": "Attachments",
+    "property": "attachments",
+    "allowAdd": true,
+    "allowDelete": true,
+    "minimumRows": 1,
+    "columns": [
+      {
+        "field": "show",
+        "label": "Show",
+        "type": "action"
+      },
+      {
+        "field": "attachmentType",
+        "label": "Attachment Type",
+        "type": "select",
+        "lookup": "attachmentTypes",
+        "required": false
+      },
+      {
+        "field": "remarks",
+        "label": "Remarks",
+        "type": "text",
+        "maxLength": 80
+      },
+      {
+        "field": "fileName",
+        "label": "Attachment",
+        "type": "file"
+      },
+      {
+        "field": "trackExpiry",
+        "label": "Track Expiry",
+        "type": "checkbox"
+      },
+      {
+        "field": "referenceNo",
+        "label": "Ref No",
+        "type": "text",
+        "maxLength": 80
+      },
+      {
+        "field": "issueDate",
+        "label": "Issue Date",
+        "type": "date",
+        "enableWith": "issueDateEnabled",
+        "toggleField": "issueDateEnabled"
+      },
+      {
+        "field": "expiryDate",
+        "label": "Expiry Date",
+        "type": "date",
+        "enableWith": "expiryDateEnabled",
+        "toggleField": "expiryDateEnabled"
+      },
+      {
+        "field": "action",
+        "label": "Action",
+        "type": "delete"
+      }
+    ]
+  },
+  "rules": {
+    "contractValueRequired": false,
+    "uniqueContractReference": true,
+    "contractEndDateMustMatchTrackedAttachmentExpiry": true,
+    "currencyDecimals": {
+      "OMR": 3,
+      "default": 2
+    }
+  }
+}

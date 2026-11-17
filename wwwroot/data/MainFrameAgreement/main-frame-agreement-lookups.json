@@ -1,0 +1,152 @@
+{
+  "clients": [
+    {
+      "value": "CLI-001",
+      "text": "ABC Trading LLC"
+    },
+    {
+      "value": "CLI-002",
+      "text": "Al Noor Services"
+    },
+    {
+      "value": "CLI-003",
+      "text": "Gulf Technologies"
+    },
+    {
+      "value": "CLI-004",
+      "text": "Muscat Engineering"
+    }
+  ],
+  "currencies": [
+    {
+      "value": "OMR",
+      "text": "OMR - Omani Rial"
+    },
+    {
+      "value": "USD",
+      "text": "USD - US Dollar"
+    },
+    {
+      "value": "AED",
+      "text": "AED - UAE Dirham"
+    },
+    {
+      "value": "INR",
+      "text": "INR - Indian Rupee"
+    },
+    {
+      "value": "EUR",
+      "text": "EUR - Euro"
+    },
+    {
+      "value": "GBP",
+      "text": "GBP - British Pound"
+    }
+  ],
+  "paymentTerms": [
+    {
+      "value": "Advance",
+      "text": "Advance Payment"
+    },
+    {
+      "value": "NET15",
+      "text": "Net 15 Days"
+    },
+    {
+      "value": "NET30",
+      "text": "Net 30 Days"
+    },
+    {
+      "value": "NET45",
+      "text": "Net 45 Days"
+    },
+    {
+      "value": "NET60",
+      "text": "Net 60 Days"
+    },
+    {
+      "value": "Monthly",
+      "text": "Monthly"
+    },
+    {
+      "value": "Milestone",
+      "text": "Milestone Based"
+    }
+  ],
+  "employees": [
+    {
+      "value": "EMP-001",
+      "text": "Admin"
+    },
+    {
+      "value": "EMP-002",
+      "text": "Project Manager"
+    },
+    {
+      "value": "EMP-003",
+      "text": "Finance Manager"
+    }
+  ],
+  "banks": [
+    {
+      "value": "BANK-001",
+      "text": "Bank Muscat"
+    },
+    {
+      "value": "BANK-002",
+      "text": "Sohar International"
+    },
+    {
+      "value": "BANK-003",
+      "text": "National Bank of Oman"
+    },
+    {
+      "value": "BANK-004",
+      "text": "Oman Arab Bank"
+    }
+  ],
+  "projects": [
+    {
+      "value": "PRJ-001",
+      "text": "PRJ-001"
+    },
+    {
+      "value": "PRJ-002",
+      "text": "PRJ-002"
+    },
+    {
+      "value": "PRJ-003",
+      "text": "PRJ-003"
+    },
+    {
+      "value": "PRJ-004",
+      "text": "PRJ-004"
+    }
+  ],
+  "attachmentTypes": [
+    {
+      "value": "Contract",
+      "text": "Contract"
+    },
+    {
+      "value": "Agreement",
+      "text": "Agreement"
+    },
+    {
+      "value": "Invoice",
+      "text": "Invoice"
+    },
+    {
+      "value": "PurchaseOrder",
+      "text": "Purchase Order"
+    },
+    {
+      "value": "SupportingDocument",
+      "text": "Supporting Document"
+    },
+    {
+      "value": "Other",
+      "text": "Other"
+    }
+  ]
+}

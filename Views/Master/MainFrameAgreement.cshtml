@@ -1,0 +1,358 @@
+@using System.Text.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Main Frame Agreement";
+    var configJson = (string)(ViewBag.ConfigJson ?? "{}");
+    var lookupsJson = (string)(ViewBag.LookupsJson ?? "{}");
+    var recordsJson = (string)(ViewBag.RecordsJson ?? "[]");
+    var recordId = (int)(ViewBag.RecordId ?? 0);
+}
+<div class="container-fluid mfa-page">
+    @Html.AntiForgeryToken()
+    <div class="card shadow-sm mb-3">
+        <div class="card-header mfa-header">
+            <h6 class="m-0 font-weight-bold text-uppercase"><i class="fas fa-file-contract mr-2"></i><span id="mfaPageTitle">Main Frame Agreement</span></h6>
+            <div id="mfaToolbar" class="mfa-toolbar"></div>
+        </div>
+    </div>
+
+    <div id="mfaMessage" class="alert" style="display:none"></div>
+    <form id="mfaForm" onsubmit="return false;">
+        <div id="mfaSections"></div>
+    </form>
+
+    <div id="mfaAttachmentsCard" class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-paperclip mr-2"></i><span id="mfaAttachmentTitle">Attachments</span></h6>
+            <button type="button" class="btn btn-primary btn-sm" id="mfaAddAttachment"><i class="fas fa-plus mr-1"></i>Add Attachment</button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover mfa-grid">
+                    <thead id="mfaAttachmentHead"></thead>
+                    <tbody id="mfaAttachmentBody"></tbody>
+                </table>
+            </div>
+            <small class="text-muted">Attachment metadata is stored in JSON. File names are recorded; physical file upload requires a separate upload endpoint.</small>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mfaConfirmModal" tabindex="-1" role="dialog" aria-hidden="true">
+ <div class="modal-dialog modal-dialog-centered" role="document"><div class="modal-content">
+  <div class="modal-header bg-danger text-white"><h5 class="modal-title" id="mfaConfirmTitle">Confirm</h5><button type="button" class="close text-white" data-dismiss="modal"><span>&times;</span></button></div>
+  <div class="modal-body" id="mfaConfirmMessage"></div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button><button type="button" class="btn btn-danger" id="mfaConfirmYes">Confirm</button></div>
+ </div></div>
+</div>
+
+<style>
+html{font-size:14px}.mfa-page{padding:20px;color:#5a5c69;font-family:'Nunito',sans-serif}
+.mfa-page .card{border:1px solid #e3e6f0;border-radius:.35rem}
+.mfa-page .card-header,.mfa-header{background:#f8f9fc;border-bottom:1px solid #e3e6f0}
+.mfa-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mfa-header h6{color:#5a5c69;letter-spacing:.06em;font-size:.85rem}
+.mfa-toolbar{display:flex;gap:6px;flex-wrap:wrap}
+.mfa-toolbar .btn{font-size:.75rem;font-weight:600}
+.mfa-section-title{font-size:.85rem;font-weight:800;color:#4e73df;margin:0}
+.mfa-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px 16px}
+.mfa-field{min-width:0}.mfa-field.full{grid-column:1/-1}
+.mfa-field label{display:block;font-size:.8rem;font-weight:700;color:#5a5c69;margin-bottom:5px}
+.mfa-field .form-control{border:1px solid #d1d3e2;border-radius:.35rem;color:#6e707e;font-size:.85rem;min-height:38px}
+.mfa-field textarea.form-control{min-height:90px}
+.mfa-required{color:#e74a3b}
+.mfa-editor-toolbar{display:flex;gap:5px;padding:7px;background:#f8f9fc;border:1px solid #d1d3e2;border-bottom:0;border-radius:.35rem .35rem 0 0}
+.mfa-editor-toolbar button{border:1px solid #d1d3e2;background:white;border-radius:3px;padding:4px 9px}
+.mfa-editor{min-height:170px;padding:12px;border:1px solid #d1d3e2;border-radius:0 0 .35rem .35rem;background:white;overflow-wrap:anywhere}
+.mfa-editor:focus{outline:0;border-color:#bac8f3;box-shadow:0 0 0 .2rem rgba(78,115,223,.12)}
+.mfa-grid{min-width:1200px;margin:0}.mfa-grid thead th{background:#4e73df;color:white;border-color:#3d5cbe;font-size:.72rem;text-transform:uppercase;white-space:nowrap}
+.mfa-grid td{vertical-align:middle;font-size:.8rem}.mfa-grid .form-control{font-size:.8rem;min-width:110px}
+.mfa-grid input[type=checkbox]{width:16px;height:16px;margin:0;vertical-align:middle}
+.mfa-grid .mfa-check-col{width:62px;min-width:62px;max-width:62px;text-align:center;padding:5px!important}
+.mfa-grid .mfa-action-col{width:65px;min-width:65px;text-align:center}
+.mfa-file-name{font-size:.72rem;color:#858796;max-width:180px;overflow-wrap:anywhere}
+@@media(max-width:900px){.mfa-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@@media(max-width:600px){.mfa-page{padding:10px 5px}.mfa-fields{grid-template-columns:1fr}.mfa-field.full{grid-column:auto}.mfa-toolbar{width:100%}}
+@@media print{.mfa-toolbar,#mfaAddAttachment,.mfa-editor-toolbar,.mfa-remove,.mfa-file-input{display:none!important}.mfa-page .card{box-shadow:none!important}}
+</style>
+
+<script>
+const MFA_CONFIG = @Html.Raw(configJson);
+const MFA_LOOKUPS = @Html.Raw(lookupsJson);
+const MFA_INITIAL_RECORDS = @Html.Raw(recordsJson);
+const MFA_INITIAL_ID = @recordId;
+const MFA_URL = {
+ save: '@Url.Content("~/Master/MainFrameAgreement/Save")',
+ get: '@Url.Content("~/Master/MainFrameAgreement/Get/")',
+ delete: '@Url.Content("~/Master/MainFrameAgreement/Delete/")',
+ status: '@Url.Content("~/Master/MainFrameAgreement/Status/")',
+ upload: '@Url.Content("~/Master/MainFrameAgreement/UploadAttachment")',
+ home: '@Url.Content("~/Master/MainFrameAgreement")'
+};
+let mfaRecordId = 0, mfaMode = 'new', mfaAttachmentRows = [], mfaPendingConfirm = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+ document.getElementById('mfaPageTitle').textContent = MFA_CONFIG.page?.name || 'Main Frame Agreement';
+ renderToolbar(); renderSections(); renderAttachmentHeader();
+ bindToolbar(); setNewDefaults();
+ document.getElementById('mfaAddAttachment').addEventListener('click',()=>addAttachment());
+ if(MFA_INITIAL_ID>0) await loadRecord(MFA_INITIAL_ID);
+ else addAttachment();
+});
+
+function renderToolbar(){
+ const host=document.getElementById('mfaToolbar');
+ host.innerHTML=(MFA_CONFIG.buttons||[]).map(b=>`<button type="button" class="btn btn-${esc(b.style||'secondary')} btn-sm" id="mfaBtn_${esc(b.id)}" data-action="${esc(b.action)}"><i class="fas ${esc(b.icon||'')} mr-1"></i>${esc(b.label)}</button>`).join('');
+}
+function bindToolbar(){
+ document.querySelectorAll('#mfaToolbar button').forEach(b=>b.addEventListener('click',()=>runAction(b.dataset.action)));
+}
+function renderSections(){
+ const host=document.getElementById('mfaSections'); host.innerHTML='';
+ (MFA_CONFIG.sections||[]).forEach(section=>{
+  const card=document.createElement('div'); card.className='card shadow-sm mb-4';
+  const header=document.createElement('div'); header.className='card-header';
+  header.innerHTML=`<h6 class="mfa-section-title"><i class="fas ${esc(section.icon||'fa-list')} mr-2"></i>${esc(section.title)}</h6>`;
+  const body=document.createElement('div'); body.className='card-body';
+  const grid=document.createElement('div'); grid.className='mfa-fields';
+  (section.fields||[]).forEach(field=>grid.appendChild(renderField(field)));
+  body.appendChild(grid); card.append(header,body); host.appendChild(card);
+ });
+}
+function renderField(f){
+ const wrap=document.createElement('div'); wrap.className='mfa-field'+(f.type==='richtext'?' full':'');
+ const label=document.createElement('label'); label.htmlFor='mfa_'+f.field;
+ label.innerHTML=esc(f.label)+(f.required?' <span class="mfa-required">*</span>':'');
+ wrap.appendChild(label);
+ if(f.type==='richtext'){
+  const tools=document.createElement('div'); tools.className='mfa-editor-toolbar';
+  [['bold','B'],['italic','I'],['underline','U'],['insertUnorderedList','• List'],['insertOrderedList','1. List']].forEach(([cmd,text])=>{
+   const btn=document.createElement('button');btn.type='button';btn.textContent=text;
+   btn.addEventListener('mousedown',e=>e.preventDefault());
+   btn.addEventListener('click',()=>{const editor=document.getElementById('mfa_'+f.field);editor.focus();document.execCommand(cmd,false,null);});
+   tools.appendChild(btn);
+  });
+  const editor=document.createElement('div');editor.id='mfa_'+f.field;editor.className='mfa-editor';editor.contentEditable='true';editor.dataset.field=f.field;
+  editor.dataset.placeholder=f.placeholder||'Enter text...';
+  wrap.append(tools,editor); return wrap;
+ }
+ let input;
+ if(f.type==='select'){
+  input=document.createElement('select');input.className='form-control';
+  const blank=document.createElement('option');blank.value='';blank.textContent='-- '+(f.placeholder||'Select')+' --';input.appendChild(blank);
+  (MFA_LOOKUPS[f.lookup]||[]).forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.text;input.appendChild(op);});
+ }else{
+  input=document.createElement(f.type==='textarea'?'textarea':'input');
+  if(f.type!=='textarea') input.type=f.type;
+  input.className='form-control';
+  if(f.min!==undefined)input.min=f.min;
+  if(f.step)input.step=f.step;
+  if(f.maxLength)input.maxLength=f.maxLength;
+  if(f.placeholder)input.placeholder=f.placeholder;
+ }
+ input.id='mfa_'+f.field;input.dataset.field=f.field;
+ if(f.required)input.required=true;if(f.readonly)input.readOnly=true;
+ if(f.default!==undefined)input.dataset.default=f.default;
+ if(f.field==='contractValue')input.addEventListener('blur',formatContractValue);
+ if(f.field==='currency')input.addEventListener('change',updateContractPrecision);
+ wrap.appendChild(input);return wrap;
+}
+function renderAttachmentHeader(){
+ const grid=MFA_CONFIG.attachmentGrid;
+ document.getElementById('mfaAttachmentTitle').textContent=grid.title;
+ document.getElementById('mfaAttachmentHead').innerHTML='<tr>'+grid.columns.map(c=>`<th class="${c.type==='checkbox'?'mfa-check-col':''}">${esc(c.label)}</th>`).join('')+'</tr>';
+}
+function addAttachment(data={}){
+ const grid=MFA_CONFIG.attachmentGrid, tbody=document.getElementById('mfaAttachmentBody'), tr=document.createElement('tr');
+ tr.dataset.row=String(Date.now()+Math.random());
+ grid.columns.forEach(c=>{
+  const td=document.createElement('td');if(c.type==='checkbox')td.className='mfa-check-col';if(c.type==='delete'||c.type==='action')td.className='mfa-action-col';
+  if(c.type==='action'){
+   const btn=document.createElement('button');btn.type='button';btn.className='btn btn-info btn-sm';btn.innerHTML='<i class="fas fa-eye"></i>';
+   btn.title='Show attachment';btn.addEventListener('click',()=>{if(tr.dataset.filePath)window.open(tr.dataset.filePath,'_blank');else alert('No uploaded file is available for this row.');});td.appendChild(btn);
+  }else if(c.type==='delete'){
+   const btn=document.createElement('button');btn.type='button';btn.className='btn btn-danger btn-sm mfa-remove';btn.innerHTML='<i class="fas fa-trash"></i>';
+   btn.addEventListener('click',()=>{if(tbody.children.length>1)tr.remove();else alert('Keep at least one attachment row.');});td.appendChild(btn);
+  }else if(c.type==='file'){
+   const file=document.createElement('input');file.type='file';file.className='form-control mfa-file-input';file.accept='.pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg';
+   const name=document.createElement('div');name.className='mfa-file-name';
+   file.addEventListener('change',()=>{name.textContent=file.files[0]?.name||'';tr.dataset.fileName=file.files[0]?.name||'';});
+   if(data.fileName){name.textContent=data.fileName;tr.dataset.fileName=data.fileName;}
+   if(data.filePath)tr.dataset.filePath=data.filePath;
+   td.append(file,name);
+  }else{
+   let input;
+   if(c.type==='select'){
+    input=document.createElement('select');input.className='form-control';
+    const blank=document.createElement('option');blank.value='';blank.textContent='-- Select --';input.appendChild(blank);
+    (MFA_LOOKUPS[c.lookup]||[]).forEach(o=>{const op=document.createElement('option');op.value=o.value;op.textContent=o.text;input.appendChild(op);});
+   }else{input=document.createElement('input');input.type=c.type==='checkbox'?'checkbox':c.type; if(c.type!=='checkbox')input.className='form-control';}
+   input.dataset.field=c.field;
+   if(c.maxLength)input.maxLength=c.maxLength;
+   if(c.type==='checkbox'){input.checked=!!data[c.field];}
+   else {input.value=data[c.field]??'';}
+   if(c.field==='trackExpiry')input.addEventListener('change',()=>{const expiry=tr.querySelector('[data-field="expiryDate"]');const toggle=tr.querySelector('[data-field="expiryDateEnabled"]');if(expiry){if(!input.checked){if(toggle)toggle.checked=false;expiry.disabled=true;expiry.value='';}else if(toggle){expiry.disabled=!toggle.checked;}}});
+   if(c.type==='date' && c.toggleField){
+    const toggle=document.createElement('input');toggle.type='checkbox';toggle.className='mr-1';toggle.dataset.field=c.toggleField;toggle.checked=!!data[c.toggleField];
+    input.disabled=!toggle.checked;
+    toggle.addEventListener('change',()=>{input.disabled=!toggle.checked;if(!toggle.checked)input.value='';});
+    if(c.field==='expiryDate' && !data.trackExpiry){toggle.disabled=true;input.disabled=true;}
+    if(c.field==='expiryDate')tr.querySelector('[data-field="trackExpiry"]')?.addEventListener('change',()=>{toggle.disabled=!tr.querySelector('[data-field="trackExpiry"]').checked;if(toggle.disabled){toggle.checked=false;input.disabled=true;input.value='';}});
+    const holder=document.createElement('div');holder.className='d-flex align-items-center';holder.append(toggle,input);td.appendChild(holder);
+   }else{td.appendChild(input);}
+  }
+  tr.appendChild(td);
+ });
+ tbody.appendChild(tr);
+}
+function setNewDefaults(){
+ const now=new Date(),date=localDate(now);
+ document.querySelectorAll('#mfaSections [data-field]').forEach(el=>{
+  const f=el.dataset.field;
+  if(f==='documentNo')el.value='AUTO';
+  else if(f==='date'||f==='startDate'||f==='endDate')el.value=date;
+  else if(f==='postDate')el.value=date+'T'+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  else if(el.dataset.default!==undefined)el.value=el.dataset.default;
+ });
+}
+function localDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function getToken(){return document.querySelector('input[name="__RequestVerificationToken"]')?.value||'';}
+function collectRecord(){
+ const obj={id:mfaRecordId};
+ document.querySelectorAll('#mfaSections [data-field]').forEach(el=>{
+  const field=el.dataset.field;
+  obj[field]=el.classList.contains('mfa-editor')?el.innerHTML:el.value;
+ });
+ obj.attachments=[...document.querySelectorAll('#mfaAttachmentBody tr')].map(tr=>{
+  const row={fileName:tr.dataset.fileName||'',filePath:tr.dataset.filePath||''};
+  tr.querySelectorAll('[data-field]').forEach(el=>{row[el.dataset.field]=el.type==='checkbox'?el.checked:el.value;});
+  row.issueDateEnabled=!!tr.querySelector('[data-field="issueDate"]')&&!tr.querySelector('[data-field="issueDate"]').disabled;
+  row.expiryDateEnabled=!!tr.querySelector('[data-field="expiryDate"]')&&!tr.querySelector('[data-field="expiryDate"]').disabled;
+  return row;
+ });
+ return obj;
+}
+async function runAction(action){
+ switch(action){
+  case 'new': newRecord();break;
+  case 'edit': setMode('edit');break;
+  case 'save': await saveRecord();break;
+  case 'clone': cloneRecord();break;
+  case 'print': window.print();break;
+  case 'delete': confirmAction('Delete this Main Frame Agreement?',async()=>deleteRecord());break;
+  case 'approve': case 'reject': case 'unpost': await changeStatus(action);break;
+  case 'authTracker': alert('Authorization Tracker is not connected yet.');break;
+  case 'close': window.location.href=document.referrer||'/';break;
+ }
+}
+function setMode(mode){
+ mfaMode=mode;const disabled=mode==='view';
+ document.querySelectorAll('#mfaForm input,#mfaForm select,#mfaForm textarea,.mfa-editor,#mfaAttachmentBody input,#mfaAttachmentBody select').forEach(el=>{if(el.id==='mfa_documentNo')return;el.disabled=disabled;});
+}
+function newRecord(){
+ mfaRecordId=0;mfaMode='new';document.getElementById('mfaForm').reset();
+ document.querySelectorAll('.mfa-editor').forEach(e=>e.innerHTML='');
+ document.getElementById('mfaAttachmentBody').innerHTML='';setNewDefaults();addAttachment();setMode('new');
+}
+function cloneRecord(){
+ const data=collectRecord();data.id=0;data.documentNo='AUTO';
+ newRecord();
+ document.querySelectorAll('#mfaSections [data-field]').forEach(el=>{const f=el.dataset.field;if(f==='documentNo')return;if(el.classList.contains('mfa-editor'))el.innerHTML=data[f]||'';else if(data[f]!==undefined)el.value=data[f];});
+ document.getElementById('mfaAttachmentBody').innerHTML='';(data.attachments||[]).forEach(a=>addAttachment(a));if(!data.attachments?.length)addAttachment();
+ setMode('new');
+}
+async function loadRecord(id){
+ try{const r=await fetch(MFA_URL.get+id);if(!r.ok)throw new Error('Unable to load record.');const data=await r.json();mfaRecordId=data.id||0;
+  document.querySelectorAll('#mfaSections [data-field]').forEach(el=>{const f=el.dataset.field;if(el.classList.contains('mfa-editor'))el.innerHTML=data[f]||'';else el.value=data[f]??'';});
+  document.getElementById('mfaAttachmentBody').innerHTML='';(data.attachments||[]).forEach(a=>addAttachment(a));if(!data.attachments?.length)addAttachment();
+  setMode('view');
+ }catch(e){showMessage(e.message,'danger');}
+}
+function updateContractPrecision(){
+ const currency=document.getElementById('mfa_currency').value;
+ const decimals=(MFA_CONFIG.rules?.currencyDecimals?.[currency]??MFA_CONFIG.rules?.currencyDecimals?.default??2);
+ const value=document.getElementById('mfa_contractValue');value.step=(1/Math.pow(10,decimals)).toFixed(decimals);value.placeholder=(0).toFixed(decimals);
+ if(value.value)formatContractValue();
+}
+function formatContractValue(){
+ const currency=document.getElementById('mfa_currency').value;
+ const decimals=MFA_CONFIG.rules?.currencyDecimals?.[currency]??MFA_CONFIG.rules?.currencyDecimals?.default??2;
+ const input=document.getElementById('mfa_contractValue');
+ if(input.value!==''&&Number.isFinite(Number(input.value)))input.value=Number(input.value).toFixed(decimals);
+}
+
+function validateContractExpiryDate() {
+    const contractEndDate =
+        document.getElementById('mfa_endDate')?.value;
+
+    const rows = document.querySelectorAll(
+        '#mfaAttachmentBody tr'
+    );
+
+    for (const row of rows) {
+        const trackExpiry =
+            row.querySelector('[data-field="trackExpiry"]');
+
+        const expiryDate =
+            row.querySelector('[data-field="expiryDate"]');
+
+        if (
+            trackExpiry?.checked &&
+            expiryDate?.value &&
+            expiryDate.value !== contractEndDate
+        ) {
+            showMessage(
+                'Contract End Date must match the expiry date of attachments marked Track Expiry.',
+                'danger'
+            );
+
+            expiryDate.focus();
+            return false;
+        }
+    }
+
+    return true;
+}
+
+async function saveRecord(){
+ const form=document.getElementById('mfaForm');if(!form.reportValidity())return;
+ if (!validateContractExpiryDate()) return;
+ try{
+  for(const tr of document.querySelectorAll('#mfaAttachmentBody tr')){
+   const file=tr.querySelector('input[type="file"]');
+   if(file?.files?.length){
+    const body=new FormData();body.append('file',file.files[0]);
+    const up=await fetch(MFA_URL.upload,{method:'POST',headers:{'RequestVerificationToken':getToken()},body});
+    const uploaded=await up.json();if(!up.ok)throw new Error(uploaded.message||'Attachment upload failed.');
+    tr.dataset.fileName=uploaded.fileName;tr.dataset.filePath=uploaded.filePath;
+    const name=tr.querySelector('.mfa-file-name');if(name)name.textContent=uploaded.fileName;
+   }
+  }
+ }catch(uploadError){showMessage(uploadError.message,'danger');return;}
+ const model=collectRecord();
+ if(model.endDate<model.startDate){showMessage('End Date cannot be earlier than Start Date.','danger');return;}
+ try{
+  const response=await fetch(MFA_URL.save,{method:'POST',headers:{'Content-Type':'application/json','RequestVerificationToken':getToken()},body:JSON.stringify(model)});
+  const result=await response.json();if(!response.ok)throw new Error(result.message||'Save failed.');
+  mfaRecordId=result.id;document.getElementById('mfa_documentNo').value=result.documentNo||'';
+  setMode('view');showMessage(result.message,'success');
+ }catch(e){showMessage(e.message,'danger');}
+}
+async function deleteRecord(){
+ if(!mfaRecordId){showMessage('Save the record before deleting it.','warning');return;}
+ const response=await fetch(MFA_URL.delete+mfaRecordId,{method:'POST',headers:{'RequestVerificationToken':getToken()}});
+ const result=await response.json();if(!response.ok){showMessage(result.message||'Delete failed.','danger');return;}newRecord();showMessage(result.message,'success');
+}
+async function changeStatus(action){
+ if(!mfaRecordId){showMessage('Save the record before changing its status.','warning');return;}
+ const response=await fetch(MFA_URL.status+mfaRecordId,{method:'POST',headers:{'Content-Type':'application/json','RequestVerificationToken':getToken()},body:JSON.stringify({action})});
+ const result=await response.json();if(!response.ok){showMessage(result.message||'Status update failed.','danger');return;}showMessage(result.message,'success');
+}
+function confirmAction(message,callback){
+ document.getElementById('mfaConfirmMessage').textContent=message;
+ $('#mfaConfirmModal').modal('show');
+ const btn=document.getElementById('mfaConfirmYes');btn.onclick=()=>{$('#mfaConfirmModal').modal('hide');callback();};
+}
+function showMessage(message,type){const el=document.getElementById('mfaMessage');el.className='alert alert-'+type;el.textContent=message;el.style.display='block';}
+function esc(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+</script>
