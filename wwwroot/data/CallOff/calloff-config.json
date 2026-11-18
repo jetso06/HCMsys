@@ -202,9 +202,8 @@
         },
         {
           "field": "WorkOrderNo",
-          "label": "WorkOrder No",
-          "type": "select",
-          "source": "work-orders.json",
+          "label": "WO/PO/CALL OFF No ",
+          "type": "text",
           "remarks": "",
           "required": false,
           "readonly": false
