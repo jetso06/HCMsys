@@ -1,0 +1,16 @@
+[
+  {
+    "DocNo": "COT-00001",
+    "Date": "19-11-2026",
+    "Name": "Example Client",
+    "Code": "CUST004",
+    "RefNo": "REF-001",
+    "Active": "Y",
+    "ApprovalStatus": "A",
+    "ID": 1,
+    "CreatedBy": "admin",
+    "CreatedDateTime": "19-11-2026 10:00",
+    "ModifiedBy": "",
+    "ModifiedDateTime": ""
+  }
+]

@@ -207,18 +207,6 @@ namespace HCMSys.Controllers
 
             return View("~/Views/Master/CallOffIndex.cshtml");
         }
-
-        [HttpGet("/Master/CallOffTemplateIndex")]
-        public async Task<IActionResult> CallOffTemplateIndex()
-        {
-            var configPath = Path.Combine(Dir, "calloff-template-index-config.json");
-            var recordsPath = Path.Combine(Dir, "calloff-template-index-records.json");
-
-            ViewData["Config"] = await ReadJsonNode(configPath);
-            ViewData["Rows"] = await ReadJsonNode(recordsPath);
-
-            return View("~/Views/Master/CallOffTemplateIndex.cshtml");
-        }
         private async Task<System.Text.Json.Nodes.JsonNode> ReadJsonNode(string path)
         {
             if (!System.IO.File.Exists(path))

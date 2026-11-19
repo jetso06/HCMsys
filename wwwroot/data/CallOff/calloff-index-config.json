@@ -99,10 +99,6 @@
     "heading": "Call Off List",
     "columns": [
       {
-        "field": "Action",
-        "header": "Action"
-      },
-      {
         "field": "DocNo",
         "header": "Doc No"
       },
@@ -111,12 +107,12 @@
         "header": "Date"
       },
       {
-        "field": "ClientVendorEmployeeName",
-        "header": "Client/Vendor/Employee Name"
+        "field": "Name",
+        "header": "Name"
       },
       {
-        "field": "ClientVendorEmployeeCode",
-        "header": "Client/Vendor/Employee Code"
+        "field": "Code",
+        "header": "Code"
       },
       {
         "field": "RefNo",

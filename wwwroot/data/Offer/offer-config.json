@@ -48,19 +48,15 @@
         },
         {
           "field": "ClientName",
-          "header": "Client/Vendor/Employee Name"
+          "header": "Name"
         },
         {
-          "field": "PersonnelName",
-          "header": "Personnel Name"
+          "field": "EmpCode",
+          "header": "Code"
         },
         {
-          "field": "PositionTitle",
-          "header": "Position Title"
-        },
-        {
-          "field": "CallOffNumber",
-          "header": "Call Off No"
+          "field": "RefNumber",
+          "header": "Ref No"
         },
         {
           "field": "active",

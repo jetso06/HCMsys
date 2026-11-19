@@ -112,7 +112,7 @@
         },
         {
           "field": "DocDate",
-          "label": "Doc Date",
+          "label": "Date",
           "type": "date",
           "source": null,
           "remarks": "",
@@ -120,22 +120,13 @@
           "readonly": false
         },
         {
-          "field": "CallOffNumber",
-          "label": "Call Off Number",
+          "field": "Name",
+          "label": "Name",
           "type": "text",
           "source": null,
           "remarks": "Auto Number",
           "required": false,
           "readonly": true
-        },
-        {
-          "field": "AgreementReferenceDate",
-          "label": "Agreement Reference Date",
-          "type": "date",
-          "source": null,
-          "remarks": "",
-          "required": false,
-          "readonly": false
         },
         {
           "field": "ClientName",

@@ -1,8 +1,35 @@
 {
   "page": {
     "title": "Call Off Template",
+    "pageId": 403,
     "icon": "fa-file-alt"
   },
+  "cards": [
+    {
+      "id": "total",
+      "label": "TOTAL CALL OFF TEMPLATES",
+      "icon": "fa-layer-group",
+      "color": "primary"
+    },
+    {
+      "id": "displayed",
+      "label": "DISPLAYED RECORDS",
+      "icon": "fa-list",
+      "color": "info"
+    },
+    {
+      "id": "selected",
+      "label": "SELECTED TEMPLATE",
+      "icon": "fa-file-alt",
+      "color": "success"
+    },
+    {
+      "id": "module",
+      "label": "MODULE",
+      "icon": "fa-sitemap",
+      "color": "warning"
+    }
+  ],
   "buttons": {
     "index": [
       {
@@ -41,7 +68,7 @@
         "id": "unpost",
         "label": "UnPost",
         "icon": "fa-undo",
-        "style": "warning",
+        "style": "secondary",
         "action": "unpost",
         "visible": true
       },
@@ -49,7 +76,7 @@
         "id": "print",
         "label": "Print",
         "icon": "fa-print",
-        "style": "secondary",
+        "style": "light",
         "action": "print",
         "visible": true
       },
@@ -89,7 +116,7 @@
         "id": "close",
         "label": "Close",
         "icon": "fa-times-circle",
-        "style": "secondary",
+        "style": "light",
         "action": "close",
         "visible": true
       }
@@ -99,10 +126,6 @@
     "heading": "Call Off Template List",
     "columns": [
       {
-        "field": "Action",
-        "header": "Action"
-      },
-      {
         "field": "DocNo",
         "header": "Doc No"
       },
@@ -111,12 +134,12 @@
         "header": "Date"
       },
       {
-        "field": "ClientVendorEmployeeName",
-        "header": "Client/Vendor/Employee Name"
+        "field": "Name",
+        "header": "Name"
       },
       {
-        "field": "ClientVendorEmployeeCode",
-        "header": "Client/Vendor/Employee Code"
+        "field": "Code",
+        "header": "Code"
       },
       {
         "field": "RefNo",
@@ -130,10 +153,10 @@
       {
         "field": "ApprovalStatus",
         "header": "AppSt",
-        "tooltip": "Approval Status Approved/Pending/Rejected"
+        "tooltip": "Approval Status: Approved/Pending/Rejected"
       },
       {
-        "field": "Id",
+        "field": "ID",
         "header": "ID"
       },
       {

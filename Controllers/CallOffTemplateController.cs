@@ -28,6 +28,22 @@ public class CallOffTemplateController : Controller
     }
     private Task<TemplateConfig> Config() => Read(ConfigPath, new TemplateConfig());
     private Task<List<JsonObject>> Records() => Read(RecordsPath, new List<JsonObject>());
+    [HttpGet("/Master/CallOffTemplateIndex")]
+    public async Task<IActionResult> Index()
+    {
+        var indexConfigPath = Path.Combine(
+            Dir, "calloff-template-index-config.json"
+        );
+
+        var indexRecordsPath = Path.Combine(
+            Dir, "calloff-template-index-records.json"
+        );
+
+        ViewData["Config"] = await Read(indexConfigPath, new JsonObject());
+        ViewData["Rows"] = await Read(indexRecordsPath, new JsonArray());
+
+        return View("~/Views/Master/CallOffTemplateIndex.cshtml");
+    }
 
     private async Task<Dictionary<string,List<TemplateOption>>> Lookups(TemplateConfig config)
     {

@@ -211,20 +211,36 @@
                                     @foreach (var column in columns)
                                     {
                                         var field = column?["field"]?.ToString() ?? "";
-                                        var value = row?[field]?.ToString() ?? "";
 
-                                        if (field == "offerDate" ||
-                                            field == "postDate" ||
-                                            field == "createdDateTime" ||
-                                            field == "modifiedDateTime")
-                                        {
-                                            if (DateTime.TryParse(value, out var date))
-                                            {
-                                                value = field == "offerDate" || field == "postDate"
-                                                    ? date.ToString("dd-MM-yyyy")
-                                                    : date.ToString("dd-MM-yyyy HH:mm");
-                                            }
-                                        }
+var value = "";
+
+if (row is JsonObject rowObject)
+{
+    var property = rowObject.FirstOrDefault(p =>
+        string.Equals(
+            p.Key,
+            field,
+            StringComparison.OrdinalIgnoreCase
+        )
+    );
+
+    value = property.Value?.ToString() ?? "";
+}
+                                        var normalizedField = field.ToLowerInvariant();
+
+if (normalizedField == "offerdate" ||
+    normalizedField == "postdate" ||
+    normalizedField == "createddatetime" ||
+    normalizedField == "modifieddatetime")
+{
+    if (DateTime.TryParse(value, out var date))
+    {
+        value = normalizedField == "offerdate" ||
+                normalizedField == "postdate"
+            ? date.ToString("dd-MM-yyyy")
+            : date.ToString("dd-MM-yyyy HH:mm");
+    }
+}
 
                                         <td title="@value">@value</td>
                                     }
@@ -477,7 +493,7 @@
 
     #ciTable {
         width: 100%;
-        table-layout: fixed;
+        table-layout: auto;
         margin-bottom: 0;
         white-space: nowrap;
     }
@@ -580,92 +596,108 @@
         cursor: not-allowed;
     }
 
-    /* Compact Offer table columns */
-    #ciTable th,
-    #ciTable td {
-        box-sizing: border-box;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+    
+/* Compact Offer grid columns */
+#ciTable {
+    width: max-content;
+    min-width: 100%;
+    table-layout: auto;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
 
-    #ciTable th:nth-child(1),
-    #ciTable td:nth-child(1) { width: 5%; }
+#ciTable th,
+#ciTable td {
+    box-sizing: border-box;
+    white-space: nowrap;
+    padding: 8px 7px;
+}
 
-    #ciTable th:nth-child(2),
-    #ciTable td:nth-child(2) { width: 7%; }
-
-    #ciTable th:nth-child(3),
-    #ciTable td:nth-child(3) { width: 7%; }
-
-    #ciTable th:nth-child(4),
-    #ciTable td:nth-child(4) { width: 7%; }
-
-    #ciTable th:nth-child(5),
-    #ciTable td:nth-child(5) { width: 15%; }
-
-    #ciTable th:nth-child(6),
-    #ciTable td:nth-child(6) { width: 9%; }
-
-    #ciTable th:nth-child(7),
-    #ciTable td:nth-child(7) { width: 10%; }
-
-    #ciTable th:nth-child(8),
-    #ciTable td:nth-child(8) { width: 7%; }
-
-    #ciTable th:nth-child(9),
-    #ciTable td:nth-child(9) { width: 5%; }
-
-    #ciTable th:nth-child(10),
-    #ciTable td:nth-child(10) { width: 7%; }
-
-    #ciTable th:nth-child(11),
-    #ciTable td:nth-child(11) { width: 12%; }
-
-    #ciTable th:nth-child(12),
-    #ciTable td:nth-child(12) { width: 8%; }
-
-    #ciTable th:nth-child(13),
-    #ciTable td:nth-child(13) { width: 11%; }
-
-    #ciTable th:nth-child(1),
-    #ciTable td:nth-child(1),
-    #ciTable th:nth-child(2),
-    #ciTable td:nth-child(2),
-    #ciTable th:nth-child(9),
-    #ciTable td:nth-child(9) {
-        text-align: center;
-    }
-
-    .ci-no-data td {
-        text-align: center;
-    }
-
-/* Ave column */
-#ciTable th:nth-child(9),
-#ciTable td:nth-child(9) {
-    width: 4%;
+/* Select */
+#ciTable th:nth-child(1),
+#ciTable td:nth-child(1) {
+    width: 55px;
+    min-width: 55px;
     text-align: center;
 }
 
-/* AppSt column */
+/* Action */
+#ciTable th:nth-child(2),
+#ciTable td:nth-child(2) {
+    width: 85px;
+    min-width: 85px;
+    text-align: center;
+}
+
+/* Doc No */
+#ciTable th:nth-child(3),
+#ciTable td:nth-child(3) {
+    width: 95px;
+}
+
+/* Date */
+#ciTable th:nth-child(4),
+#ciTable td:nth-child(4) {
+    width: 90px;
+}
+
+/* Name */
+#ciTable th:nth-child(5),
+#ciTable td:nth-child(5) {
+    width: 150px;
+}
+
+/* Code */
+#ciTable th:nth-child(6),
+#ciTable td:nth-child(6) {
+    width: 90px;
+}
+
+/* Ref No */
+#ciTable th:nth-child(7),
+#ciTable td:nth-child(7) {
+    width: 75px;
+    min-width: 75px;
+}
+
+/* Ave, AppSt and ID */
+#ciTable th:nth-child(8),
+#ciTable td:nth-child(8),
+#ciTable th:nth-child(9),
+#ciTable td:nth-child(9),
 #ciTable th:nth-child(10),
 #ciTable td:nth-child(10) {
-    width: 5%;
+    width: 55px;
     text-align: center;
 }
 
-/* ID column */
+/* Created By and Modified By */
 #ciTable th:nth-child(11),
-#ciTable td:nth-child(11) {
-    width: 4%;
-    text-align: center;
+#ciTable td:nth-child(11),
+#ciTable th:nth-child(13),
+#ciTable td:nth-child(13) {
+    width: 85px;
 }
 
-/* Compact column headings */
+/* Created DateTime and Modified DateTime */
+#ciTable th:nth-child(12),
+#ciTable td:nth-child(12),
+#ciTable th:nth-child(14),
+#ciTable td:nth-child(14) {
+    width: 125px;
+}
+
+/* Tooltip icons */
+#ciTable th .fa-info-circle {
+    font-size: .7rem;
+    margin-left: 3px;
+    cursor: help;
+}
+
+/* Compact headings for status columns */
+#ciTable th:nth-child(8),
 #ciTable th:nth-child(9),
-#ciTable th:nth-child(10),
-#ciTable th:nth-child(11) {
+#ciTable th:nth-child(10) {
     font-size: .68rem;
     padding: 8px 4px;
 }
