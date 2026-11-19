@@ -1,63 +1,995 @@
-@model List<HCMSys.Controllers.OfferRecord>
+
+@using System.Text.Json.Nodes
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Offer";
+
+    var config = ViewData["Config"] as JsonObject ?? new JsonObject();
+    var index = config["index"];
+    var page = index?["page"];
+    var tableConfig = index?["table"];
+    var rows = ViewData["Rows"] as JsonArray ?? new JsonArray();
+    var columns = tableConfig?["columns"] as JsonArray ?? new JsonArray();
+    var buttons = config["buttons"]?["index"] as JsonArray ?? new JsonArray();
+
+    ViewData["Title"] = page?["title"]?.ToString() ?? "Offer";
 }
-<style>
- .oi-page{padding:0 15px 24px;color:#5a5c69;font-size:13px}
- .oi-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.1);padding:16px;margin-bottom:16px}
- .oi-toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;justify-content:space-between}
- .oi-title{font-size:.9rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
- .oi-table{width:100%;border-collapse:collapse}
- .oi-table th{background:#4e73df;color:#fff;padding:10px;border:1px solid #e3e6f0;font-size:11px;text-transform:uppercase;white-space:nowrap}
- .oi-table td{padding:9px;border:1px solid #e3e6f0}
- .oi-table tr:nth-child(even){background:#f8f9fc}
- .oi-search{max-width:320px;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;padding:6px 10px}
- .oi-status{font-weight:700;color:#4e73df}
-</style>
-<div class="oi-page">
- <div class="oi-card oi-toolbar">
-  <div class="oi-title"><i class="fas fa-file-signature mr-2"></i>Offer Index</div>
-  <div class="d-flex flex-wrap" style="gap:6px">
-   <a class="btn btn-primary btn-sm" href="@Url.Action("Form","Offer")"><i class="fas fa-plus mr-1"></i>New</a>
-   <button class="btn btn-warning btn-sm" type="button" id="oiEdit" disabled><i class="fas fa-edit mr-1"></i>Edit</button>
-   <button class="btn btn-info btn-sm" type="button" id="oiClone" disabled><i class="fas fa-copy mr-1"></i>Clone</button>
-   <button class="btn btn-secondary btn-sm" type="button" onclick="window.print()"><i class="fas fa-print mr-1"></i>Print</button>
-   <button class="btn btn-danger btn-sm" type="button" id="oiDelete" disabled><i class="fas fa-trash mr-1"></i>Delete</button>
-  </div>
- </div>
- <div class="oi-card">
-  <div class="d-flex justify-content-between align-items-center flex-wrap mb-3" style="gap:10px">
-   <div><strong>Total Offers:</strong> @Model.Count</div>
-   <input id="oiSearch" class="oi-search" placeholder="Search offer number, client, calloff..." />
-  </div>
-  <div class="table-responsive">
-   <table class="oi-table" id="oiTable">
-    <thead><tr><th>Select</th><th>ID</th><th>Offer No</th><th>Offer Date</th><th>Client</th><th>CallOff No</th><th>Contract Type</th><th>Nationality</th><th>Status</th><th>Action</th></tr></thead>
-    <tbody>
-    @foreach(var x in Model){
-     <tr data-id="@x.Id">
-      <td><input type="checkbox" class="oi-select" /></td>
-      <td>@x.Id</td><td>@x.OfferNo</td><td>@x.OfferDate?.ToString("dd-MM-yyyy")</td><td>@x.ClientName</td>
-      <td>@x.CallOffNumber</td><td>@x.ContractType</td><td>@x.NationalityType</td><td class="oi-status">@x.Status</td>
-      <td><a class="btn btn-sm btn-outline-primary" href="@Url.Action("Form","Offer",new{id=x.Id})">Open</a></td>
-     </tr>
+
+<div class="container-fluid candidate-index">
+
+    <!-- MASTER TOOLBAR -->
+    <div class="card ci-card ci-toolbar-card">
+        <div class="card-header ci-toolbar">
+            <h6 class="ci-title">
+                <i class="fas @(page?["icon"]?.ToString())"></i>
+                @(page?["title"]?.ToString())
+                <span class="ci-module-badge">OFFER</span>
+            </h6>
+
+            <div class="ci-buttons">
+                @foreach (var button in buttons)
+                {
+                    if (button?["visible"]?.GetValue<bool>() != true)
+                    {
+                        continue;
+                    }
+
+                    var action = button?["action"]?.ToString()?.ToLowerInvariant() ?? "";
+                    var disabled = action != "new" && action != "print" && action != "close";
+
+                    <button type="button"
+                            class="btn btn-@(button?["style"]?.ToString() ?? "secondary") btn-sm shadow-sm"
+                            data-action="@action"
+                            @(disabled ? "disabled" : "")>
+                        <i class="fas @button?["icon"]"></i>
+                        @button?["label"]
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">@TempData["Success"]</div>
     }
-    </tbody>
-   </table>
-  </div>
- </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mt-3">@TempData["Error"]</div>
+    }
+
+    <!-- SUMMARY CARDS -->
+    <div class="row ci-summary">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-primary">
+                <div class="card-body">
+                    <div class="ci-summary-label">Total Offers</div>
+                    <div class="ci-summary-value">@rows.Count</div>
+                    <i class="fas fa-layer-group ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-info">
+                <div class="card-body">
+                    <div class="ci-summary-label">Displayed Records</div>
+                    <div class="ci-summary-value" id="ciDisplayed">@rows.Count</div>
+                    <i class="fas fa-list ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-success">
+                <div class="card-body">
+                    <div class="ci-summary-label">Selected Offer</div>
+                    <div class="ci-summary-value" id="ciSelected">None</div>
+                    <i class="fas fa-file-alt ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-warning">
+                <div class="card-body">
+                    <div class="ci-summary-label">Module</div>
+                    <div class="ci-summary-module">Offers</div>
+                    <i class="fas fa-sitemap ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECORDS CARD -->
+    <div class="card ci-card ci-records-card">
+
+        <div class="card-header ci-records-header">
+            <h6>
+                <i class="fas fa-table"></i>
+                @(tableConfig?["heading"]?.ToString() ?? "Offer List")
+            </h6>
+
+            <span class="badge badge-primary" id="ciRecordCount">
+                @rows.Count Records
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <!-- TABLE TOOLS -->
+            <div class="ci-table-tools">
+
+                <div class="ci-page-size">
+                    <span>Show</span>
+                    <select id="ciPageSize" class="form-control form-control-sm">
+                        <option value="20">20</option>
+                        <option value="35">35</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                    <span>entries</span>
+                </div>
+
+                <input type="text"
+                       id="ciSearch"
+                       class="form-control form-control-sm ci-search"
+                       placeholder="Search offers..." />
+
+            </div>
+
+            <!-- OFFER TABLE -->
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped table-hover"
+                       id="ciTable">
+
+                    <thead>
+                        <tr>
+                            <th class="ci-control-column">
+                                <div class="ci-select-header">
+                                    <span>Select</span>
+                                    <input type="checkbox" id="ciSelectAll" title="Select All" />
+                                </div>
+                            </th>
+
+                            <th class="ci-action-column">Action</th>
+
+                            @foreach (var column in columns)
+                            {
+                                <th>
+                                    @column?["header"]
+
+                                    @if (!string.IsNullOrWhiteSpace(column?["tooltip"]?.ToString()))
+                                    {
+                                        <i class="fas fa-info-circle ml-1 text-white"
+                                           title="@column?["tooltip"]"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           style="cursor: help;">
+                                        </i>
+                                    }
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody id="ciTableBody">
+
+                        @if (rows.Count > 0)
+                        {
+                            foreach (var row in rows)
+                            {
+                                var id = row?["id"]?.ToString() ?? "";
+
+                                <tr data-id="@id">
+
+                                    <td class="text-center ci-control-column">
+                                        <input type="checkbox"
+                                               class="ci-checkbox"
+                                               value="@id" />
+                                    </td>
+
+                                    <td class="text-center ci-action-column">
+
+                                        <button type="button"
+                                                class="ci-row-edit"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="ci-row-delete"
+                                                title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+
+                                    </td>
+
+                                    @foreach (var column in columns)
+                                    {
+                                        var field = column?["field"]?.ToString() ?? "";
+                                        var value = row?[field]?.ToString() ?? "";
+
+                                        if (field == "offerDate" ||
+                                            field == "postDate" ||
+                                            field == "createdDateTime" ||
+                                            field == "modifiedDateTime")
+                                        {
+                                            if (DateTime.TryParse(value, out var date))
+                                            {
+                                                value = field == "offerDate" || field == "postDate"
+                                                    ? date.ToString("dd-MM-yyyy")
+                                                    : date.ToString("dd-MM-yyyy HH:mm");
+                                            }
+                                        }
+
+                                        <td title="@value">@value</td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="ci-no-data">
+                                <td colspan="@(columns.Count + 2)" class="ci-empty">
+                                    No offer records found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="ci-table-footer">
+
+                <span id="ciShowing">Showing 0 records</span>
+
+                <div class="ci-pagination">
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciPrevious" type="button">
+                        Previous
+                    </button>
+
+                    <span id="ciPageInfo">0 / 0</span>
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciNext" type="button">
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
 </div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .candidate-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .candidate-index .ci-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .ci-toolbar-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-toolbar,
+    .ci-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .ci-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+    }
+
+    .ci-title i,
+    .ci-records-header i {
+        color: #4e73df;
+    }
+
+    .ci-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .ci-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ci-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .ci-buttons .btn i {
+        margin-right: 4px;
+    }
+
+    .ci-summary {
+        margin-bottom: 8px;
+    }
+
+    .ci-summary > div {
+        margin-bottom: 16px;
+    }
+
+    .ci-summary-card {
+        min-height: 78px;
+    }
+
+    .ci-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .ci-summary-label {
+        margin-bottom: 4px;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .ci-border-primary .ci-summary-label { color: #4e73df; }
+    .ci-border-info .ci-summary-label { color: #36b9cc; }
+    .ci-border-success .ci-summary-label { color: #1cc88a; }
+    .ci-border-warning .ci-summary-label { color: #f6c23e; }
+
+    .ci-summary-value,
+    .ci-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    #ciSelected {
+        font-size: .9rem;
+    }
+
+    .ci-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    .ci-border-primary { border-left: 4px solid #4e73df !important; }
+    .ci-border-warning { border-left: 4px solid #f6c23e !important; }
+    .ci-border-success { border-left: 4px solid #1cc88a !important; }
+    .ci-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .ci-records-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .ci-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+        background: #4e73df;
+        color: white;
+    }
+
+    .ci-records-card .card-body {
+        padding: 16px;
+    }
+
+    .ci-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ci-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-page-size select {
+        width: 60px;
+    }
+
+    .ci-search {
+        width: 320px;
+        max-width: 100%;
+    }
+
+    .candidate-index .form-control {
+        min-height: 32px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .candidate-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+    #ciTable {
+        width: 100%;
+        table-layout: fixed;
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
+
+    #ciTable thead th {
+        padding: 10px 8px;
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        vertical-align: middle;
+    }
+
+    #ciTable tbody td {
+        padding: 8px;
+        color: #5a5c69;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    #ciTable tbody tr:hover {
+        background-color: #f3f6ff;
+    }
+
+    .ci-row-edit,
+    .ci-row-delete {
+        border: none;
+        background: transparent;
+        padding: 4px 7px;
+        cursor: pointer;
+        font-size: .9rem;
+    }
+
+    .ci-row-edit { color: #4e73df; }
+    .ci-row-delete { color: #e74a3b; }
+
+    .ci-checkbox,
+    #ciSelectAll {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        vertical-align: middle;
+    }
+
+    .ci-select-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .ci-action-column {
+        text-align: center;
+        min-width: 85px;
+    }
+
+    .ci-control-column {
+        width: 55px;
+        min-width: 55px;
+        text-align: center;
+    }
+
+    #ciTable tbody tr.selected {
+        background-color: #eaecf4;
+    }
+
+    .ci-empty {
+        padding: 24px !important;
+        color: #858796;
+        text-align: center !important;
+    }
+
+    .ci-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .ci-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .ci-pagination .btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    /* Compact Offer table columns */
+    #ciTable th,
+    #ciTable td {
+        box-sizing: border-box;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #ciTable th:nth-child(1),
+    #ciTable td:nth-child(1) { width: 5%; }
+
+    #ciTable th:nth-child(2),
+    #ciTable td:nth-child(2) { width: 7%; }
+
+    #ciTable th:nth-child(3),
+    #ciTable td:nth-child(3) { width: 7%; }
+
+    #ciTable th:nth-child(4),
+    #ciTable td:nth-child(4) { width: 7%; }
+
+    #ciTable th:nth-child(5),
+    #ciTable td:nth-child(5) { width: 15%; }
+
+    #ciTable th:nth-child(6),
+    #ciTable td:nth-child(6) { width: 9%; }
+
+    #ciTable th:nth-child(7),
+    #ciTable td:nth-child(7) { width: 10%; }
+
+    #ciTable th:nth-child(8),
+    #ciTable td:nth-child(8) { width: 7%; }
+
+    #ciTable th:nth-child(9),
+    #ciTable td:nth-child(9) { width: 5%; }
+
+    #ciTable th:nth-child(10),
+    #ciTable td:nth-child(10) { width: 7%; }
+
+    #ciTable th:nth-child(11),
+    #ciTable td:nth-child(11) { width: 12%; }
+
+    #ciTable th:nth-child(12),
+    #ciTable td:nth-child(12) { width: 8%; }
+
+    #ciTable th:nth-child(13),
+    #ciTable td:nth-child(13) { width: 11%; }
+
+    #ciTable th:nth-child(1),
+    #ciTable td:nth-child(1),
+    #ciTable th:nth-child(2),
+    #ciTable td:nth-child(2),
+    #ciTable th:nth-child(9),
+    #ciTable td:nth-child(9) {
+        text-align: center;
+    }
+
+    .ci-no-data td {
+        text-align: center;
+    }
+
+/* Ave column */
+#ciTable th:nth-child(9),
+#ciTable td:nth-child(9) {
+    width: 4%;
+    text-align: center;
+}
+
+/* AppSt column */
+#ciTable th:nth-child(10),
+#ciTable td:nth-child(10) {
+    width: 5%;
+    text-align: center;
+}
+
+/* ID column */
+#ciTable th:nth-child(11),
+#ciTable td:nth-child(11) {
+    width: 4%;
+    text-align: center;
+}
+
+/* Compact column headings */
+#ciTable th:nth-child(9),
+#ciTable th:nth-child(10),
+#ciTable th:nth-child(11) {
+    font-size: .68rem;
+    padding: 8px 4px;
+}
+
+/* Tooltip icons */
+#ciTable th .fa-info-circle {
+    font-size: .7rem;
+    margin-left: 3px;
+    cursor: help;
+}
+
+    @@media (max-width: 768px) {
+        .ci-toolbar {
+            align-items: flex-start;
+        }
+
+        .ci-buttons {
+            width: 100%;
+        }
+
+        .ci-search {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .ci-buttons,
+        .ci-table-tools,
+        .ci-table-footer,
+        .ci-control-column,
+        .ci-action-column {
+            display: none !important;
+        }
+
+        .candidate-index .ci-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
 <script>
-(function(){
- const rows=[...document.querySelectorAll("#oiTable tbody tr")];
- const selected=()=>rows.filter(r=>r.querySelector(".oi-select").checked);
- function update(){const s=selected();document.getElementById("oiEdit").disabled=s.length!==1;document.getElementById("oiClone").disabled=s.length!==1;document.getElementById("oiDelete").disabled=s.length!==1;}
- document.querySelectorAll(".oi-select").forEach(x=>x.addEventListener("change",update));
- document.getElementById("oiSearch").addEventListener("input",e=>{const q=e.target.value.toLowerCase();rows.forEach(r=>r.hidden=!r.innerText.toLowerCase().includes(q));});
- document.getElementById("oiEdit").onclick=()=>{const s=selected();if(s.length===1)location.href="@Url.Action("Form","Offer")?id="+s[0].dataset.id;};
- document.getElementById("oiClone").onclick=()=>{const s=selected();if(s.length===1)location.href="@Url.Action("Form","Offer")?id="+s[0].dataset.id+"&clone=true";};
- document.getElementById("oiDelete").onclick=()=>{const s=selected();if(s.length!==1)return;if(!confirm("Delete selected Offer?"))return;const f=document.createElement("form");f.method="post";f.action="@Url.Action("Delete","Offer")/"+s[0].dataset.id;const token=document.querySelector('input[name="__RequestVerificationToken"]');if(token){const h=document.createElement("input");h.type="hidden";h.name="__RequestVerificationToken";h.value=token.value;f.appendChild(h);}document.body.appendChild(f);f.submit();};
+(() => {
+    const body = document.getElementById("ciTableBody");
+    const searchInput = document.getElementById("ciSearch");
+    const pageSizeInput = document.getElementById("ciPageSize");
+    const selectAllCheckbox = document.getElementById("ciSelectAll");
+
+    const rows = Array.from(body.querySelectorAll("tr[data-id]"));
+
+    let selectedId = null;
+    let filteredRows = rows.slice();
+    let currentPage = 1;
+
+    function updateSelection() {
+        const selected = body.querySelectorAll(".ci-checkbox:checked");
+
+        const selectedInFiltered = filteredRows.filter(row =>
+            row.querySelector(".ci-checkbox")?.checked
+        ).length;
+
+        selectAllCheckbox.checked =
+            filteredRows.length > 0 &&
+            selectedInFiltered === filteredRows.length;
+
+        selectAllCheckbox.indeterminate =
+            selectedInFiltered > 0 &&
+            selectedInFiltered < filteredRows.length;
+
+        selectedId = selected.length === 1 ? selected[0].value : null;
+
+        const names = Array.from(selected).map(checkbox => {
+            const row = checkbox.closest("tr");
+            return row.cells[2]?.textContent.trim() || checkbox.value;
+        });
+
+        body.querySelectorAll("tr[data-id]").forEach(row => {
+            row.classList.toggle(
+                "selected",
+                row.querySelector(".ci-checkbox")?.checked === true
+            );
+        });
+
+        document.getElementById("ciSelected").textContent =
+            names.length ? names.join(", ") : "None";
+
+        document.querySelector('[data-action="edit"]')?.toggleAttribute(
+            "disabled", !selectedId
+        );
+
+        document.querySelector('[data-action="clone"]')?.toggleAttribute(
+            "disabled", !selectedId
+        );
+
+        document.querySelector('[data-action="delete"]')?.toggleAttribute(
+            "disabled", selected.length === 0
+        );
+
+        document.querySelector('[data-action="save"]')?.toggleAttribute(
+            "disabled", true
+        );
+    }
+
+    function renderRows() {
+        const pageSize = Number(pageSizeInput.value);
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / pageSize)
+        );
+
+        currentPage = Math.min(currentPage, totalPages);
+
+        rows.forEach(row => row.hidden = true);
+
+        const start = (currentPage - 1) * pageSize;
+        const visibleRows = filteredRows.slice(start, start + pageSize);
+
+        visibleRows.forEach(row => row.hidden = false);
+
+        document.getElementById("ciDisplayed").textContent =
+            filteredRows.length;
+
+        document.getElementById("ciRecordCount").textContent =
+            `${filteredRows.length} Records`;
+
+        document.getElementById("ciShowing").textContent =
+            filteredRows.length
+                ? `Showing ${start + 1} to ${start + visibleRows.length} of ${filteredRows.length} offers`
+                : "Showing 0 offers";
+
+        document.getElementById("ciPageInfo").textContent =
+            filteredRows.length
+                ? `${currentPage} / ${totalPages}`
+                : "0 / 0";
+
+        document.getElementById("ciPrevious").disabled =
+            currentPage <= 1;
+
+        document.getElementById("ciNext").disabled =
+            currentPage >= totalPages;
+
+        updateSelection();
+    }
+
+    function filterRows() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        filteredRows = rows.filter(row =>
+            row.innerText.toLowerCase().includes(query)
+        );
+
+        currentPage = 1;
+        renderRows();
+    }
+
+    function editRecord(id) {
+        if (!id) {
+            alert("Please select an offer.");
+            return;
+        }
+
+        window.location.href =
+            "/Master/Offer/Form?id=" + encodeURIComponent(id);
+    }
+
+    function deleteRecord(id) {
+        if (!id) {
+            alert("Please select an offer.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete this offer?")) {
+            return;
+        }
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "/Master/Offer/Delete/" + encodeURIComponent(id);
+
+        const token = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        );
+
+        if (token) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "__RequestVerificationToken";
+            input.value = token.value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    selectAllCheckbox.addEventListener("change", function () {
+        filteredRows.forEach(row => {
+            const checkbox = row.querySelector(".ci-checkbox");
+
+            if (checkbox) {
+                checkbox.checked = this.checked;
+            }
+        });
+
+        updateSelection();
+    });
+
+    rows.forEach(row => {
+        row.querySelector(".ci-checkbox")?.addEventListener(
+            "change", updateSelection
+        );
+
+        row.addEventListener("click", event => {
+            if (event.target.closest(
+                ".ci-row-edit, .ci-row-delete, .ci-checkbox"
+            )) return;
+
+            const checkbox = row.querySelector(".ci-checkbox");
+            checkbox.checked = !checkbox.checked;
+            updateSelection();
+        });
+    });
+
+    body.addEventListener("click", event => {
+        const edit = event.target.closest(".ci-row-edit");
+        const del = event.target.closest(".ci-row-delete");
+
+        if (!edit && !del) return;
+
+        const row = event.target.closest("tr[data-id]");
+        if (!row) return;
+
+        if (edit) editRecord(row.dataset.id);
+        if (del) deleteRecord(row.dataset.id);
+    });
+
+    document.querySelector(".ci-buttons").addEventListener(
+        "click", event => {
+            const button = event.target.closest("[data-action]");
+            if (!button || button.disabled) return;
+
+            const action = button.dataset.action;
+
+            switch (action) {
+                case "new":
+                    window.location.href = "/Master/Offer/Form";
+                    break;
+
+                case "edit":
+                    editRecord(selectedId);
+                    break;
+
+                case "clone":
+                    if (selectedId) {
+                        window.location.href =
+                            "/Master/Offer/Form?id=" +
+                            encodeURIComponent(selectedId) + "&clone=true";
+                    }
+                    break;
+
+                case "delete": {
+                    const selected = Array.from(
+                        body.querySelectorAll(".ci-checkbox:checked")
+                    );
+
+                    if (selected.length === 1) {
+                        deleteRecord(selected[0].value);
+                    } else if (selected.length > 1) {
+                        alert("Multiple selection requires a DeleteSelected action.");
+                    } else {
+                        alert("Please select an offer.");
+                    }
+                    break;
+                }
+
+                case "print":
+                    window.print();
+                    break;
+
+                case "close":
+                    window.location.href = "/Home/Index";
+                    break;
+
+                case "save":
+                case "unpost":
+                case "approve":
+                case "reject":
+                case "authtracker":
+                    alert("This action is not connected to the backend yet.");
+                    break;
+            }
+        }
+    );
+
+    searchInput.addEventListener("input", filterRows);
+
+    pageSizeInput.addEventListener("change", () => {
+        currentPage = 1;
+        renderRows();
+    });
+
+    document.getElementById("ciPrevious").addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderRows();
+        }
+    });
+
+    document.getElementById("ciNext").addEventListener("click", () => {
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / Number(pageSizeInput.value))
+        );
+
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderRows();
+        }
+    });
+
+    updateSelection();
+    renderRows();
 })();
 </script>
-<form style="display:none">@Html.AntiForgeryToken()</form>
+
+<form id="offerAntiForgery" hidden>
+    @Html.AntiForgeryToken()
+</form>

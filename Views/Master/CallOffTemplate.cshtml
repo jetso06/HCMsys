@@ -1,0 +1,122 @@
+@using HCMSys.Controllers
+@using System.Text.Json.Nodes
+@{
+    Layout="~/Views/Shared/_Layout.cshtml";
+    var cfg=ViewBag.Config as TemplateConfig ?? new TemplateConfig();
+    var rec=ViewBag.Record as JsonObject ?? new JsonObject();
+    var lookups=ViewBag.Lookups as Dictionary<string,List<TemplateOption>> ?? new();
+    bool ro=(bool?)ViewBag.IsReadOnly==true;
+    int id=(int?)rec["id"]??0;
+    string V(string key)=>rec[key]?.ToString()??"";
+    var webJson = new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web);
+    var gridJson=System.Text.Json.JsonSerializer.Serialize(cfg.Grids.Select(g=>new {id=g.Id,property=g.Property,columns=g.Columns}), webJson);
+    var lookupJson=System.Text.Json.JsonSerializer.Serialize(lookups, webJson);
+}
+<style>
+html{font-size:14px}.cot-page{padding:0 15px 24px;color:#5a5c69;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}.cot-page *{box-sizing:border-box}
+.cot-header,.cot-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10);margin-bottom:16px}
+.cot-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 18px}.cot-title{margin:0;color:#5a5c69;font-size:.85rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.cot-title i,.cot-head i{color:#4e73df;margin-right:7px}.cot-toolbar{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.cot-toolbar .btn{padding:5px 9px;font-size:.8rem;font-weight:700}
+.cot-card{overflow:hidden}.cot-head{padding:12px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;font-weight:800}.cot-body{padding:18px}
+.cot-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 20px}.cot-field{min-width:0}.cot-field label,.cot-grid-title{display:block;margin-bottom:6px;color:#5a5c69;font-size:12px;font-weight:700}
+.cot-field .form-control,.cot-field select{width:100%;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px}.cot-full{grid-column:1/-1}.cot-required{color:#e74a3b}
+.cot-gridhead{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}.cot-actions{display:flex;gap:8px}.cot-actions button{font-size:12px;padding:5px 10px}
+.cot-wrap{width:100%;overflow-x:auto}.cot-table{width:100%;border-collapse:collapse}.cot-table th{padding:10px 11px;background:#4e73df;border:1px solid #e3e6f0;color:#fff;text-align:left;font-size:11px;text-transform:uppercase;white-space:nowrap}
+.cot-table td{padding:7px 8px;border:1px solid #e3e6f0}.cot-table tr:nth-child(even){background:#f8f9fc}.cot-table input:not([type=checkbox]),.cot-table select{width:100%;min-width:90px;height:36px;padding:6px 10px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px;background:#fff}
+.cot-select{width:55px!important;min-width:55px!important;max-width:55px!important;text-align:center!important;padding:5px!important}.cot-select input{width:15px;height:15px;margin:0}
+.cot-rich{border:1px solid #d1d3e2;border-radius:4px;overflow:hidden}.cot-tools{display:flex;gap:5px;padding:7px;background:#f8f9fc;border-bottom:1px solid #d1d3e2}.cot-tools button{height:29px;min-width:29px;padding:3px 9px;border:1px solid #d1d3e2;border-radius:4px;background:#fff;color:#5a5c69;font-size:12px}
+.cot-editor{min-height:120px;padding:12px;outline:none;color:#6e707e;font-size:13px;line-height:1.6}.cot-editor:focus{box-shadow:inset 0 0 0 1px #4e73df}.cot-editor ul,.cot-editor ol{padding-left:28px}.cot-hidden{display:none!important}
+.cot-comments{margin-top:18px}.cot-msg{padding:10px 14px;margin-bottom:14px;background:#e8f5e9;color:#247a45;border-radius:4px}
+.two-line-field {
+    height: 70px !important;
+    min-height: 70px !important;
+    max-height: 70px !important;
+    resize: vertical;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+@@media(max-width:900px){.cot-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}@@media(max-width:600px){.cot-fields{grid-template-columns:1fr}.cot-full{grid-column:auto}.cot-toolbar{justify-content:flex-start}}
+@@media print{.cot-toolbar,.cot-actions,.cot-no-print{display:none!important}.cot-card,.cot-header{box-shadow:none;break-inside:avoid}}
+</style>
+<div class="cot-page">
+ <div class="cot-header">
+  <h5 class="cot-title"><i class="fas @cfg.Page.Icon"></i>@cfg.Page.Title</h5>
+  <div class="cot-toolbar">
+   @foreach(var b in cfg.Buttons.Form.Where(x=>x.Visible)){
+    switch(b.Action.ToLowerInvariant()){
+     case "new":<a class="btn btn-@b.Style btn-sm shadow-sm" href="@Url.Action("Form","CallOffTemplate")"><i class="fas @b.Icon mr-1"></i>@b.Label</a>;break;
+     case "edit":<button type="button" id="cotEdit" class="btn btn-@b.Style btn-sm shadow-sm" disabled="@(!ro)"><i class="fas @b.Icon mr-1"></i>@b.Label</button>;break;
+     case "save":<button type="submit" form="cotForm" class="btn btn-@b.Style btn-sm shadow-sm" disabled="@ro"><i class="fas @b.Icon mr-1"></i>@b.Label</button>;break;
+     case "clone":<a class="btn btn-@b.Style btn-sm shadow-sm" href="@(id==0?"#":Url.Action("Form","CallOffTemplate",new{id,clone=true}))"><i class="fas @b.Icon mr-1"></i>@b.Label</a>;break;
+     case "print":<button type="button" onclick="window.print()" class="btn btn-@b.Style btn-sm shadow-sm"><i class="fas @b.Icon mr-1"></i>@b.Label</button>;break;
+     case "delete":<form class="cot-no-print" method="post" action="@Url.Action("Delete","CallOffTemplate",new{id})">@Html.AntiForgeryToken()<button class="btn btn-@b.Style btn-sm" disabled="@(id==0)"><i class="fas @b.Icon mr-1"></i>@b.Label</button></form>;break;
+     case "approve":case "reject":case "unpost":var status=b.Action=="approve"?"Approved":b.Action=="reject"?"Rejected":"Pending";<form class="cot-no-print" method="post" action="@Url.Action("SetStatus","CallOffTemplate",new{id})">@Html.AntiForgeryToken()<input type="hidden" name="status" value="@status"/><button class="btn btn-@b.Style btn-sm" disabled="@(id==0)"><i class="fas @b.Icon mr-1"></i>@b.Label</button></form>;break;
+     case "authtracker":<button type="button" class="btn btn-@b.Style btn-sm" onclick="alert('Template: @V("templateNo") | Status: @V("status")')"><i class="fas @b.Icon mr-1"></i>@b.Label</button>;break;
+     case "close":<a class="btn btn-@b.Style btn-sm" href="@Url.Action("Index","Home")"><i class="fas @b.Icon mr-1"></i>@b.Label</a>;break;
+    }
+   }
+  </div>
+ </div>
+ @if(TempData["Success"]!=null){<div class="cot-msg">@TempData["Success"]</div>}
+ <form id="cotForm" method="post" action="@Url.Action("Save","CallOffTemplate")">
+  @Html.AntiForgeryToken()<input type="hidden" name="Id" value="@id"/>
+  @foreach(var s in cfg.Sections){
+   <div class="cot-card"><div class="cot-head"><i class="fas fa-folder-open"></i>@s.Title</div><div class="cot-body"><div class="cot-fields">
+    @foreach(var f in s.Fields){var val=V(f.Field);
+     <div class="cot-field @(f.Type=="richtext"||f.Type=="textarea"?"cot-full":"")">
+      <label for="@f.Field">@f.Label @if(f.Required){<span class="cot-required">*</span>}</label>
+      @if(f.Type=="select"){
+       <select class="form-control" id="@f.Field" name="@f.Field" required="@f.Required" disabled="@ro"><option value="">Select @f.Label</option>
+        @if(f.Source!=null&&lookups.TryGetValue(f.Source,out var options)){foreach(var o in options){<option value="@o.Value" selected="@(val==o.Value)">@o.Text</option>}}
+       </select>
+      }else if(f.Type=="checkbox"){
+       <input type="hidden" name="@f.Field" value="false"/><input type="checkbox" id="@f.Field" name="@f.Field" value="true" checked="@(val=="true")" disabled="@ro"/>
+      }else if(f.Type=="richtext"){
+       <div class="cot-rich"><div class="cot-tools"><button type="button" data-cmd="bold" disabled="@ro"><b>B</b></button><button type="button" data-cmd="italic" disabled="@ro"><i>I</i></button><button type="button" data-cmd="underline" disabled="@ro"><u>U</u></button><button type="button" data-cmd="insertUnorderedList" disabled="@ro">• List</button><button type="button" data-cmd="insertOrderedList" disabled="@ro">1. List</button></div><div class="cot-editor" contenteditable="@(!ro?"true":"false")">@Html.Raw(val)</div><textarea class="cot-hidden" name="@f.Field"></textarea></div>
+      }else if(f.Type=="textarea"){<textarea class="form-control" id="@f.Field" name="@f.Field" rows="2" readonly="@ro">@val</textarea>}
+      else{<input class="form-control" id="@f.Field" name="@f.Field" type="@f.Type" value="@val" maxlength="@(f.MaxLength > 0 ? f.MaxLength : null)" required="@f.Required" readonly="@(ro||f.Readonly)"/>}
+      @if(!string.IsNullOrWhiteSpace(f.Remarks)){<small class="text-muted">@f.Remarks</small>}
+     </div>
+    }
+   </div></div></div>
+  }
+  @foreach(var g in cfg.Grids){
+   var rows=rec[g.Property] as JsonArray ?? new JsonArray();var rowCount=Math.Max(5,rows.Count);
+   <div class="cot-card"><div class="cot-head"><i class="fas fa-table"></i>@g.Title</div><div class="cot-body">
+    <div class="cot-gridhead"><span class="cot-grid-title">@g.Subtitle</span><div class="cot-actions cot-no-print"><button type="button" class="btn btn-outline-primary btn-sm" data-add="@g.Id" disabled="@ro">＋ Add Row</button><button type="button" class="btn btn-outline-success btn-sm" data-insert="@g.Id" disabled="@ro">↳ Insert Row</button><button type="button" class="btn btn-outline-danger btn-sm" data-delete="@g.Id" disabled="@ro">▣ Delete Row</button></div></div>
+    <div class="cot-wrap"><table class="cot-table" id="grid-@g.Id" data-property="@g.Property"><thead><tr><th class="cot-select"><input type="checkbox" class="cot-all" disabled="@ro"/></th>@foreach(var c in g.Columns){<th>@c.Label</th>}</tr></thead><tbody>
+    @for(int i=0;i<rowCount;i++){var row=i<rows.Count?rows[i] as JsonObject:null;<tr><td class="cot-select"><input type="checkbox" class="cot-row" disabled="@ro"/></td>
+     @foreach(var c in g.Columns){var cell=row?[c.Field]?.ToString()??(c.Field.Equals("Qty",StringComparison.OrdinalIgnoreCase)?"1":"");<td>
+      @if(c.Type=="select"){<select name="@(g.Property)[@i].@c.Field" disabled="@ro"><option value="">Select @c.Label</option>@if(c.Source!=null&&lookups.TryGetValue(c.Source,out var opts)){foreach(var o in opts){<option value="@o.Value" selected="@(cell==o.Value)">@o.Text</option>}}</select>}
+      else if(c.Type=="checkbox"){<input type="hidden" name="@(g.Property)[@i].@c.Field" value="false"/><input type="checkbox" name="@(g.Property)[@i].@c.Field" value="true" checked="@(cell=="true")" disabled="@ro"/>}
+      else{<input type="@c.Type" name="@(g.Property)[@i].@c.Field" value="@cell" step="@c.Step" min="@(c.Field.Equals("Qty",StringComparison.OrdinalIgnoreCase)?"1":null)" disabled="@ro"/>}
+     </td>}</tr>}
+    </tbody></table></div>
+    <input type="hidden" id="count-@g.Id" name="@(g.Id)__count" value="@rowCount"/>
+    <div class="cot-comments"><label class="cot-grid-title">@g.Title Comments</label><div class="cot-rich"><div class="cot-tools"><button type="button" data-cmd="bold" disabled="@ro"><b>B</b></button><button type="button" data-cmd="italic" disabled="@ro"><i>I</i></button><button type="button" data-cmd="underline" disabled="@ro"><u>U</u></button><button type="button" data-cmd="insertUnorderedList" disabled="@ro">• List</button><button type="button" data-cmd="insertOrderedList" disabled="@ro">1. List</button></div><div class="cot-editor" contenteditable="@(!ro?"true":"false")">@Html.Raw(V(g.Id+"Comments"))</div><textarea class="cot-hidden" name="@(g.Id)Comments"></textarea></div></div>
+   </div></div>
+  }
+ </form>
+</div>
+<script>
+(()=>{
+ const form=document.getElementById('cotForm'), grids=@Html.Raw(gridJson), lookups=@Html.Raw(lookupJson), readOnly=@ro.ToString().ToLower();
+ function reindex(t){let p=t.dataset.property;[...t.tBodies[0].rows].forEach((r,i)=>r.querySelectorAll('input,select').forEach(e=>{if(e.name)e.name=e.name.replace(new RegExp('^'+p+'\\[\\d+\\]'),`${p}[${i}]`)}));document.getElementById('count-'+t.id.replace('grid-','')).value=t.tBodies[0].rows.length;}
+ function newRow(t){let id=t.id.replace('grid-',''),g=grids.find(x=>x.id===id),tr=document.createElement('tr'),sel=document.createElement('td');sel.className='cot-select';sel.innerHTML='<input type="checkbox" class="cot-row">';tr.append(sel);
+  g.columns.forEach(c=>{let td=document.createElement('td'),name=`${g.property}[0].${c.field}`,el;
+   if(c.type==='select'){el=document.createElement('select');el.name=name;el.add(new Option('Select '+c.label,''));(lookups[c.source]||[]).forEach(o=>el.add(new Option(o.text,o.value)));}
+   else if(c.type==='checkbox'){let h=document.createElement('input');h.type='hidden';h.name=name;h.value='false';td.append(h);el=document.createElement('input');el.type='checkbox';el.name=name;el.value='true';}
+   else{el=document.createElement('input');el.type=c.type;el.name=name;if(c.step)el.step=c.step;if(c.field.toLowerCase()==='qty'){el.value='1';el.min='1';}}
+   td.append(el);tr.append(td);
+  });return tr;
+ }
+ function chosen(t){return [...t.querySelectorAll('.cot-row:checked')].map(x=>x.closest('tr'));}
+ document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{let t=document.getElementById('grid-'+b.dataset.add);t.tBodies[0].append(newRow(t));reindex(t);});
+ document.querySelectorAll('[data-insert]').forEach(b=>b.onclick=()=>{let t=document.getElementById('grid-'+b.dataset.insert),s=chosen(t);if(s.length!==1){alert('Select exactly one row to insert below.');return;}s[0].after(newRow(t));reindex(t);});
+ document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{let t=document.getElementById('grid-'+b.dataset.delete),s=chosen(t);if(!s.length){alert('Select at least one row.');return;}if(confirm(`Delete ${s.length} selected row(s)?`)){s.forEach(r=>r.remove());reindex(t);}});
+ document.querySelectorAll('.cot-all').forEach(a=>a.onchange=()=>a.closest('table').querySelectorAll('.cot-row').forEach(c=>c.checked=a.checked));
+ document.querySelectorAll('.cot-rich').forEach(ed=>{let content=ed.querySelector('.cot-editor'),hidden=ed.querySelector('.cot-hidden');const sync=()=>hidden.value=content.innerHTML;sync();content.addEventListener('input',sync);ed.querySelectorAll('[data-cmd]').forEach(b=>b.onclick=()=>{content.focus();document.execCommand(b.dataset.cmd,false,null);sync();});});
+ form.addEventListener('submit',()=>document.querySelectorAll('.cot-rich').forEach(ed=>ed.querySelector('.cot-hidden').value=ed.querySelector('.cot-editor').innerHTML));
+ document.getElementById('cotEdit')?.addEventListener('click',()=>{form.querySelectorAll('input,select,textarea').forEach(e=>{e.disabled=false;e.readOnly=false;});document.querySelectorAll('.cot-actions button,.cot-all,.cot-row').forEach(e=>e.disabled=false);});
+})();
+</script>

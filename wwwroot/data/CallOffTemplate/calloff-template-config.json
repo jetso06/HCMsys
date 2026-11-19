@@ -1,0 +1,312 @@
+{
+  "page": {
+    "title": "Call Off Template",
+    "icon": "fa-file-contract"
+  },
+  "buttons": {
+    "form": [
+      {
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "warning",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authtracker",
+        "visible": true
+      },
+      {
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "general",
+      "title": "General",
+      "fields": [
+        {
+          "field": "ContractType",
+          "label": "Contract Type",
+          "type": "text",
+          "required": true,
+          "maxLength": 100
+        },
+        {
+          "field": "ContractTypeCode",
+          "label": "Contract Type Code",
+          "type": "text",
+          "required": true,
+          "maxLength": 30
+        },
+        {
+          "field": "ContractTypeNativeName",
+          "label": "Contract Type Name in Native Language",
+          "type": "text",
+          "maxLength": 100
+        },
+        {
+          "field": "Comments",
+          "label": "Comments",
+          "type": "text",
+          "maxLength": 150
+        },
+        {
+          "field": "ClientName",
+          "label": "Client Name",
+          "type": "select",
+          "source": "client-master.json"
+        },
+        {
+          "field": "VisaStatus",
+          "label": "Visa Status",
+          "type": "select",
+          "source": "visa-statuses.json"
+        }
+      ]
+    },
+    {
+      "id": "employmentTerms",
+      "title": "Employment Terms",
+      "fields": [
+        {
+          "field": "WorkSchedule",
+          "label": "Work Schedule",
+          "type": "textarea"
+        },
+        {
+          "field": "TimesheetRequired",
+          "label": "Timesheet Required",
+          "type": "checkbox"
+        },
+        {
+          "field": "EndOfServiceType",
+          "label": "End Of Service Type",
+          "type": "select",
+          "source": "end-of-service-types.json"
+        },
+        {
+          "field": "LeaveEntitlement",
+          "label": "Leave Entitlement",
+          "type": "text"
+        },
+        {
+          "field": "ProbationPeriod",
+          "label": "Probation Period",
+          "type": "text"
+        },
+        {
+          "field": "NoticePeriod",
+          "label": "Notice Period",
+          "type": "text"
+        },
+        {
+          "field": "OvertimeApplicable",
+          "label": "Overtime Applicable",
+          "type": "checkbox"
+        },
+        {
+          "field": "OvertimeRemarks",
+          "label": "Overtime Remarks",
+          "type": "textarea"
+        }
+      ]
+    },
+    {
+      "id": "additionalTerms",
+      "title": "Additional Terms",
+      "fields": [
+        {
+          "field": "AdditionalTerms",
+          "label": "Additional Terms",
+          "type": "richtext"
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "billingHeads",
+      "title": "Billing Heads",
+      "subtitle": "Billing Heads",
+      "property": "BillingHeads",
+      "columns": [
+        {
+          "field": "BillingHead",
+          "label": "Billing Heads",
+          "type": "select",
+          "source": "billing-categories.json"
+        },
+        {
+          "field": "DenominationType",
+          "label": "Denomination Type",
+          "type": "select",
+          "source": "denomination-types.json"
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "ServiceFeeType",
+          "label": "Service Fee Type",
+          "type": "select",
+          "source": "service-fee-types.json"
+        },
+        {
+          "field": "ServiceFeeValue",
+          "label": "Service Fee Value",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "TaxPercent",
+          "label": "Tax %",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "Qty",
+          "label": "Qty",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "Remarks",
+          "label": "Remarks",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "additionalInfo",
+      "title": "Other Details",
+      "subtitle": "Additional Info",
+      "property": "AdditionalInfo",
+      "columns": [
+        {
+          "field": "AdditionalInfo",
+          "label": "Additional Info",
+          "type": "select",
+          "source": "additional-checks.json"
+        },
+        {
+          "field": "Required",
+          "label": "Required",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "id": "salaryBreakdown",
+      "title": "Salary Breakdown",
+      "subtitle": "Component",
+      "property": "SalaryBreakdown",
+      "columns": [
+        {
+          "field": "Component",
+          "label": "Component",
+          "type": "select",
+          "source": "salary-categories.json"
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        }
+      ]
+    },
+    {
+      "id": "benefits",
+      "title": "Other Benefits & Reimbursements",
+      "subtitle": "Benefit Type",
+      "property": "Benefits",
+      "columns": [
+        {
+          "field": "BenefitType",
+          "label": "Benefit Type",
+          "type": "select",
+          "source": "benefit-types.json"
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "Frequency",
+          "label": "Frequency",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

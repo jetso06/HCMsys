@@ -196,6 +196,41 @@ namespace HCMSys.Controllers
             TempData["Success"] = $"CallOff status changed to {status}.";
             return RedirectToAction(nameof(Form), new { id });
         }
+        [HttpGet("/Master/CallOffIndex")]
+        public async Task<IActionResult> CallOffIndex()
+        {
+            var configPath = Path.Combine(Dir, "calloff-index-config.json");
+            var recordsPath = Path.Combine(Dir, "calloff-index-records.json");
+
+            ViewData["Config"] = await ReadJsonNode(configPath);
+            ViewData["Rows"] = await ReadJsonNode(recordsPath);
+
+            return View("~/Views/Master/CallOffIndex.cshtml");
+        }
+
+        [HttpGet("/Master/CallOffTemplateIndex")]
+        public async Task<IActionResult> CallOffTemplateIndex()
+        {
+            var configPath = Path.Combine(Dir, "calloff-template-index-config.json");
+            var recordsPath = Path.Combine(Dir, "calloff-template-index-records.json");
+
+            ViewData["Config"] = await ReadJsonNode(configPath);
+            ViewData["Rows"] = await ReadJsonNode(recordsPath);
+
+            return View("~/Views/Master/CallOffTemplateIndex.cshtml");
+        }
+        private async Task<System.Text.Json.Nodes.JsonNode> ReadJsonNode(string path)
+        {
+            if (!System.IO.File.Exists(path))
+            {
+                return new System.Text.Json.Nodes.JsonArray();
+            }
+
+            var json = await System.IO.File.ReadAllTextAsync(path);
+
+            return System.Text.Json.Nodes.JsonNode.Parse(json)
+                   ?? new System.Text.Json.Nodes.JsonArray();
+        }
     }
 
     public class CallOffPageConfig { public CallOffPageInfo Page {get;set;}=new(); public CallOffButtonGroup Buttons {get;set;}=new(); public List<CallOffSection> Sections {get;set;}=new(); public List<CallOffGridConfig> Grids {get;set;}=new(); }

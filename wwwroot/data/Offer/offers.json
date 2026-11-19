@@ -1,1 +1,19 @@
-[]
+[
+  {
+    "id": 1,
+    "offerNo": "OFF-00001",
+    "offerDate": "2026-11-19T00:00:00",
+    "offerType": "Employment Offer",
+    "clientName": "Example Client",
+    "supplierName": "",
+    "currency": "OMR",
+    "callOffNumber": "CO-00001",
+    "personnelName": "John Mathew",
+    "positionTitle": "Software Developer",
+    "status": "Pending",
+    "createdBy": "admin",
+    "createdDateTime": "2026-11-19T10:00:00",
+    "modifiedBy": "",
+    "modifiedDateTime": null
+  }
+]

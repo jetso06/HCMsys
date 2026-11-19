@@ -1,0 +1,157 @@
+{
+  "page": {
+    "title": "Call Off",
+    "icon": "fa-file-contract"
+  },
+  "buttons": {
+    "index": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "warning",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+  "table": {
+    "heading": "Call Off List",
+    "columns": [
+      {
+        "field": "Action",
+        "header": "Action"
+      },
+      {
+        "field": "DocNo",
+        "header": "Doc No"
+      },
+      {
+        "field": "Date",
+        "header": "Date"
+      },
+      {
+        "field": "ClientVendorEmployeeName",
+        "header": "Client/Vendor/Employee Name"
+      },
+      {
+        "field": "ClientVendorEmployeeCode",
+        "header": "Client/Vendor/Employee Code"
+      },
+      {
+        "field": "RefNo",
+        "header": "Ref No"
+      },
+      {
+        "field": "Active",
+        "header": "Ave",
+        "tooltip": "Active Yes/No"
+      },
+      {
+        "field": "ApprovalStatus",
+        "header": "AppSt",
+        "tooltip": "Approval Status Approved/Pending/Rejected"
+      },
+      {
+        "field": "Id",
+        "header": "ID"
+      },
+      {
+        "field": "CreatedBy",
+        "header": "Created By"
+      },
+      {
+        "field": "CreatedDateTime",
+        "header": "Created DateTime"
+      },
+      {
+        "field": "ModifiedBy",
+        "header": "Modified By"
+      },
+      {
+        "field": "ModifiedDateTime",
+        "header": "Modified DateTime"
+      }
+    ]
+  }
+}

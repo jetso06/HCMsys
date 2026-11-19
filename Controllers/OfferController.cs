@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json.Nodes;
 
 namespace HCMSys.Controllers
 {
@@ -210,6 +211,28 @@ namespace HCMSys.Controllers
             await Write(RecordsPath, rows);
             TempData["Success"] = $"Offer status changed to {status}.";
             return RedirectToAction(nameof(Form), new { id });
+        }
+        [HttpGet("/Master/OfferIndex")]
+        public async Task<IActionResult> Index()
+        {
+            JsonObject config = new();
+
+            if (System.IO.File.Exists(ConfigPath))
+            {
+                config = JsonNode.Parse(
+                    await System.IO.File.ReadAllTextAsync(ConfigPath)
+                ) as JsonObject ?? new JsonObject();
+            }
+
+            var records = await Records();
+
+            var rows = JsonSerializer.SerializeToNode(records, _json) as JsonArray
+                       ?? new JsonArray();
+
+            ViewData["Config"] = config;
+            ViewData["Rows"] = rows;
+
+            return View("~/Views/Master/OfferIndex.cshtml");
         }
     }
 
