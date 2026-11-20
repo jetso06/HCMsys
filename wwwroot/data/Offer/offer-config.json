@@ -1,4 +1,775 @@
 {
+  "page": {
+    "title": "Offer",
+    "pageId": 402,
+    "icon": "fa-file-signature"
+  },
+  "buttons": {
+    "form": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "primary",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "warning",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "success",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ],
+    "index": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "success",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "primary",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "primary",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "light",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "light",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "offerInformation",
+      "title": "Offer Information",
+      "fields": [
+        {
+          "field": "OfferNo",
+          "label": "Offer No",
+          "type": "text",
+          "required": true,
+          "readonly": false
+        },
+        {
+          "field": "OfferDate",
+          "label": "Offer Date",
+          "type": "date",
+          "required": true,
+          "readonly": false
+        },
+        {
+          "field": "OfferType",
+          "label": "Offer Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "offer-types.json"
+        },
+        {
+          "field": "NationalityType",
+          "label": "Nationality Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "nationality-types.json"
+        },
+        {
+          "field": "EmploymentStatus",
+          "label": "Employment Status",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "employment-statuses.json"
+        },
+        {
+          "field": "ClientName",
+          "label": "Client Name",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "clients.json"
+        },
+        {
+          "field": "Currency",
+          "label": "Currency",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "currencies.json"
+        },
+        {
+          "field": "CallOffNumber",
+          "label": "CallOff Number",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "calloff-numbers.json"
+        },
+        {
+          "field": "PostDate",
+          "label": "Post Date",
+          "type": "date",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "MainFrameAgreement",
+          "label": "Main Frame Agreement",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "main-frame-agreements.json"
+        },
+        {
+          "field": "WorkOrderNo",
+          "label": "Work Order No",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "work-orders.json"
+        },
+        {
+          "field": "ContractType",
+          "label": "Contract Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "contract-types.json"
+        },
+        {
+          "field": "RecruitmentType",
+          "label": "Recruitment Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "recruitment-types.json"
+        },
+        {
+          "field": "CallOffType",
+          "label": "Call Off Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "calloff-types.json"
+        },
+        {
+          "field": "Candidate",
+          "label": "Candidate",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "employees.json"
+        },
+        {
+          "field": "ReportingTo",
+          "label": "Reporting To",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "WorkBaseLocation",
+          "label": "Work Base Location",
+          "type": "textarea",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "Department",
+          "label": "Department",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "PositionTitle",
+          "label": "Position Title",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "designation-master.json"
+        }
+      ]
+    },
+    {
+      "id": "assignmentDetails",
+      "title": "Assignment Details",
+      "fields": [
+        {
+          "field": "AssignmentType",
+          "label": "Assignment Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "assignment-types.json"
+        },
+        {
+          "field": "VisaStatus",
+          "label": "Visa Status",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "visa-statuses.json"
+        },
+        {
+          "field": "CommencementDate",
+          "label": "Commencement Date",
+          "type": "date",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "EndDate",
+          "label": "End Date",
+          "type": "date",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "DurationMonths",
+          "label": "Duration Months",
+          "type": "number",
+          "required": false,
+          "readonly": true,
+          "step": "1"
+        }
+      ]
+    },
+    {
+      "id": "descriptionDuties",
+      "title": "Description of Duties",
+      "fields": []
+    },
+    {
+      "id": "salarySection",
+      "title": "Salary Breakdown",
+      "fields": []
+    },
+    {
+      "id": "benefitsSection",
+      "title": "Other Benefits & Reimbursements",
+      "fields": []
+    },
+    {
+      "id": "employmentTerms",
+      "title": "Employment Terms: Leave & Working Hours",
+      "fields": [
+        {
+          "field": "WorkSchedule",
+          "label": "Work Schedule",
+          "type": "textarea",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "TimesheetRequired",
+          "label": "Timesheet Required",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "EndOfServiceType",
+          "label": "End of Service Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "end-of-service-types.json"
+        },
+        {
+          "field": "LeaveEntitlement",
+          "label": "Leave Entitlement",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "ProbationPeriod",
+          "label": "Probation Period",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "NoticePeriod",
+          "label": "Notice Period",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "OvertimeApplicable",
+          "label": "Overtime Applicable",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "OvertimeRemarks",
+          "label": "Overtime Remarks",
+          "type": "textarea",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "AnnualLeaveDays",
+          "label": "Annual Leave Days",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "annual-leave-days.json"
+        },
+        {
+          "field": "WeeklyWorkingHours",
+          "label": "Weekly Working Hours",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "0.5"
+        },
+        {
+          "field": "WorkingDaysPerWeek",
+          "label": "Working Days Per Week",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "1"
+        }
+      ]
+    },
+    {
+      "id": "medicalInsurance",
+      "title": "Medical Insurance",
+      "fields": [
+        {
+          "field": "MedicalInsuranceApplicable",
+          "label": "Medical Insurance Applicable",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "CoverageStartAfterProbation",
+          "label": "Coverage Start After Probation",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "travelBenefits",
+      "title": "Travel Benefits",
+      "fields": [
+        {
+          "field": "MobilizationTicket",
+          "label": "Mobilization Ticket",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "DemobilizationTicket",
+          "label": "Demobilization Ticket",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "AnnualLeaveTravelAllowance",
+          "label": "Annual Leave Travel Allowance",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "complianceSection",
+      "title": "Compliance & Conditions",
+      "fields": []
+    },
+    {
+      "id": "otherDetails",
+      "title": "Other Details",
+      "fields": [
+        {
+          "field": "AdditionalTerms",
+          "label": "Additional Terms",
+          "type": "richtext",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "duties",
+      "title": "Description of Duties",
+      "subtitle": "Description of Duties",
+      "property": "Duties",
+      "columns": [
+        {
+          "field": "Main",
+          "label": "Main",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "Sub",
+          "label": "Sub",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "Description",
+          "label": "Description",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "salaryBreakdown",
+      "title": "Salary Breakdown",
+      "subtitle": "Salary Breakdown",
+      "property": "SalaryBreakdown",
+      "columns": [
+        {
+          "field": "Component",
+          "label": "Salary Component",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "salary-categories.json"
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "0.001"
+        }
+      ]
+    },
+    {
+      "id": "benefits",
+      "title": "Other Benefits & Reimbursements",
+      "subtitle": "Other Benefits & Reimbursements",
+      "property": "Benefits",
+      "columns": [
+        {
+          "field": "BenefitType",
+          "label": "Benefit Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "benefit-types.json"
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "0.001"
+        },
+        {
+          "field": "Frequency",
+          "label": "Frequency",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "benefit-frequencies.json"
+        }
+      ]
+    },
+    {
+      "id": "medicalInsuranceGrid",
+      "title": "Medical Insurance Details",
+      "subtitle": "Medical Insurance Details",
+      "property": "MedicalInsuranceRows",
+      "columns": [
+        {
+          "field": "CoveragePerson",
+          "label": "Coverage Person",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "coverage-persons.json"
+        },
+        {
+          "field": "NoOfPersonCovered",
+          "label": "No of Person Covered",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "1",
+          "default": 1
+        },
+        {
+          "field": "Remarks",
+          "label": "Remarks",
+          "type": "text",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    },
+    {
+      "id": "travelBenefitsGrid",
+      "title": "Travel Benefits Details",
+      "subtitle": "Travel Benefits",
+      "property": "TravelBenefits",
+      "columns": [
+        {
+          "field": "Covered",
+          "label": "Covered",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "covered-options.json"
+        },
+        {
+          "field": "TravelClass",
+          "label": "Travel Class",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "travel-classes.json"
+        },
+        {
+          "field": "TravelType",
+          "label": "Travel Type",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "travel-types.json"
+        },
+        {
+          "field": "NoOfTickets",
+          "label": "No of Tickets",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "1",
+          "default": 1
+        },
+        {
+          "field": "ServiceDays",
+          "label": "Service Days",
+          "type": "number",
+          "required": false,
+          "readonly": false,
+          "step": "1",
+          "default": 365
+        }
+      ]
+    },
+    {
+      "id": "compliance",
+      "title": "Compliance & Conditions",
+      "subtitle": "Compliance & Conditions",
+      "property": "ComplianceConditions",
+      "columns": [
+        {
+          "field": "AdditionalInfo",
+          "label": "Additional Info",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "additional-checks.json"
+        },
+        {
+          "field": "Required",
+          "label": "Required",
+          "type": "checkbox",
+          "required": false,
+          "readonly": false
+        }
+      ]
+    }
+  ],
+  "comments": [
+    {
+      "id": "DutiesComments",
+      "label": "Description of Duties Comments",
+      "grid": "duties"
+    },
+    {
+      "id": "SalaryBreakdownComments",
+      "label": "Salary Breakdown Comments",
+      "grid": "salaryBreakdown"
+    },
+    {
+      "id": "MedicalInsuranceComments",
+      "label": "Medical Insurance Comments",
+      "grid": "medicalInsuranceGrid"
+    },
+    {
+      "id": "TravelBenefitsComments",
+      "label": "Travel Benefits Comments",
+      "grid": "travelBenefitsGrid"
+    },
+    {
+      "id": "ComplianceComments",
+      "label": "Compliance & Conditions Comments",
+      "grid": "compliance"
+    }
+  ],
   "index": {
     "page": {
       "title": "Offer",
@@ -90,97 +861,5 @@
         }
       ]
     }
-  },
-  "buttons": {
-    "index": [
-      {
-        "id": "new",
-        "label": "New",
-        "icon": "fa-plus",
-        "style": "success",
-        "action": "new",
-        "visible": true
-      },
-      {
-        "id": "edit",
-        "label": "Edit",
-        "icon": "fa-edit",
-        "style": "primary",
-        "action": "edit",
-        "visible": true
-      },
-      {
-        "id": "save",
-        "label": "Save",
-        "icon": "fa-save",
-        "style": "primary",
-        "action": "save",
-        "visible": true
-      },
-      {
-        "id": "clone",
-        "label": "Clone",
-        "icon": "fa-copy",
-        "style": "info",
-        "action": "clone",
-        "visible": true
-      },
-      {
-        "id": "unpost",
-        "label": "UnPost",
-        "icon": "fa-undo",
-        "style": "secondary",
-        "action": "unpost",
-        "visible": true
-      },
-      {
-        "id": "print",
-        "label": "Print",
-        "icon": "fa-print",
-        "style": "light",
-        "action": "print",
-        "visible": true
-      },
-      {
-        "id": "delete",
-        "label": "Delete",
-        "icon": "fa-trash",
-        "style": "danger",
-        "action": "delete",
-        "visible": true
-      },
-      {
-        "id": "approve",
-        "label": "Approve",
-        "icon": "fa-check",
-        "style": "success",
-        "action": "approve",
-        "visible": true
-      },
-      {
-        "id": "reject",
-        "label": "Reject",
-        "icon": "fa-times",
-        "style": "danger",
-        "action": "reject",
-        "visible": true
-      },
-      {
-        "id": "authTracker",
-        "label": "Auth Tracker",
-        "icon": "fa-route",
-        "style": "info",
-        "action": "authTracker",
-        "visible": true
-      },
-      {
-        "id": "close",
-        "label": "Close",
-        "icon": "fa-times-circle",
-        "style": "light",
-        "action": "close",
-        "visible": true
-      }
-    ]
   }
 }
