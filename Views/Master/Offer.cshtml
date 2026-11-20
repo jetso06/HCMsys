@@ -163,7 +163,7 @@ html{font-size:14px}
        <div class="of-editor-content" contenteditable="@(isReadOnly ? "false" : "true")" tabindex="0" role="textbox" aria-multiline="true" data-content="@field.Field">@Html.Raw(value)</div><textarea hidden name="@field.Field" data-hidden-editor="@field.Field">@value</textarea>
       </div>
      }else if(field.Type=="textarea"){
-      <textarea id="@field.Field" name="@field.Field" class="form-control" rows="3" readonly="@isReadOnly">@value</textarea>
+      <textarea id="@field.Field" name="@field.Field" class="form-control" rows="2" readonly="@isReadOnly">@value</textarea>
      }else{
       <input id="@field.Field" name="@field.Field" type="@field.Type" value="@value" class="form-control" step="@field.Step" required="@field.Required" readonly="@(isReadOnly||field.Readonly)"/>
      }
