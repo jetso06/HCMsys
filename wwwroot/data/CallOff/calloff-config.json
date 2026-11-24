@@ -93,6 +93,22 @@
         "style": "secondary",
         "action": "close",
         "visible": true
+      },  
+      {
+        "id": "saveAs",
+        "label": "Save As",
+        "icon": "fa-save",
+        "style": "info",
+        "action": "saveAs",
+        "visible": true
+      },
+      {
+        "id": "revisions",
+        "label": "Revisions",
+        "icon": "fa-history",
+        "style": "secondary",
+        "action": "revisions",
+        "visible": true
       }
     ]
   },
@@ -209,6 +225,15 @@
           "readonly": false
         },
         {
+          "field": "ContractStatus",
+          "label": "Contract Status",
+          "type": "select",
+          "source": "contract-statuses.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
           "field": "RecruitmentType",
           "label": "Recruitment Type",
           "type": "select",
@@ -222,6 +247,15 @@
           "label": "Calloff Type",
           "type": "select",
           "source": "calloff-types.json",
+          "remarks": "",
+          "required": false,
+          "readonly": false
+        },
+        {
+          "field": "CalloffStatus",
+          "label": "Calloff Status",
+          "type": "select",
+          "source": "calloff-status.json",
           "remarks": "",
           "required": false,
           "readonly": false

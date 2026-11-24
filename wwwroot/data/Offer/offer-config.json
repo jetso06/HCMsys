@@ -336,6 +336,14 @@
           "required": false,
           "readonly": false,
           "source": "designation-master.json"
+        },
+        {
+          "field": "OfferStatus",
+          "label": "Offer Status",
+          "type": "select",
+          "required": false,
+          "readonly": false,
+          "source": "offer-status-types.json"
         }
       ]
     },

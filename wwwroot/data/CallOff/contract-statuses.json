@@ -1,0 +1,18 @@
+[
+  {
+    "value": "Pending for Agreement",
+    "text": "Pending for Agreement"
+  },
+  {
+    "value": "Active",
+    "text": "Active"
+  },
+  {
+    "value": "Cancelled",
+    "text": "Cancelled"
+  },
+  {
+    "value": "Inactive",
+    "text": "Inactive"
+  }
+]

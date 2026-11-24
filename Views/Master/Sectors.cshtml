@@ -1,0 +1,308 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Sector";
+}
+
+<div class="container-fluid sector-page">
+
+    <div class="card sector-card">
+        <div class="card-header sector-header">
+            <h6><i class="fas fa-plane"></i> Air Ticket Entitlement</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered sector-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Travel Class</th>
+                            <th>Travel Type</th>
+                            <th>No of Tickets</th>
+                            <th>Service Days</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Type</option>
+                                    <option>Self</option>
+                                    <option>Spouse</option>
+                                    <option>Dependent Adult</option>
+                                    <option>Child</option>
+                                    <option>Infant</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Class</option>
+                                    <option>First</option>
+                                    <option>Economy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Travel Type</option>
+                                    <option>One Way</option>
+                                    <option>Two Way</option>
+                                </select>
+                            </td>
+                            <td><input type="number" step="0.01" value="1" class="form-control form-control-sm" /></td>
+                            <td><input type="number" step="0.01" value="365" class="form-control form-control-sm" /></td>
+                            <td><input type="text" class="form-control form-control-sm" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card sector-card">
+        <div class="card-header sector-header">
+            <h6><i class="fas fa-route"></i> Sector Definition</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered sector-table">
+                    <thead>
+                        <tr>
+                            <th>From Age</th>
+                            <th>To Age</th>
+                            <th>Travel Class</th>
+                            <th>Travel Type</th>
+                            <th>Amount in Base Currency</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm" /></td>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Class</option>
+                                    <option>First</option>
+                                    <option>Economy</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Travel Type</option>
+                                    <option>One Way</option>
+                                    <option>Two Way</option>
+                                </select>
+                            </td>
+                            <td><input type="number" step="0.001" class="form-control form-control-sm" /></td>
+                            <td><input type="text" class="form-control form-control-sm" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card sector-card">
+        <div class="card-header sector-header">
+            <h6><i class="fas fa-list-alt"></i> Entitlement Grid</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered sector-table">
+                    <thead>
+                        <tr>
+                            <th>Slab Master</th>
+                            <th>Entitlement</th>
+                            <th>Service Days</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select class="form-select form-select-sm">
+                                    <option value="">Select Slab</option>
+                                    <option>Single Slab</option>
+                                    @for (int i = 1; i <= 10; i++)
+                                    {
+                                        <option>Slab-@i</option>
+                                    }
+                                    <option>Continuous Slab</option>
+                                </select>
+                            </td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm" /></td>
+                            <td><input type="number" step="0.01" class="form-control form-control-sm" /></td>
+                            <td><input type="text" class="form-control form-control-sm" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    .sector-page {
+        padding: 12px;
+        color: #555968;
+    }
+
+    .sector-card {
+        border: 1px solid #dfe3ed;
+        border-radius: 6px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 7px rgba(0,0,0,.05);
+    }
+
+    .sector-header {
+        background: #f5f6fa;
+        border-bottom: 1px solid #dfe3ed;
+        padding: 13px 17px;
+    }
+
+    .sector-header h6 {
+        margin: 0;
+        font-size: .85rem;
+        font-weight: 800;
+        color: #555968;
+    }
+
+    .sector-table {
+        margin-bottom: 0;
+        font-size: .78rem;
+        vertical-align: middle;
+        min-width: 850px;
+    }
+
+    .sector-table thead th {
+        background: #5273df;
+        color: white;
+        font-size: .72rem;
+        font-weight: 700;
+        padding: 10px 8px;
+        white-space: nowrap;
+    }
+
+    .sector-table tbody td {
+        padding: 7px;
+        background: #fff;
+    }
+
+    
+        /* Inputs and dropdowns */
+        .sector-table .form-control,
+        .sector-table .form-select {
+            display: block;
+            width: 100%;
+            min-width: 0;
+            height: 38px;
+            padding: 7px 12px;
+            border: 1px solid #cfd5e6;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #555b6b;
+            font-family: inherit;
+            font-size: .8rem;
+            font-weight: 500;
+            box-shadow: none;
+            transition: all .2s ease;
+            box-sizing: border-box;
+        }
+
+        /* Dropdown arrow and appearance */
+        .sector-table .form-select {
+            padding-right: 34px;
+            cursor: pointer;
+            background-position: right 12px center;
+            background-size: 13px 10px;
+        }
+
+            /* Dropdown hover */
+            .sector-table .form-select:hover,
+            .sector-table .form-control:hover {
+                border-color: #9eaddb;
+            }
+
+            /* Focus effect */
+            .sector-table .form-select:focus,
+            .sector-table .form-control:focus {
+                border-color: #5273df;
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(82, 115, 223, .13);
+            }
+
+            /* Dropdown options */
+            .sector-table .form-select option {
+                padding: 10px;
+                background: #fff;
+                color: #555b6b;
+            }
+
+
+    /* All form controls */
+    .sector-control {
+        display: block;
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        height: 38px;
+        box-sizing: border-box;
+        padding: 7px 12px;
+        border: 1px solid #cfd5e6;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #555b6b;
+        font-family: inherit;
+        font-size: .8rem;
+        font-weight: 500;
+        transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+        /* Dropdown styling */
+        .sector-control[type="text"],
+        .sector-control[type="number"] {
+            background-color: #fff;
+        }
+
+    select.sector-control {
+        display: block;
+        width: 100% !important;
+        height: 38px;
+        padding: 7px 34px 7px 12px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        cursor: pointer;
+        background-color: #fff;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        background-size: 14px;
+    }
+
+        select.sector-control option {
+            padding: 10px;
+            background: #fff;
+            color: #555b6b;
+            font-size: .8rem;
+        }
+
+    /* Hover */
+    .sector-control:hover {
+        border-color: #9eaddb;
+    }
+
+    /* Focus */
+    .sector-control:focus {
+        outline: none;
+        border-color: #5273df;
+        box-shadow: 0 0 0 3px rgba(82, 115, 223, .13);
+    }
+
+    /* Table cell spacing */
+    .sector-table td {
+        padding: 8px 10px;
+        vertical-align: middle;
+    }
+</style>

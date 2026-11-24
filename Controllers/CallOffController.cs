@@ -162,6 +162,22 @@ namespace HCMSys.Controllers
             {
                 var old = records.FirstOrDefault(x => x.Id == model.Id);
                 if (old == null) return NotFound();
+
+                // Save the previous version before updating the record.
+                var revisionsPath = Path.Combine(Dir, "calloff-revisions.json");
+                var revisions = await Read(revisionsPath, new List<CallOffRevision>());
+
+                revisions.Add(new CallOffRevision
+                {
+                    Id = old.Id,
+                    RevisionNo = revisions.Count(x => x.Id == old.Id) + 1,
+                    SavedDate = DateTime.Now,
+                    SavedBy = "admin",
+                    Snapshot = Copy(old)
+                });
+
+                await Write(revisionsPath, revisions);
+
                 model.DocNo = old.DocNo; model.CallOffNumber = old.CallOffNumber;
                 model.CreatedBy = old.CreatedBy; model.CreatedDateTime = old.CreatedDateTime;
                 model.ModifiedBy = "admin"; model.ModifiedDateTime = DateTime.Now; model.Status = old.Status;
@@ -170,6 +186,89 @@ namespace HCMSys.Controllers
             await Write(RecordsPath, records);
             TempData["Success"] = "CallOff saved successfully.";
             return RedirectToAction(nameof(Form), new { id = model.Id });
+        }
+
+        [HttpPost("SaveAs/{id:int}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveAs(int id)
+        {
+            var records = await Records();
+            var existing = records.FirstOrDefault(x => x.Id == id);
+
+            if (existing == null)
+                return NotFound();
+
+            var newRecord = Copy(existing);
+
+            newRecord.Id = records.Count == 0 ? 1 : records.Max(x => x.Id) + 1;
+            newRecord.DocNo = $"CO-{newRecord.Id:00000}";
+            newRecord.CallOffNumber = newRecord.DocNo;
+            newRecord.Status = "Pending";
+            newRecord.CreatedBy = "admin";
+            newRecord.CreatedDateTime = DateTime.Now;
+            newRecord.ModifiedBy = null;
+            newRecord.ModifiedDateTime = null;
+
+            records.Add(newRecord);
+
+            await Write(RecordsPath, records);
+
+            TempData["Success"] = "A new CallOff document was created using Save As.";
+
+            return RedirectToAction(nameof(Form), new { id = newRecord.Id });
+        }
+
+        [HttpGet("Revisions/{id:int}")]
+        public async Task<IActionResult> Revisions(int id)
+        {
+            var revisionsPath = Path.Combine(Dir, "calloff-revisions.json");
+
+            var revisions = await Read(
+                revisionsPath,
+                new List<CallOffRevision>()
+            );
+
+            var result = revisions
+                .Where(x => x.Id == id)
+                .OrderByDescending(x => x.RevisionNo)
+                .Select(x => new
+                {
+                    x.RevisionNo,
+                    x.SavedDate,
+                    x.SavedBy,
+                    x.Snapshot
+                });
+
+            return Json(result);
+        }
+        [HttpGet("Revision/{id:int}")]
+        public async Task<IActionResult> Revision(int id, int revisionNo)
+        {
+            var revisionsPath = Path.Combine(Dir, "calloff-revisions.json");
+
+            var revisions = await Read(
+                revisionsPath,
+                new List<CallOffRevision>()
+            );
+
+            var revision = revisions.FirstOrDefault(x =>
+                x.Id == id && x.RevisionNo == revisionNo
+            );
+
+            if (revision == null)
+                return NotFound();
+
+            var config = await Config();
+
+            ViewBag.Config = config;
+            ViewBag.Lookups = await LoadLookups(config);
+            ViewBag.IsNew = false;
+            ViewBag.IsReadOnly = true;
+
+            return View(
+                "~/Views/Master/CallOff.cshtml",
+                Copy(revision.Snapshot)
+            );
         }
 
         [HttpPost("Delete/{id:int}")]
@@ -229,6 +328,14 @@ namespace HCMSys.Controllers
     public class CallOffField { public string Field {get;set;}=""; public string Label {get;set;}=""; public string Type {get;set;}="text"; public string? Source {get;set;} public string? Remarks {get;set;} public bool Required {get;set;} public bool Readonly {get;set;} public string? Step {get;set;} }
     public class CallOffGridConfig { public string Id {get;set;}=""; public string Title {get;set;}=""; public string Subtitle {get;set;}=""; public string Property {get;set;}=""; public List<CallOffField> Columns {get;set;}=new(); }
     public class CallOffOption { public string Value {get;set;}=""; public string Text {get;set;}=""; }
+    public class CallOffRevision
+    {
+        public int Id { get; set; }
+        public int RevisionNo { get; set; }
+        public DateTime SavedDate { get; set; }
+        public string SavedBy { get; set; } = "admin";
+        public CallOffRecord Snapshot { get; set; } = new();
+    }
     public class CallOffMasterType { public int Id {get;set;} public string Name {get;set;}=""; }
     public class CallOffMasterRecord { public int Id {get;set;} public int MasterType {get;set;} public string Name {get;set;}=""; public bool IsActive {get;set;}=true; }
 

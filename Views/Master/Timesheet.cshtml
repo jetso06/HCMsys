@@ -495,6 +495,7 @@
         color: #4d596b;
         font: inherit;
     }
+    .ts-grid-input
 
     .ts-grid-input:focus {
         outline: none;
@@ -1208,29 +1209,59 @@ function tsRender() {
                 const value = data[column.id] ?? "";
 
                 if (column.editable) {
-                    const input = document.createElement("input");
+    let input;
 
-                    input.type = column.type === "number"
-                        ? "number"
-                        : "text";
+    if (column.type === "select" || column.type === "dropdown") {
+        input = document.createElement("select");
 
-                    input.className = "ts-grid-input";
-                    input.value = value;
+        input.add(new Option(
+            "-- Select " + (column.label || column.id) + " --",
+            ""
+        ));
 
-                    if (column.type === "number") {
-                        input.step = "any";
-                    }
+        (column.options || []).forEach(option => {
+            const optionValue =
+                typeof option === "object" ? option.value : option;
 
-                    input.addEventListener("input", () => {
-                        data[column.id] = column.type === "number"
-                            ? (input.value === "" ? "" : Number(input.value))
-                            : input.value;
-                    });
+            const optionText =
+                typeof option === "object" ? option.text : option;
 
-                    cell.appendChild(input);
-                } else {
-                    cell.textContent = value;
-                }
+            input.add(new Option(
+                String(optionText),
+                String(optionValue)
+            ));
+        });
+
+        input.value = String(value);
+    } else {
+        input = document.createElement("input");
+
+        input.type = column.type === "number"
+            ? "number"
+            : "text";
+
+        input.value = value;
+
+        if (column.type === "number") {
+            input.step = "any";
+        }
+    }
+
+    input.className = "ts-grid-input";
+    input.value = input.value ?? "";
+
+    input.addEventListener("change", () => {
+        data[column.id] = input.value;
+    });
+
+    input.addEventListener("input", () => {
+        data[column.id] = input.value;
+    });
+
+    cell.appendChild(input);
+} else {
+    cell.textContent = value;
+}
 
                 row.appendChild(cell);
             });

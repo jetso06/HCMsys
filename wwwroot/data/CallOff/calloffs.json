@@ -4,6 +4,8 @@
     "docNo": "CO-00001",
     "docDate": null,
     "callOffNumber": "CO-00001",
+    "recruitmentType": null,
+    "calloffType": null,
     "agreementReferenceDate": null,
     "clientName": null,
     "supplierName": null,
@@ -102,6 +104,582 @@
     "status": "Pending",
     "createdBy": "admin",
     "createdDateTime": "2026-11-13T10:24:09.7975366+04:00",
+    "modifiedBy": null,
+    "modifiedDateTime": null
+  },
+  {
+    "id": 2,
+    "docNo": "CO-00002",
+    "docDate": null,
+    "callOffNumber": "CO-00002",
+    "recruitmentType": null,
+    "calloffType": null,
+    "agreementReferenceDate": null,
+    "clientName": null,
+    "supplierName": null,
+    "currency": null,
+    "contractNumberReference": null,
+    "contractTitleReference": null,
+    "postDate": null,
+    "mainFrameAgreement": null,
+    "workOrderNo": null,
+    "contractType": null,
+    "personnelName": null,
+    "positionTitle": null,
+    "pointOfOrigin": null,
+    "reportingTo": null,
+    "workBaseLocation": null,
+    "assignmentType": null,
+    "visaStatus": null,
+    "commencementDate": null,
+    "endDate": null,
+    "durationMonths": null,
+    "workSchedule": null,
+    "timesheetRequired": false,
+    "endOfServiceType": null,
+    "leaveEntitlement": null,
+    "probationPeriod": null,
+    "noticePeriod": null,
+    "overtimeApplicable": false,
+    "overtimeRemarks": null,
+    "additionalTerms": null,
+    "billingHeads": [
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      }
+    ],
+    "duties": [
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      }
+    ],
+    "additionalInfo": [
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      }
+    ],
+    "salaryBreakdown": [
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      }
+    ],
+    "benefits": [
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      }
+    ],
+    "status": "Pending",
+    "createdBy": "admin",
+    "createdDateTime": "2026-11-21T22:52:00.6878435+04:00",
+    "modifiedBy": null,
+    "modifiedDateTime": null
+  },
+  {
+    "id": 3,
+    "docNo": "CO-00003",
+    "docDate": null,
+    "callOffNumber": "CO-00003",
+    "recruitmentType": null,
+    "calloffType": null,
+    "agreementReferenceDate": null,
+    "clientName": null,
+    "supplierName": null,
+    "currency": null,
+    "contractNumberReference": null,
+    "contractTitleReference": null,
+    "postDate": null,
+    "mainFrameAgreement": null,
+    "workOrderNo": null,
+    "contractType": null,
+    "personnelName": null,
+    "positionTitle": null,
+    "pointOfOrigin": null,
+    "reportingTo": null,
+    "workBaseLocation": null,
+    "assignmentType": null,
+    "visaStatus": null,
+    "commencementDate": null,
+    "endDate": null,
+    "durationMonths": null,
+    "workSchedule": null,
+    "timesheetRequired": false,
+    "endOfServiceType": null,
+    "leaveEntitlement": null,
+    "probationPeriod": null,
+    "noticePeriod": null,
+    "overtimeApplicable": false,
+    "overtimeRemarks": null,
+    "additionalTerms": null,
+    "billingHeads": [
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      }
+    ],
+    "duties": [
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      }
+    ],
+    "additionalInfo": [
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      }
+    ],
+    "salaryBreakdown": [
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      }
+    ],
+    "benefits": [
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      }
+    ],
+    "status": "Pending",
+    "createdBy": "admin",
+    "createdDateTime": "2026-11-21T22:52:06.1271459+04:00",
+    "modifiedBy": null,
+    "modifiedDateTime": null
+  },
+  {
+    "id": 4,
+    "docNo": "CO-00004",
+    "docDate": null,
+    "callOffNumber": "CO-00004",
+    "recruitmentType": null,
+    "calloffType": null,
+    "agreementReferenceDate": null,
+    "clientName": null,
+    "supplierName": null,
+    "currency": null,
+    "contractNumberReference": null,
+    "contractTitleReference": null,
+    "postDate": null,
+    "mainFrameAgreement": null,
+    "workOrderNo": null,
+    "contractType": null,
+    "personnelName": null,
+    "positionTitle": null,
+    "pointOfOrigin": null,
+    "reportingTo": null,
+    "workBaseLocation": null,
+    "assignmentType": null,
+    "visaStatus": null,
+    "commencementDate": null,
+    "endDate": null,
+    "durationMonths": null,
+    "workSchedule": null,
+    "timesheetRequired": false,
+    "endOfServiceType": null,
+    "leaveEntitlement": null,
+    "probationPeriod": null,
+    "noticePeriod": null,
+    "overtimeApplicable": false,
+    "overtimeRemarks": null,
+    "additionalTerms": null,
+    "billingHeads": [
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      },
+      {
+        "billingHead": null,
+        "denominationType": null,
+        "amount": null,
+        "serviceFeeType": null,
+        "serviceFeeValue": null,
+        "taxPercent": null,
+        "qty": 1,
+        "remarks": null
+      }
+    ],
+    "duties": [
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      },
+      {
+        "main": false,
+        "sub": false,
+        "description": null
+      }
+    ],
+    "additionalInfo": [
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      },
+      {
+        "additionalInfo": null,
+        "required": false
+      }
+    ],
+    "salaryBreakdown": [
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      },
+      {
+        "component": null,
+        "amount": null
+      }
+    ],
+    "benefits": [
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      },
+      {
+        "benefitType": null,
+        "amount": null,
+        "frequency": null
+      }
+    ],
+    "status": "Pending",
+    "createdBy": "admin",
+    "createdDateTime": "2026-11-21T22:52:11.4486783+04:00",
     "modifiedBy": null,
     "modifiedDateTime": null
   }

@@ -73,7 +73,10 @@
       {"field":"netAmount","header":"Net Amount","type":"number","step":"0.001","readOnly":true},
       {"field":"poNumber","header":"PO Number","type":"text"},
       {"field":"poDate","header":"PO Date","type":"date"},
-      {"field":"remarks","header":"Remarks","type":"text"}
+      {"field":"remarks","header":"Remarks","type":"text"},
+      {"field":"pdoNo","header":"PDO No","type":"text","maxLength":30},
+      {"field":"serviceEntryNo","header":"Service Entry No","type":"text","maxLength":30},
+      {"field":"callOff","header":"Call Off","type":"select","source":"callOffs"}
     ]
   }
 }

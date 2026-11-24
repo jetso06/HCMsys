@@ -85,6 +85,22 @@
       "label": "Remarks",
       "type": "text",
       "editable": true
+    },
+    {
+      "id": "calloff",
+      "label": "Call Off",
+      "type": "select",
+      "editable": true,
+      "options": [
+        {
+          "value": "CallOff1",
+          "text": "Call Off 1"
+        },
+        {
+          "value": "CallOff2",
+          "text": "Call Off 2"
+        }
+      ]
     }
   ]
 }

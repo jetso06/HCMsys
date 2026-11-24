@@ -150,5 +150,9 @@ namespace HCMSys.Controllers
         {
             return View();
         }
+        public ActionResult Sectors()
+        {
+            return View();
+        }
     }
 }

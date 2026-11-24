@@ -319,6 +319,84 @@
         max-height: 54px !important;
         resize: none;
     }
+    
+/* CONTRACT TYPE CHANGE CONFIRMATION MODAL */
+
+.contract-modal {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .25);
+}
+
+.contract-modal-header {
+    background: #f6ad3c;
+    color: #fff;
+    border-bottom: none;
+}
+
+.contract-warning-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #fff5df;
+    color: #f0a526;
+    font-size: 30px;
+    animation: contractPulse 1.5s infinite;
+}
+
+.contract-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #343a40;
+    margin-bottom: 8px;
+}
+
+.contract-message {
+    font-size: .85rem;
+    color: #5a5c69;
+    margin-bottom: 4px;
+}
+
+.contract-submessage {
+    font-size: .72rem;
+    color: #858796;
+    margin-bottom: 0;
+}
+
+.contract-modal .modal-footer {
+    border-top: 1px solid #e3e6f0;
+    padding: 14px;
+    gap: 8px;
+}
+
+.contract-modal .btn {
+    min-width: 100px;
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+@@keyframes contractPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(246, 173, 60, .35);
+    }
+
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 0 10px rgba(246, 173, 60, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(246, 173, 60, 0);
+    }
+}
+
     @@media(max-width:992px) { .co-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
     @@media(max-width:600px) { .co-grid { grid-template-columns:1fr; } .co-field-full { grid-column:auto; } .co-header { align-items:flex-start; } .co-toolbar { justify-content:flex-start; width:100%; } }
     @@media print { .co-toolbar,.co-add-row,.co-remove-row,.co-no-print { display:none!important; } .co-card,.co-header { box-shadow:none; break-inside:avoid; } .co-page { padding:0; } }
@@ -366,6 +444,42 @@
                     case "close":
                         <a href="@Url.Action("Index","Home")" class="btn btn-@button.Style btn-sm shadow-sm"><i class="fas @button.Icon mr-1"></i>@button.Label</a>
                         break;
+                    case "saveas":
+    <form method="post"
+          action="@Url.Action("SaveAs", "CallOff", new { id = Model.Id })"
+          class="co-no-print"
+          onsubmit="return confirm('Create a new document using the current CallOff details?')">
+        @Html.AntiForgeryToken()
+        <button type="submit"
+                class="btn btn-@button.Style btn-sm shadow-sm"
+                @(isNew ? "disabled" : "")>
+            <i class="fas @button.Icon mr-1"></i>@button.Label
+        </button>
+    </form>
+    break;
+
+case "revisions":
+    <div class="dropdown co-no-print">
+        <button type="button"
+                id="coRevisions"
+                class="btn btn-@button.Style btn-sm shadow-sm dropdown-toggle"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                @(isNew ? "disabled" : "")>
+            <i class="fas @button.Icon mr-1"></i>@button.Label
+        </button>
+
+        <div class="dropdown-menu dropdown-menu-right"
+             id="coRevisionMenu"
+             aria-labelledby="coRevisions"
+             style="min-width:230px;">
+            <span class="dropdown-item-text text-muted">
+                Loading revisions...
+            </span>
+        </div>
+    </div>
+    break;
                 }
             }
         </div>
@@ -674,6 +788,80 @@ else if (col.Type == "checkbox")
     </div>
 </div>
 
+
+<!-- CONTRACT TYPE CHANGE CONFIRMATION MODAL -->
+<div class="modal fade"
+     id="coContractConfirmModal"
+     tabindex="-1"
+     role="dialog"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered"
+         role="document">
+
+        <div class="modal-content contract-modal">
+
+            <div class="modal-header contract-modal-header">
+
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Confirm Contract Type Change
+                </h5>
+
+                <button type="button"
+                        class="close text-white"
+                        data-dismiss="modal"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <div class="modal-body text-center py-4">
+
+                <div class="contract-warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+
+                <h5 class="contract-title">
+                    Are you sure?
+                </h5>
+
+                <p class="contract-message">
+                    Changing the Contract Type will reload the data from Call Off.
+                </p>
+
+                <p class="contract-submessage">
+                    Please confirm.
+                </p>
+
+            </div>
+
+            <div class="modal-footer justify-content-center">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        id="coConfirmNo"
+                        data-dismiss="modal">
+                    <i class="fas fa-times mr-1"></i>
+                    No
+                </button>
+
+                <button type="button"
+                        class="btn btn-warning"
+                        id="coConfirmYes">
+                    <i class="fas fa-check mr-1"></i>
+                    Yes
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
 (function () {
     const form = document.getElementById("callOffForm");
@@ -681,6 +869,55 @@ else if (col.Type == "checkbox")
     const gridColumns = @Html.Raw(gridConfigJson);
     const lookupOptions = @Html.Raw(lookupJson);
     const isReadOnly = @isReadOnly.ToString().ToLower();
+
+    
+// Contract Type change confirmation
+const contractType = document.getElementById("ContractType");
+
+let previousContractType = contractType?.value ?? "";
+let pendingContractType = null;
+
+if (contractType && !isReadOnly) {
+
+    contractType.addEventListener("focus", function () {
+        previousContractType = this.value;
+    });
+
+    contractType.addEventListener("change", function () {
+
+        if (this.value === previousContractType) return;
+
+        pendingContractType = this.value;
+
+        // Restore previous selection until confirmation
+        this.value = previousContractType;
+
+        // Show Bootstrap modal
+        $("#coContractConfirmModal").modal("show");
+    });
+}
+
+// NO: Keep the previous Contract Type
+$("#coConfirmNo").on("click", function () {
+
+    pendingContractType = null;
+
+    if (contractType) {
+        contractType.value = previousContractType;
+    }
+
+});
+
+// YES: Reload the Call Off page
+$("#coConfirmYes").on("click", function () {
+
+    if (pendingContractType === null) return;
+
+    $("#coContractConfirmModal").modal("hide");
+
+    window.location.reload();
+
+});
 
     // Enable editing
     document.getElementById("coEdit")?.addEventListener("click", function () {
@@ -1014,6 +1251,65 @@ document.addEventListener("change", function (event) {
         }
     });
 
+    // Load revision history into the toolbar dropdown
+document.getElementById("coRevisions")?.addEventListener("click", async function () {
+
+    const menu = document.getElementById("coRevisionMenu");
+
+    menu.innerHTML = `
+        <span class="dropdown-item-text text-muted">
+            Loading revisions...
+        </span>`;
+
+    try {
+        const response = await fetch(
+            '@Url.Action("Revisions", "CallOff", new { id = Model.Id })'
+        );
+
+        if (!response.ok) {
+            throw new Error("Unable to load revisions.");
+        }
+
+        const revisions = await response.json();
+
+        menu.innerHTML = "";
+
+        if (!revisions.length) {
+            menu.innerHTML = `
+                <span class="dropdown-item-text text-muted">
+                    No revisions available
+                </span>`;
+            return;
+        }
+
+        revisions.forEach(revision => {
+
+            const link = document.createElement("a");
+            link.className = "dropdown-item";
+            link.href =
+                '@Url.Action("Revision", "CallOff", new { id = Model.Id })'
+                + '?revisionNo=' + encodeURIComponent(revision.revisionNo);
+
+            const date = new Date(revision.savedDate).toLocaleString();
+
+            link.innerHTML = `
+                <div class="font-weight-bold">
+                    Revision ${revision.revisionNo}
+                </div>
+                <small class="text-muted">
+                    ${date} · ${revision.savedBy}
+                </small>`;
+
+            menu.appendChild(link);
+        });
+
+    } catch (error) {
+        menu.innerHTML = `
+            <span class="dropdown-item-text text-danger">
+                ${error.message}
+            </span>`;
+    }
+});
 
 })();
 </script>

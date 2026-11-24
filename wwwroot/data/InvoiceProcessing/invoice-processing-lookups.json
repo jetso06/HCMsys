@@ -22,5 +22,15 @@
       "value": "1",
       "text": "OT Only"
     }
+  ],
+  "calloffs": [
+    {
+      "value": "1",
+      "text": "Call Off 1"
+    },
+    {
+      "value": "2",
+      "text": "Call Off 2"
+    }
   ]
 }

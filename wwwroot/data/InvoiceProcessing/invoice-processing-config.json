@@ -381,6 +381,13 @@
         "header": "Remarks",
         "type": "text",
         "readOnly": false
+      },
+      {
+        "field": "calloff",
+        "header": "Call Off",
+        "type": "select",
+        "optionsSource": "calloffs",
+        "readOnly": false
       }
     ]
   }
