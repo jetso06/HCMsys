@@ -1,32 +1,1019 @@
+
+@using System.Text.Json
 @using System.Text.Json.Nodes
+@using System.Globalization
 @model List<JsonNode>
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Tax Invoice";
-    var config = ViewData["Config"] as JsonObject ?? new();
+
+    var config = ViewData["Config"] as JsonObject ?? new JsonObject();
+    var page = config["page"] as JsonObject;
+
+    var buttons = config["buttons"]?["index"] as JsonArray
+                  ?? new JsonArray();
+
+    var rows = Model ?? new List<JsonNode>();
+
+    var columns = config["index"]?["columns"] as JsonArray
+              ?? new JsonArray();
+
+    var visibleColumns = columns
+        .OfType<JsonObject>()
+        .Where(c => c["visible"]?.GetValue<bool>() != false)
+        .ToList();
+
+    ViewData["Title"] = page?["title"]?.ToString() ?? "Tax Invoice";
+
+    string GetValue(JsonNode? row, string field)
+    {
+        if (row is not JsonObject obj)
+            return "";
+
+        // Try the configured field first.
+        var property = obj.FirstOrDefault(p =>
+            string.Equals(p.Key, field, StringComparison.OrdinalIgnoreCase));
+
+        if (property.Value != null)
+            return property.Value.ToString();
+
+        // Support alternative display properties.
+        var alternative = field switch
+        {
+            "clientName" => "client",
+            "mainFrameAgreementName" => "mainFrameAgreement",
+            "printTemplateText" => "printTemplate",
+            "invoiceTypeText" => "invoiceType",
+            "timeSheetTypeText" => "timeSheetType",
+            _ => ""
+        };
+
+        if (!string.IsNullOrEmpty(alternative))
+        {
+            property = obj.FirstOrDefault(p =>
+                string.Equals(p.Key, alternative, StringComparison.OrdinalIgnoreCase));
+
+            if (property.Value != null)
+                return property.Value.ToString();
+        }
+
+        return "";
+    }
+
+    string FormatValue(string field, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "";
+
+        var normalized = field.ToLowerInvariant();
+
+        if (normalized.Contains("date") &&
+            DateTime.TryParse(value, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var date))
+        {
+            return normalized.Contains("time")
+                ? date.ToString("dd-MM-yyyy HH:mm")
+                : date.ToString("dd-MM-yyyy");
+        }
+
+        return value;
+    }
 }
-<div class="container-fluid txi-page">
- @Html.AntiForgeryToken()
- <div class="card shadow mb-3"><div class="card-header txi-toolbar"><h6 class="txi-title"><i class="fas fa-file-invoice mr-2"></i>TAX INVOICE</h6><div class="txi-buttons" id="txiButtons"></div></div></div>
- <div class="card shadow mb-3"><div class="card-body">
-  <div class="row align-items-end mb-3"><div class="col-md-4"><label class="txi-label" for="txiSearch">Advanced Filter</label><input id="txiSearch" class="form-control form-control-sm" placeholder="Search invoice no, client, batch..." /></div><div class="col-md-2"><label class="txi-label" for="txiPageSize">Rows per page</label><select id="txiPageSize" class="form-control form-control-sm"><option>10</option><option>25</option><option>50</option><option>100</option></select></div><div class="col-md-6 text-md-right mt-2"><span id="txiCount" class="txi-count"></span></div></div>
-  <div class="table-responsive"><table class="table table-bordered table-hover txi-table"><thead><tr><th><input type="checkbox" id="txiSelectAll" /></th><th>ID</th><th>Invoice No</th><th>Invoice Date</th><th>PostDate</th><th>Client</th><th>Main Frame Agreement</th><th>PayMonth</th><th>Currency</th><th>Print Template</th><th>Invoice Type</th><th>TimeSheet Type</th><th>Comments</th></tr></thead><tbody id="txiBody"></tbody></table></div>
-  <div class="d-flex justify-content-between align-items-center mt-3"><span id="txiPageInfo" class="txi-count"></span><div><button class="btn btn-outline-primary btn-sm" id="txiPrev">Previous</button> <button class="btn btn-outline-primary btn-sm" id="txiNext">Next</button></div></div>
- </div></div>
+
+<div class="container-fluid candidate-index">
+
+    <!-- MASTER TOOLBAR -->
+    <div class="card ci-card ci-toolbar-card">
+        <div class="card-header ci-toolbar">
+
+            <h6 class="ci-title">
+                <i class="fas @(page?["icon"]?.ToString() ?? "fa-file-invoice")"></i>
+                @(page?["title"]?.ToString() ?? "Tax Invoice")
+                <span class="ci-module-badge">TAX INVOICE</span>
+            </h6>
+
+            <div class="ci-buttons">
+                @foreach (var button in buttons)
+                {
+                    if (button?["visible"]?.GetValue<bool>() == false)
+                        continue;
+
+                    var id = button?["id"]?.ToString() ?? "";
+                    var label = button?["label"]?.ToString()
+                                ?? button?["text"]?.ToString() ?? id;
+
+                    var icon = button?["icon"]?.ToString() ?? "";
+                    var style = button?["style"]?.ToString() ?? "secondary";
+                    var action = id.Replace("btn", "").ToLowerInvariant();
+
+                    <button type="button"
+                            class="btn btn-@style btn-sm shadow-sm"
+                            data-action="@action">
+                        <i class="fas @icon"></i>
+                        @label
+                    </button>
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row ci-summary">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-primary">
+                <div class="card-body">
+                    <div class="ci-summary-label">Total Records</div>
+                    <div class="ci-summary-value">@rows.Count</div>
+                    <i class="fas fa-layer-group ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-info">
+                <div class="card-body">
+                    <div class="ci-summary-label">Displayed Records</div>
+                    <div class="ci-summary-value" id="ciDisplayed">@rows.Count</div>
+                    <i class="fas fa-list ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-success">
+                <div class="card-body">
+                    <div class="ci-summary-label">Selected Record</div>
+                    <div class="ci-summary-value" id="ciSelected">None</div>
+                    <i class="fas fa-file-alt ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-warning">
+                <div class="card-body">
+                    <div class="ci-summary-label">Module</div>
+                    <div class="ci-summary-module">Tax Invoice</div>
+                    <i class="fas fa-file-invoice ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECORDS CARD -->
+    <div class="card ci-card ci-records-card">
+
+        <div class="card-header ci-records-header">
+    <h6>
+        <i class="fas fa-table"></i>
+        @(config["index"]?["heading"]?.ToString() ?? page?["title"]?.ToString())
+    </h6>
+
+    <span class="badge badge-primary" id="ciRecordCount">
+        @rows.Count Records
+    </span>
 </div>
-<style>
-.txi-page{padding:18px 0 25px;color:#5a5c69;font-size:13px}.txi-page>.card{border:1px solid #e1e6ed;border-radius:6px;box-shadow:0 4px 14px rgba(58,59,69,.14);overflow:hidden}.txi-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:14px 18px;background:#eef0f3}.txi-title{margin:0;color:#5a5c69;font-size:.85rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.txi-buttons{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}.txi-buttons .btn{font-size:.75rem;font-weight:700;box-shadow:0 2px 5px rgba(0,0,0,.08)}.txi-page .card-body{padding:20px 16px}.txi-label{display:block;margin-bottom:5px;color:#596579;font-size:.76rem;font-weight:700;text-transform:uppercase;letter-spacing:.055em}.txi-count{color:#858796;font-size:.78rem}.txi-table{width:100%;margin:0;color:#5a5c69;font-size:.76rem;white-space:nowrap}.txi-table thead th{padding:9px 8px;background:#4e73df;color:#fff;border-color:#3d5cbe;font-size:.7rem;font-weight:800;text-align:center;text-transform:uppercase}.txi-table tbody td{padding:7px 8px;border-color:#e3e6f0;vertical-align:middle}.txi-table tbody tr.selected{background:#eef3ff}
-</style>
-@section Scripts {
-<script>
-const txiConfig=@Html.Raw(config.ToJsonString());
-const txiRows=@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model));
-let txiPage=1,txiFiltered=[...txiRows],txiSelected=new Set();
-const txiEl=id=>document.getElementById(id);
-function txiButtons(){(txiConfig.buttons?.index||[]).forEach(b=>{let x=document.createElement('button');x.type='button';x.id='txi'+b.id.replace(/^btn/,'');x.className='btn btn-'+(b.style||'secondary')+' btn-sm';x.innerHTML='<i class="fas '+b.icon+' mr-1"></i>'+b.text;x.addEventListener('click',()=>txiAction(b.id));txiEl('txiButtons').append(x);});}
-function txiAction(id){let chosen=[...txiSelected];switch(id){case'btnHome':location.href='/';break;case'btnNew':location.href='/Master/TaxInvoice';break;case'btnEdit':if(chosen.length!==1){alert('Select one Tax Invoice to edit.');return;}location.href='/Master/TaxInvoice?id='+chosen[0];break;case'btnDelete':if(!chosen.length){alert('Select at least one Tax Invoice.');return;}if(confirm('Delete '+chosen.length+' selected invoice(s)?'))txiDelete(chosen);break;case'btnPrint':window.print();break;case'btnClose':history.back();break;case'btnSave':alert('Open a Tax Invoice to save changes.');break;case'btnClone':if(chosen.length!==1){alert('Select one Tax Invoice to clone.');return;}location.href='/Master/TaxInvoice?id='+chosen[0];break;default:alert(id.replace('btn','')+' is not connected yet.');}}
-function txiRender(){let q=txiEl('txiSearch').value.toLowerCase();txiFiltered=txiRows.filter(x=>JSON.stringify(x).toLowerCase().includes(q));let size=Number(txiEl('txiPageSize').value),pages=Math.max(1,Math.ceil(txiFiltered.length/size));txiPage=Math.min(txiPage,pages);let start=(txiPage-1)*size;let body=txiEl('txiBody');body.innerHTML='';txiFiltered.slice(start,start+size).forEach(x=>{let tr=document.createElement('tr');let cb=document.createElement('input');cb.type='checkbox';cb.checked=txiSelected.has(Number(x.id));cb.addEventListener('change',()=>{cb.checked?txiSelected.add(Number(x.id)):txiSelected.delete(Number(x.id));tr.classList.toggle('selected',cb.checked);});let vals=[null,x.id,x.invoiceNo,x.invoiceDate,x.postDate,x.clientName||x.client,x.mainFrameAgreementName||x.mainFrameAgreement,x.payMonth,x.currency,x.printTemplateText||x.printTemplate,x.invoiceTypeText||x.invoiceType,x.timeSheetTypeText||x.timeSheetType,x.comments];vals.forEach((v,i)=>{let td=document.createElement('td');if(i===0)td.append(cb);else td.textContent=v??'';tr.append(td);});if(txiSelected.has(Number(x.id)))tr.classList.add('selected');body.append(tr);});txiEl('txiCount').textContent=txiFiltered.length+' records';txiEl('txiPageInfo').textContent='Page '+txiPage+' of '+pages;txiEl('txiPrev').disabled=txiPage<=1;txiEl('txiNext').disabled=txiPage>=pages;}
-async function txiDelete(ids){for(const id of ids){let token=document.querySelector('input[name="__RequestVerificationToken"]')?.value||'';let r=await fetch('/Master/TaxInvoice/Delete/'+id,{method:'POST',headers:{'RequestVerificationToken':token}});if(!r.ok){alert('Could not delete invoice ID '+id);return;}}location.reload();}
-document.addEventListener('DOMContentLoaded',()=>{txiButtons();txiRender();txiEl('txiSearch').addEventListener('input',()=>{txiPage=1;txiRender();});txiEl('txiPageSize').addEventListener('change',()=>{txiPage=1;txiRender();});txiEl('txiPrev').addEventListener('click',()=>{txiPage--;txiRender();});txiEl('txiNext').addEventListener('click',()=>{txiPage++;txiRender();});txiEl('txiSelectAll').addEventListener('change',e=>{let size=Number(txiEl('txiPageSize').value),start=(txiPage-1)*size;txiFiltered.slice(start,start+size).forEach(x=>e.target.checked?txiSelected.add(Number(x.id)):txiSelected.delete(Number(x.id)));txiRender();});});
-</script>
+
+        <div class="card-body">
+
+            <!-- TABLE TOOLS -->
+            <div class="ci-table-tools">
+
+                <div class="ci-page-size">
+                    <span>Show</span>
+
+                    <select id="ciPageSize" class="form-control form-control-sm">
+                        <option value="20">20</option>
+                        <option value="35">35</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                    <span>entries</span>
+                </div>
+
+                <input type="text"
+                       id="ciSearch"
+                       class="form-control form-control-sm ci-search"
+                       placeholder="Search tax invoice records..." />
+
+            </div>
+
+            <!-- RECORD TABLE -->
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped table-hover"
+                       id="ciTable">
+
+                    <thead>
+                        <tr>
+                            <th class="ci-control-column">
+                                <div class="ci-select-header">
+                                    <span>Select</span>
+                                    <input type="checkbox" id="ciSelectAll" />
+                                </div>
+                            </th>
+
+                            <th class="ci-action-column">Action</th>
+
+                            @foreach (var column in visibleColumns)
+{
+    var field = column["field"]?.ToString() ?? "";
+    var label = column["label"]?.ToString() ?? "";
+
+    <th>
+        @label
+
+        @if (field.Equals("ave", StringComparison.OrdinalIgnoreCase))
+        {
+            <i class="fas fa-info-circle ci-tooltip"
+               title="Y = Approved | N = Rejected | P = Pending"></i>
+        }
+        else if (field.Equals("appSt", StringComparison.OrdinalIgnoreCase))
+        {
+            <i class="fas fa-info-circle ci-tooltip"
+               title="P = Pending / Posted | A = Approved | R = Rejected | U = Under Review"></i>
+        }
+    </th>
 }
+                        </tr>
+                    </thead>
+
+                    <tbody id="ciTableBody">
+
+                        @if (rows.Count > 0)
+                        {
+                            foreach (var row in rows)
+                            {
+                                var id = GetValue(row, "id");
+                                var invoiceNo = GetValue(row, "invoiceNo");
+
+                                <tr data-id="@id">
+
+                                    <td class="text-center ci-control-column">
+                                        <input type="checkbox"
+                                               class="ci-checkbox"
+                                               value="@id" />
+                                    </td>
+
+                                    <td class="text-center ci-action-column">
+
+                                        <button type="button"
+                                                class="ci-row-edit"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="ci-row-delete"
+                                                title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+
+                                    </td>
+
+                                    @foreach (var column in visibleColumns)
+                                    {
+                                        var field = column["field"]?.ToString() ?? "";
+                                        var value = FormatValue(field, GetValue(row, field));
+
+                                        <td title="@value">@value</td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="ci-no-data">
+                                <td colspan="@(visibleColumns.Count + 2)" class="ci-empty">
+                                    No Tax Invoice records found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="ci-table-footer">
+
+                <span id="ciShowing">Showing 0 records</span>
+
+                <div class="ci-pagination">
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciPrevious" type="button">
+                        Previous
+                    </button>
+
+                    <span id="ciPageInfo">0 / 0</span>
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciNext" type="button">
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .candidate-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .candidate-index .ci-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .ci-toolbar-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-toolbar,
+    .ci-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .ci-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+    }
+
+    .ci-title i,
+    .ci-records-header i {
+        color: #4e73df;
+    }
+
+    .ci-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .ci-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ci-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .ci-buttons .btn i {
+        margin-right: 4px;
+    }
+
+    .ci-summary {
+        margin-bottom: 8px;
+    }
+
+    .ci-summary > div {
+        margin-bottom: 16px;
+    }
+
+    .ci-summary-card {
+        min-height: 78px;
+    }
+
+    .ci-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .ci-summary-label {
+        margin-bottom: 4px;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .ci-border-primary .ci-summary-label { color: #4e73df; }
+    .ci-border-info .ci-summary-label { color: #36b9cc; }
+    .ci-border-success .ci-summary-label { color: #1cc88a; }
+    .ci-border-warning .ci-summary-label { color: #f6c23e; }
+
+    .ci-summary-value,
+    .ci-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    #ciSelected {
+        font-size: .9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ci-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    .ci-border-primary { border-left: 4px solid #4e73df !important; }
+    .ci-border-warning { border-left: 4px solid #f6c23e !important; }
+    .ci-border-success { border-left: 4px solid #1cc88a !important; }
+    .ci-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .ci-records-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .ci-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+        background: #4e73df;
+    }
+
+    .ci-records-card .card-body {
+        padding: 16px;
+    }
+
+    .ci-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ci-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-page-size select {
+        width: 60px;
+    }
+
+    .ci-search {
+        width: 320px;
+        max-width: 100%;
+    }
+
+    .candidate-index .form-control {
+        min-height: 32px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .candidate-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+   #ciTable {
+    width: 100%;
+    min-width: 1250px;
+    table-layout: fixed;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+#ciTable th,
+#ciTable td {
+    box-sizing: border-box;
+    padding: 7px 6px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 10px;
+}
+
+#ciTable thead th {
+    background: #4e73df;
+    color: #fff;
+    border-color: #3d5cbe;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .02em;
+    vertical-align: middle;
+}
+
+#ciTable tbody td {
+    color: #5a5c69;
+    vertical-align: middle;
+}
+
+#ciTable th:nth-child(1),
+#ciTable td:nth-child(1) {
+    width: 55px;
+}
+
+#ciTable th:nth-child(2),
+#ciTable td:nth-child(2) {
+    width: 65px;
+}
+
+#ciTable th:nth-child(3),
+#ciTable td:nth-child(3) {
+    width: 90px;
+}
+
+#ciTable th:nth-child(4),
+#ciTable td:nth-child(4) {
+    width: 85px;
+}
+
+#ciTable th:nth-child(5),
+#ciTable td:nth-child(5) {
+    width: 150px;
+}
+
+#ciTable th:nth-child(6),
+#ciTable td:nth-child(6) {
+    width: 85px;
+}
+
+#ciTable th:nth-child(7),
+#ciTable td:nth-child(7) {
+    width: 90px;
+}
+
+#ciTable th:nth-child(8),
+#ciTable td:nth-child(8),
+#ciTable th:nth-child(9),
+#ciTable td:nth-child(9) {
+    width: 55px;
+    text-align: center;
+}
+
+#ciTable th:nth-child(10),
+#ciTable td:nth-child(10) {
+    width: 55px;
+    text-align: center;
+}
+
+#ciTable th:nth-child(n+11),
+#ciTable td:nth-child(n+11) {
+    width: 120px;
+}
+
+#ciTable tbody tr:hover {
+    background-color: #f3f6ff;
+}
+
+#ciTable tbody tr.selected {
+    background-color: #eaecf4;
+}
+
+.ci-control-column,
+.ci-action-column {
+    text-align: center !important;
+}
+
+.ci-select-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.ci-row-edit,
+.ci-row-delete {
+    border: none;
+    background: transparent;
+    padding: 4px 5px;
+    cursor: pointer;
+    font-size: .9rem;
+}
+
+.ci-row-edit { color: #4e73df; }
+.ci-row-delete { color: #e74a3b; }
+
+    .ci-checkbox,
+    #ciSelectAll {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .ci-empty {
+        padding: 24px !important;
+        color: #858796;
+        text-align: center !important;
+    }
+
+    .ci-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .ci-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .ci-pagination .btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .ci-toolbar {
+            align-items: flex-start;
+        }
+
+        .ci-buttons,
+        .ci-search {
+            width: 100%;
+        }
+
+        .ci-search {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .ci-buttons,
+        .ci-table-tools,
+        .ci-table-footer,
+        .ci-control-column,
+        .ci-action-column {
+            display: none !important;
+        }
+
+        .candidate-index .ci-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<script>
+(() => {
+    const body = document.getElementById("ciTableBody");
+    const searchInput = document.getElementById("ciSearch");
+    const pageSizeInput = document.getElementById("ciPageSize");
+    const selectAllCheckbox = document.getElementById("ciSelectAll");
+
+    const rows = Array.from(body.querySelectorAll("tr[data-id]"));
+
+    let filteredRows = rows.slice();
+    let currentPage = 1;
+
+    function getSelected() {
+        return Array.from(body.querySelectorAll(".ci-checkbox:checked"));
+    }
+
+    function updateSelection() {
+        const selected = getSelected();
+
+        const selectedInFiltered = filteredRows.filter(row =>
+            row.querySelector(".ci-checkbox")?.checked
+        ).length;
+
+        selectAllCheckbox.checked =
+            filteredRows.length > 0 &&
+            selectedInFiltered === filteredRows.length;
+
+        selectAllCheckbox.indeterminate =
+            selectedInFiltered > 0 &&
+            selectedInFiltered < filteredRows.length;
+
+        rows.forEach(row => {
+            row.classList.toggle(
+                "selected",
+                row.querySelector(".ci-checkbox")?.checked === true
+            );
+        });
+
+        const names = selected.map(checkbox => {
+    const row = checkbox.closest("tr");
+    return row.cells[4]?.textContent.trim() || checkbox.value;
+});
+
+        document.getElementById("ciSelected").textContent =
+            names.length ? names.join(", ") : "None";
+
+        document.querySelector('[data-action="edit"]')?.toggleAttribute(
+            "disabled", selected.length !== 1
+        );
+
+        document.querySelector('[data-action="clone"]')?.toggleAttribute(
+            "disabled", selected.length !== 1
+        );
+
+        document.querySelector('[data-action="delete"]')?.toggleAttribute(
+            "disabled", selected.length === 0
+        );
+    }
+
+    function renderRows() {
+        const pageSize = Number(pageSizeInput.value);
+
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / pageSize)
+        );
+
+        currentPage = Math.min(currentPage, totalPages);
+
+        rows.forEach(row => row.hidden = true);
+
+        const start = (currentPage - 1) * pageSize;
+        const visibleRows = filteredRows.slice(start, start + pageSize);
+
+        visibleRows.forEach(row => row.hidden = false);
+
+        document.getElementById("ciDisplayed").textContent =
+            filteredRows.length;
+
+        document.getElementById("ciRecordCount").textContent =
+            `${filteredRows.length} Records`;
+
+        document.getElementById("ciShowing").textContent =
+            filteredRows.length
+                ? `Showing ${start + 1} to ${start + visibleRows.length} of ${filteredRows.length} records`
+                : "Showing 0 records";
+
+        document.getElementById("ciPageInfo").textContent =
+            filteredRows.length
+                ? `${currentPage} / ${totalPages}`
+                : "0 / 0";
+
+        document.getElementById("ciPrevious").disabled =
+            currentPage <= 1;
+
+        document.getElementById("ciNext").disabled =
+            currentPage >= totalPages;
+
+        updateSelection();
+    }
+
+    function filterRows() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        filteredRows = rows.filter(row =>
+            row.innerText.toLowerCase().includes(query)
+        );
+
+        currentPage = 1;
+        renderRows();
+    }
+
+    function editRecord(id) {
+        if (!id) {
+            alert("Please select a Tax Invoice.");
+            return;
+        }
+
+        window.location.href =
+            "/Master/TaxInvoice?id=" + encodeURIComponent(id);
+    }
+
+    async function deleteRecord(id) {
+        if (!id) {
+            alert("Please select a Tax Invoice.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete this Tax Invoice?"))
+            return;
+
+        const token = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        )?.value || "";
+
+        const response = await fetch(
+            "/Master/TaxInvoice/Delete/" + encodeURIComponent(id),
+            {
+                method: "POST",
+                headers: {
+                    "RequestVerificationToken": token
+                }
+            }
+        );
+
+        if (!response.ok) {
+            alert("Could not delete Tax Invoice ID " + id);
+            return;
+        }
+
+        location.reload();
+    }
+
+    selectAllCheckbox.addEventListener("change", function () {
+        filteredRows.forEach(row => {
+            const checkbox = row.querySelector(".ci-checkbox");
+
+            if (checkbox)
+                checkbox.checked = this.checked;
+        });
+
+        updateSelection();
+    });
+
+    rows.forEach(row => {
+        row.querySelector(".ci-checkbox")?.addEventListener(
+            "change", updateSelection
+        );
+
+        row.addEventListener("click", event => {
+            if (event.target.closest(
+                ".ci-row-edit, .ci-row-delete, .ci-checkbox"
+            )) return;
+
+            const checkbox = row.querySelector(".ci-checkbox");
+            checkbox.checked = !checkbox.checked;
+            updateSelection();
+        });
+    });
+
+    body.addEventListener("click", event => {
+        const edit = event.target.closest(".ci-row-edit");
+        const del = event.target.closest(".ci-row-delete");
+
+        if (!edit && !del) return;
+
+        const row = event.target.closest("tr[data-id]");
+        if (!row) return;
+
+        if (edit)
+            editRecord(row.dataset.id);
+
+        if (del)
+            deleteRecord(row.dataset.id);
+    });
+
+    document.querySelector(".ci-buttons")?.addEventListener(
+        "click", event => {
+
+            const button = event.target.closest("[data-action]");
+
+            if (!button || button.disabled)
+                return;
+
+            const action = button.dataset.action;
+            const selected = getSelected();
+
+            switch (action) {
+
+                case "new":
+                    window.location.href = "/Master/TaxInvoice";
+                    break;
+
+                case "edit":
+                    if (selected.length === 1)
+                        editRecord(selected[0].value);
+                    else
+                        alert("Select one Tax Invoice to edit.");
+                    break;
+
+                case "clone":
+                    if (selected.length !== 1) {
+                        alert("Select one Tax Invoice to clone.");
+                        return;
+                    }
+
+                    window.location.href =
+                        "/Master/TaxInvoice?id=" +
+                        encodeURIComponent(selected[0].value) +
+                        "&clone=true";
+                    break;
+
+                case "delete":
+                    if (!selected.length) {
+                        alert("Select at least one Tax Invoice.");
+                        return;
+                    }
+
+                    if (selected.length > 1) {
+                        alert("Please delete one Tax Invoice at a time.");
+                        return;
+                    }
+
+                    deleteRecord(selected[0].value);
+                    break;
+
+                case "print":
+                    window.print();
+                    break;
+
+                case "close":
+                    history.back();
+                    break;
+
+                case "home":
+                    window.location.href = "/Home/Index";
+                    break;
+
+                default:
+                    alert("The " + action + " action is not connected yet.");
+                    break;
+            }
+        }
+    );
+
+    searchInput.addEventListener("input", filterRows);
+
+    pageSizeInput.addEventListener("change", () => {
+        currentPage = 1;
+        renderRows();
+    });
+
+    document.getElementById("ciPrevious").addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderRows();
+        }
+    });
+
+    document.getElementById("ciNext").addEventListener("click", () => {
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / Number(pageSizeInput.value))
+        );
+
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderRows();
+        }
+    });
+
+    renderRows();
+})();
+</script>
+
+@Html.AntiForgeryToken()

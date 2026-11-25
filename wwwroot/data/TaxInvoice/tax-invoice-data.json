@@ -1,4 +1,19 @@
 {
-  "lastId": 0,
-  "invoices": []
+  "lastId": 1020,
+  "invoices": [
+    {
+      "id": 1001,
+      "invoiceNo": "TI-2026-001",
+      "invoiceDate": "2026-10-01",
+      "clientName": "Al Noor Trading LLC",
+      "clientCode": "CL-001",
+      "refNo": "REF-1001",
+      "ave": "Y",
+      "appSt": "A",
+      "createdBy": "Jerin",
+      "createdDateTime": "2026-10-01T09:15:00",
+      "modifiedBy": "Ahmed",
+      "modifiedDateTime": "2026-10-02T11:30:00"
+    }
+  ]
 }

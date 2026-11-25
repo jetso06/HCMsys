@@ -1,0 +1,11 @@
+[
+  {
+    "value": "OFFER-001",
+    "text": "Offer 001",
+    "callOff": "CO-001",
+    "callOffType": "New Recruitment",
+    "candidate": "CAND-001",
+    "employee": "",
+    "status": "Pending"
+  }
+]

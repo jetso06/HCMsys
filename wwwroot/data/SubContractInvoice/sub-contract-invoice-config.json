@@ -1,0 +1,424 @@
+{
+  "page": {
+    "title": "Sub Contract Invoice",
+    "pageId": 403,
+    "icon": "fa-file-invoice-dollar"
+  },
+  "buttons": {
+    "form": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "primary",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "warning",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "success",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "dark",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      },
+      {
+        "id": "saveAs",
+        "label": "Save As",
+        "icon": "fa-save",
+        "style": "info",
+        "action": "saveAs",
+        "visible": true
+      },
+      {
+        "id": "revisions",
+        "label": "Revisions",
+        "icon": "fa-history",
+        "style": "secondary",
+        "action": "revisions",
+        "visible": true
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "documentInformation",
+      "title": "Document Information",
+      "columns": 3,
+      "fields": [
+        {
+          "field": "DocNo",
+          "label": "Doc No",
+          "type": "text",
+          "maxlength": 60,
+          "readonly": true,
+          "required": false
+        },
+        {
+          "field": "DocDate",
+          "label": "Doc Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "PostDate",
+          "label": "PostDate",
+          "type": "datetime-local",
+          "required": false
+        },
+        {
+          "field": "SupplierVendor",
+          "label": "Supplier/Vendor",
+          "type": "select",
+          "source": "suppliers.json",
+          "required": true
+        },
+        {
+          "field": "Currency",
+          "label": "Currency",
+          "type": "select",
+          "source": "currencies.json",
+          "required": true
+        },
+        {
+          "field": "ExRate",
+          "label": "Ex Rate",
+          "type": "number",
+          "step": "0.000001",
+          "min": "0",
+          "required": true
+        },
+        {
+          "field": "AttentionPerson",
+          "label": "Attention Person",
+          "type": "select",
+          "source": "attention-persons.json",
+          "required": false
+        },
+        {
+          "field": "PaymentTerms",
+          "label": "Payment Terms",
+          "type": "select",
+          "source": "payment-terms.json",
+          "required": false
+        },
+        {
+          "field": "Comments",
+          "label": "Comments",
+          "type": "textarea",
+          "maxlength": 200,
+          "required": false
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "attendance",
+      "title": "Attendance",
+      "subtitle": "Employee Attendance and Billing Details",
+      "property": "Attendance",
+      "allowAdd": true,
+      "allowDelete": true,
+      "allowMultiDelete": true,
+      "selection": {
+        "enabled": true,
+        "type": "checkbox",
+        "selectAll": true
+      },
+      "columns": [
+        {
+          "field": "StartDate",
+          "label": "Start Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "EndDate",
+          "label": "End Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "EmpCode",
+          "label": "EmpCode",
+          "type": "select",
+          "source": "employees.json",
+          "required": true
+        },
+        {
+          "field": "EmpName",
+          "label": "EmpName",
+          "type": "text",
+          "readonly": true
+        },
+        {
+          "field": "MainFrameAgreement",
+          "label": "Main Frame Agreement",
+          "type": "select",
+          "source": "main-frame-agreements.json",
+          "required": true
+        },
+        {
+          "field": "CallOff",
+          "label": "Call Off",
+          "type": "select",
+          "source": "call-offs.json",
+          "required": true,
+          "filterBy": "MainFrameAgreement"
+        },
+        {
+          "field": "ContractType",
+          "label": "Contract Type",
+          "type": "select",
+          "source": "contract-types.json",
+          "required": true
+        },
+        {
+          "field": "BillingHeads",
+          "label": "Billing Heads",
+          "type": "select",
+          "source": "billing-heads.json",
+          "required": true
+        },
+        {
+          "field": "DenominationType",
+          "label": "Denomination Type",
+          "type": "select",
+          "source": "denomination-types.json",
+          "required": true
+        },
+        {
+          "field": "Qty",
+          "label": "Qty",
+          "type": "number",
+          "step": "0.001",
+          "required": true
+        },
+        {
+          "field": "Rate",
+          "label": "Rate",
+          "type": "number",
+          "step": "0.001",
+          "required": true
+        },
+        {
+          "field": "Amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001",
+          "readonly": true,
+          "calculation": "Qty * Rate"
+        },
+        {
+          "field": "TaxPercent",
+          "label": "Tax %",
+          "type": "number",
+          "step": "0.01",
+          "required": false
+        },
+        {
+          "field": "TaxAmount",
+          "label": "Tax Amount",
+          "type": "number",
+          "step": "0.001",
+          "readonly": true,
+          "calculation": "Amount * TaxPercent / 100"
+        },
+        {
+          "field": "NetAmount",
+          "label": "Net Amount",
+          "type": "number",
+          "step": "0.001",
+          "readonly": true,
+          "calculation": "Amount + TaxAmount"
+        },
+        {
+          "field": "PONumber",
+          "label": "PO Number",
+          "type": "text",
+          "required": false
+        },
+        {
+          "field": "PODate",
+          "label": "PO Date",
+          "type": "date",
+          "required": false
+        },
+        {
+          "field": "Remarks",
+          "label": "Remarks",
+          "type": "text",
+          "maxlength": 250,
+          "required": false
+        }
+      ],
+      "defaultRows": []
+    }
+  ],
+  "calculations": [
+    {
+      "target": "Amount",
+      "expression": "Qty * Rate",
+      "triggerFields": [
+        "Qty",
+        "Rate"
+      ]
+    },
+    {
+      "target": "TaxAmount",
+      "expression": "Amount * TaxPercent / 100",
+      "triggerFields": [
+        "Amount",
+        "TaxPercent"
+      ]
+    },
+    {
+      "target": "NetAmount",
+      "expression": "Amount + TaxAmount",
+      "triggerFields": [
+        "Amount",
+        "TaxAmount"
+      ]
+    }
+  ],
+  "index": {
+    "heading": "Sub Contract Invoice List",
+    "columns": [
+      {
+        "field": "DocNo",
+        "label": "Doc No",
+        "visible": true
+      },
+      {
+        "field": "DocDate",
+        "label": "Date",
+        "visible": true
+      },
+      {
+        "field": "Name",
+        "label": "Name",
+        "visible": true
+      },
+      {
+        "field": "Code",
+        "label": "Code",
+        "visible": true
+      },
+      {
+        "field": "RefNo",
+        "label": "Ref No",
+        "visible": true
+      },
+      {
+        "field": "Ave",
+        "label": "Ave",
+        "tooltip": "Approval Value",
+        "visible": true
+      },
+      {
+        "field": "AppSt",
+        "label": "AppSt",
+        "tooltip": "Approval Status",
+        "visible": true
+      },
+      {
+        "field": "Id",
+        "label": "ID",
+        "visible": true
+      },
+      {
+        "field": "CreatedBy",
+        "label": "Created By",
+        "visible": true
+      },
+      {
+        "field": "CreatedDateTime",
+        "label": "Created DateTime",
+        "visible": true
+      },
+      {
+        "field": "ModifiedBy",
+        "label": "Modified By",
+        "visible": true
+      },
+      {
+        "field": "ModifiedDateTime",
+        "label": "Modified DateTime",
+        "visible": true
+      }
+    ]
+  }
+}

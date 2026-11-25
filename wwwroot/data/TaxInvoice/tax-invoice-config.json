@@ -1,82 +1,495 @@
 {
-  "page": { "name": "Tax Invoice", "title": "Tax Invoice", "formRoute": "/Master/TaxInvoice", "indexRoute": "/Master/TaxInvoiceIndex" },
+  "page": {
+    "name": "Tax Invoice",
+    "title": "Tax Invoice",
+    "formRoute": "/Master/TaxInvoice",
+    "indexRoute": "/Master/TaxInvoiceIndex"
+  },
   "buttons": {
     "form": [
-      {"id":"btnHome","text":"Home","icon":"fa-home","style":"primary"},
-      {"id":"btnNew","text":"New","icon":"fa-plus","style":"success"},
-      {"id":"btnEdit","text":"Edit","icon":"fa-edit","style":"warning"},
-      {"id":"btnSave","text":"Save","icon":"fa-save","style":"primary"},
-      {"id":"btnClone","text":"Clone","icon":"fa-copy","style":"info"},
-      {"id":"btnUnPost","text":"UnPost","icon":"fa-undo","style":"secondary"},
-      {"id":"btnPrint","text":"Print","icon":"fa-print","style":"info"},
-      {"id":"btnDelete","text":"Delete","icon":"fa-trash","style":"danger"},
-      {"id":"btnApprove","text":"Approve","icon":"fa-check","style":"success"},
-      {"id":"btnReject","text":"Reject","icon":"fa-times","style":"danger"},
-      {"id":"btnAuthTracker","text":"Auth Tracker","icon":"fa-history","style":"info"},
-      {"id":"btnClose","text":"Close","icon":"fa-times-circle","style":"secondary"}
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "primary"
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "success"
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning"
+      },
+      {
+        "id": "btnSave",
+        "text": "Save",
+        "icon": "fa-save",
+        "style": "primary"
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info"
+      },
+      {
+        "id": "btnUnPost",
+        "text": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary"
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "info"
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger"
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success"
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger"
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info"
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary"
+      }
     ],
     "index": [
-      {"id":"btnHome","text":"Home","icon":"fa-home","style":"primary"},
-      {"id":"btnNew","text":"New","icon":"fa-plus","style":"success"},
-      {"id":"btnEdit","text":"Edit","icon":"fa-edit","style":"warning"},
-      {"id":"btnSave","text":"Save","icon":"fa-save","style":"primary"},
-      {"id":"btnClone","text":"Clone","icon":"fa-copy","style":"info"},
-      {"id":"btnUnPost","text":"UnPost","icon":"fa-undo","style":"secondary"},
-      {"id":"btnPrint","text":"Print","icon":"fa-print","style":"info"},
-      {"id":"btnDelete","text":"Delete","icon":"fa-trash","style":"danger"},
-      {"id":"btnApprove","text":"Approve","icon":"fa-check","style":"success"},
-      {"id":"btnReject","text":"Reject","icon":"fa-times","style":"danger"},
-      {"id":"btnAuthTracker","text":"Auth Tracker","icon":"fa-history","style":"info"},
-      {"id":"btnClose","text":"Close","icon":"fa-times-circle","style":"secondary"}
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "primary"
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "success"
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning"
+      },
+      {
+        "id": "btnSave",
+        "text": "Save",
+        "icon": "fa-save",
+        "style": "primary"
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info"
+      },
+      {
+        "id": "btnUnPost",
+        "text": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary"
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "info"
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger"
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success"
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger"
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info"
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary"
+      }
     ]
   },
   "headerFields": [
-    {"id":"invoiceNo","label":"Invoice No","type":"text","maxLength":60,"required":true},
-    {"id":"invoiceDate","label":"Invoice Date","type":"date","required":true},
-    {"id":"postDate","label":"PostDate","type":"datetime-local","readonly":true,"defaultValue":"currentDateTime"},
-    {"id":"clientId","label":"Client","type":"select","source":"clients","valueField":"id","textField":"name","required":true},
-    {"id":"mainFrameAgreementId","label":"Main Frame Agreement / Contract No","type":"select","source":"mainFrameAgreements","valueField":"id","textField":"name","dependsOn":"clientId","required":true},
-    {"id":"payMonth","label":"PayMonth","type":"select","source":"payMonths","required":true},
-    {"id":"currency","label":"Currency","type":"select","source":"currencies","required":true},
-    {"id":"exchangeRate","label":"Ex Rate","type":"number","step":"0.000001","defaultValue":"1"},
-    {"id":"printTemplate","label":"Print Template","type":"select","source":"printTemplates","required":true},
-    {"id":"employeeMaster","label":"Employee Master","type":"text"},
-    {"id":"pdoNo","label":"PDO No","type":"text","maxLength":30},
-    {"id":"serviceEntryNo","label":"Service Entry No","type":"text","maxLength":30},
-    {"id":"attentionPerson","label":"Attention Person","type":"select","source":"attentionPersons"},
-    {"id":"paymentTerms","label":"Payment Terms","type":"select","source":"paymentTerms"},
-    {"id":"businessType","label":"Business Type","type":"select","source":"businessTypes"},
-    {"id":"invoiceType","label":"Invoice Type","type":"select","source":"invoiceTypes","required":true},
-    {"id":"timeSheetType","label":"TimeSheet Type","type":"select","source":"timeSheetTypes","required":true},
-    {"id":"comments","label":"Comments","type":"textarea","maxLength":200},
-    {"id":"invBatchNo","label":"InvBatchno","type":"select","source":"invoiceBatches"}
+    {
+      "id": "invoiceNo",
+      "label": "Invoice No",
+      "type": "text",
+      "maxLength": 60,
+      "required": true
+    },
+    {
+      "id": "invoiceDate",
+      "label": "Invoice Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "id": "postDate",
+      "label": "PostDate",
+      "type": "datetime-local",
+      "readonly": true,
+      "defaultValue": "currentDateTime"
+    },
+    {
+      "id": "clientId",
+      "label": "Client",
+      "type": "select",
+      "source": "clients",
+      "valueField": "id",
+      "textField": "name",
+      "required": true
+    },
+    {
+      "id": "mainFrameAgreementId",
+      "label": "Main Frame Agreement / Contract No",
+      "type": "select",
+      "source": "mainFrameAgreements",
+      "valueField": "id",
+      "textField": "name",
+      "dependsOn": "clientId",
+      "required": true
+    },
+    {
+      "id": "payMonth",
+      "label": "PayMonth",
+      "type": "select",
+      "source": "payMonths",
+      "required": true
+    },
+    {
+      "id": "currency",
+      "label": "Currency",
+      "type": "select",
+      "source": "currencies",
+      "required": true
+    },
+    {
+      "id": "exchangeRate",
+      "label": "Ex Rate",
+      "type": "number",
+      "step": "0.000001",
+      "defaultValue": "1"
+    },
+    {
+      "id": "printTemplate",
+      "label": "Print Template",
+      "type": "select",
+      "source": "printTemplates",
+      "required": true
+    },
+    {
+      "id": "employeeMaster",
+      "label": "Employee Master",
+      "type": "text"
+    },
+    {
+      "id": "pdoNo",
+      "label": "PDO No",
+      "type": "text",
+      "maxLength": 30
+    },
+    {
+      "id": "serviceEntryNo",
+      "label": "Service Entry No",
+      "type": "text",
+      "maxLength": 30
+    },
+    {
+      "id": "attentionPerson",
+      "label": "Attention Person",
+      "type": "select",
+      "source": "attentionPersons"
+    },
+    {
+      "id": "paymentTerms",
+      "label": "Payment Terms",
+      "type": "select",
+      "source": "paymentTerms"
+    },
+    {
+      "id": "businessType",
+      "label": "Business Type",
+      "type": "select",
+      "source": "businessTypes"
+    },
+    {
+      "id": "invoiceType",
+      "label": "Invoice Type",
+      "type": "select",
+      "source": "invoiceTypes",
+      "required": true
+    },
+    {
+      "id": "timeSheetType",
+      "label": "TimeSheet Type",
+      "type": "select",
+      "source": "timeSheetTypes",
+      "required": true
+    },
+    {
+      "id": "comments",
+      "label": "Comments",
+      "type": "textarea",
+      "maxLength": 200
+    },
+    {
+      "id": "invBatchNo",
+      "label": "InvBatchno",
+      "type": "select",
+      "source": "invoiceBatches"
+    }
   ],
   "grid": {
-    "title":"Attendance / Billing Details",
-    "columns":[
-      {"field":"payMonth","header":"PayMonth","type":"text","readOnly":true},
-      {"field":"tsBatchNo","header":"TS Batch No","type":"select","source":"timesheetBatches"},
-      {"field":"startDate","header":"Start Date","type":"date"},
-      {"field":"endDate","header":"End Date","type":"date"},
-      {"field":"empCode","header":"EmpCode","type":"text","readOnly":true},
-      {"field":"empName","header":"EmpName","type":"text","readOnly":true},
-      {"field":"contractType","header":"Contract Type","type":"text","readOnly":true},
-      {"field":"billingHead","header":"Billing Heads","type":"select","source":"billingHeads"},
-      {"field":"denominationType","header":"Denomination Type","type":"select","source":"denominationTypes"},
-      {"field":"qty","header":"Qty","type":"number","step":"0.001"},
-      {"field":"rate","header":"Rate","type":"number","step":"0.001"},
-      {"field":"amount","header":"Amount","type":"number","step":"0.001","readOnly":true},
-      {"field":"serviceFeeType","header":"Service Fee Type","type":"select","source":"serviceFeeTypes"},
-      {"field":"serviceFeeValue","header":"Service Fee Value","type":"number","step":"0.001"},
-      {"field":"taxPercent","header":"Tax %","type":"number","step":"0.01"},
-      {"field":"taxAmount","header":"Tax Amount","type":"number","step":"0.001","readOnly":true},
-      {"field":"netAmount","header":"Net Amount","type":"number","step":"0.001","readOnly":true},
-      {"field":"poNumber","header":"PO Number","type":"text"},
-      {"field":"poDate","header":"PO Date","type":"date"},
-      {"field":"remarks","header":"Remarks","type":"text"},
-      {"field":"pdoNo","header":"PDO No","type":"text","maxLength":30},
-      {"field":"serviceEntryNo","header":"Service Entry No","type":"text","maxLength":30},
-      {"field":"callOff","header":"Call Off","type":"select","source":"callOffs"}
+    "title": "Attendance / Billing Details",
+    "columns": [
+      {
+        "field": "payMonth",
+        "header": "PayMonth",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "tsBatchNo",
+        "header": "TS Batch No",
+        "type": "select",
+        "source": "timesheetBatches"
+      },
+      {
+        "field": "startDate",
+        "header": "Start Date",
+        "type": "date"
+      },
+      {
+        "field": "endDate",
+        "header": "End Date",
+        "type": "date"
+      },
+      {
+        "field": "empCode",
+        "header": "EmpCode",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "empName",
+        "header": "EmpName",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "contractType",
+        "header": "Contract Type",
+        "type": "text",
+        "readOnly": true
+      },
+      {
+        "field": "billingHead",
+        "header": "Billing Heads",
+        "type": "select",
+        "source": "billingHeads"
+      },
+      {
+        "field": "denominationType",
+        "header": "Denomination Type",
+        "type": "select",
+        "source": "denominationTypes"
+      },
+      {
+        "field": "qty",
+        "header": "Qty",
+        "type": "number",
+        "step": "0.001"
+      },
+      {
+        "field": "rate",
+        "header": "Rate",
+        "type": "number",
+        "step": "0.001"
+      },
+      {
+        "field": "amount",
+        "header": "Amount",
+        "type": "number",
+        "step": "0.001",
+        "readOnly": true
+      },
+      {
+        "field": "serviceFeeType",
+        "header": "Service Fee Type",
+        "type": "select",
+        "source": "serviceFeeTypes"
+      },
+      {
+        "field": "serviceFeeValue",
+        "header": "Service Fee Value",
+        "type": "number",
+        "step": "0.001"
+      },
+      {
+        "field": "taxPercent",
+        "header": "Tax %",
+        "type": "number",
+        "step": "0.01"
+      },
+      {
+        "field": "taxAmount",
+        "header": "Tax Amount",
+        "type": "number",
+        "step": "0.001",
+        "readOnly": true
+      },
+      {
+        "field": "netAmount",
+        "header": "Net Amount",
+        "type": "number",
+        "step": "0.001",
+        "readOnly": true
+      },
+      {
+        "field": "poNumber",
+        "header": "PO Number",
+        "type": "text"
+      },
+      {
+        "field": "poDate",
+        "header": "PO Date",
+        "type": "date"
+      },
+      {
+        "field": "remarks",
+        "header": "Remarks",
+        "type": "text"
+      },
+      {
+        "field": "pdoNo",
+        "header": "PDO No",
+        "type": "text",
+        "maxLength": 30
+      },
+      {
+        "field": "serviceEntryNo",
+        "header": "Service Entry No",
+        "type": "text",
+        "maxLength": 30
+      },
+      {
+        "field": "callOff",
+        "header": "Call Off",
+        "type": "select",
+        "source": "callOffs"
+      }
+    ]
+  },
+
+  "index": {
+    "heading": "Tax Invoice List",
+    "columns": [
+      {
+        "field": "invoiceNo",
+        "label": "Doc No",
+        "visible": true
+      },
+      {
+        "field": "invoiceDate",
+        "label": "Date",
+        "visible": true
+      },
+      {
+        "field": "clientName",
+        "label": "Name",
+        "visible": true
+      },
+      {
+        "field": "clientCode",
+        "label": "Code",
+        "visible": true
+      },
+      {
+        "field": "refNo",
+        "label": "Ref No",
+        "visible": true
+      },
+      {
+        "field": "ave",
+        "label": "Ave",
+        "visible": true
+      },
+      {
+        "field": "appSt",
+        "label": "AppSt",
+        "visible": true
+      },
+      {
+        "field": "id",
+        "label": "ID",
+        "visible": true
+      },
+      {
+        "field": "createdBy",
+        "label": "Created By",
+        "visible": true
+      },
+      {
+        "field": "createdDateTime",
+        "label": "Created DateTime",
+        "visible": true
+      },
+      {
+        "field": "modifiedBy",
+        "label": "Modified By",
+        "visible": true
+      },
+      {
+        "field": "modifiedDateTime",
+        "label": "Modified DateTime",
+        "visible": true
+      }
     ]
   }
 }

@@ -1,0 +1,524 @@
+
+@model HCMSys.Controllers.OfferOnboardingModule.OARecord
+@using HCMSys.Controllers.OfferOnboardingModule
+@using System.Globalization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var config = ViewBag.Config as OAConfig ?? new OAConfig();
+
+    var lookups = ViewBag.Lookups as Dictionary<string, List<OAOption>>
+        ?? new Dictionary<string, List<OAOption>>();
+
+    bool isNew = Model.Id == 0;
+    bool isReadOnly = (bool?)ViewBag.IsReadOnly == true;
+
+    ViewData["Title"] = config.Page.Title;
+
+    string FieldValue(string name, string type)
+    {
+        var value = Model.GetType().GetProperty(name)?.GetValue(Model);
+
+        if (value is DateTime dt)
+            return dt.ToString(
+                type == "datetime-local" ? "yyyy-MM-ddTHH:mm" : "yyyy-MM-dd"
+            );
+
+        return Convert.ToString(value, CultureInfo.InvariantCulture) ?? "";
+    }
+
+    List<OAOption> Options(string? source) =>
+        !string.IsNullOrWhiteSpace(source) &&
+        lookups.TryGetValue(source, out var values)
+            ? values
+            : new();
+
+    var grid = config.Grids.FirstOrDefault();
+
+    var rows = Model.Comparison.Count > 0
+        ? Model.Comparison
+        : grid?.DefaultRows ?? new List<OAComparisonRow>();
+
+    var topActions = new[]
+    {
+        "new", "edit", "save", "clone", "unpost",
+        "print", "delete", "approve", "reject",
+        "authtracker", "close"
+    };
+}
+
+<style>
+html{font-size:14px}
+.oa-page{width:100%;padding:0 15px 24px;color:#5a5c69;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;font-size:13px}
+.oa-page *,.oa-page *:before,.oa-page *:after{box-sizing:border-box}
+.oa-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:12px 18px;margin-bottom:16px;background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.12)}
+.oa-title{display:flex;align-items:center;gap:8px;margin:0;color:#5a5c69;font-size:.85rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.oa-title i,.oa-card-header i{color:#4e73df}
+.oa-toolbar{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:6px}
+.oa-toolbar .btn,.oa-action-toolbar .btn{padding:5px 9px;border-radius:4px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.oa-toolbar form,.oa-action-toolbar form{margin:0}
+.oa-card{margin-bottom:16px;overflow:hidden;background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10)}
+.oa-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;color:#5a5c69;font-weight:800}
+.oa-card-header i{margin-right:7px}
+.oa-card-body{padding:18px}
+.oa-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 20px}
+.oa-field{min-width:0}
+.oa-field label{display:block;margin-bottom:6px;color:#5a5c69;font-size:12px;font-weight:700}
+.oa-field .form-control,.oa-field .custom-select{width:100%;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px;box-shadow:none}
+.oa-required{color:#e74a3b}
+.oa-status{display:inline-block;padding:4px 9px;border-radius:12px;background:#eef2ff;color:#4e73df;font-size:11px;font-weight:700}
+.oa-message{margin-bottom:14px;padding:10px 14px;border-radius:4px;font-size:13px}
+.oa-message.success{background:#e8f5e9;color:#247a45}
+.oa-message.error{background:#fcebea;color:#c0392b}
+.oa-action-card{margin-bottom:16px;padding:12px 18px;background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10)}
+/* Business action buttons and descriptions */
+.oa-business-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin-top: 24px;
+    padding-top: 12px;
+}
+
+.oa-business-action-row {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    min-height: 42px;
+    margin-bottom: 4px;
+}
+
+.oa-business-action-button {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.oa-business-action-button .btn {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.oa-business-action-description {
+    color: #5a5c69;
+    font-size: 12px;
+    line-height: 1.7;
+    padding-left: 4px;
+}
+
+@@media(max-width:600px) {
+    .oa-business-action-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+}
+.oa-table-wrap{width:100%;overflow-x:auto}
+.oa-table{width:100%;margin:0;border-collapse:collapse;table-layout:fixed}
+.oa-table th{padding:10px 11px;background:#4e73df;border:1px solid #e3e6f0;color:#fff;text-align:left;font-size:11px;text-transform:uppercase}
+.oa-table td{padding:7px 8px;border:1px solid #e3e6f0;vertical-align:middle}
+.oa-table tbody tr:nth-child(even){background:#f8f9fc}
+.oa-table input{width:100%;min-width:100px;height:36px;padding:6px 10px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px}
+.oa-table input[readonly]{background:#f8f9fc}
+.oa-no-print{display:inline-block}
+@@media(max-width:992px){.oa-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@@media(max-width:600px){.oa-grid{grid-template-columns:1fr}.oa-header{align-items:flex-start}.oa-toolbar{justify-content:flex-start;width:100%}}
+@@media print{.oa-toolbar,.oa-action-card,.oa-no-print{display:none!important}.oa-card,.oa-header{box-shadow:none;break-inside:avoid}.oa-page{padding:0}}
+</style>
+
+<div class="oa-page">
+
+    <!-- TOP TOOLBAR -->
+    <div class="oa-header">
+        <h5 class="oa-title">
+            <i class="fas @config.Page.Icon"></i>
+            @config.Page.Title
+        </h5>
+
+        <div class="oa-toolbar">
+            @foreach (var button in config.Buttons.Form
+                .Where(x => x.Visible && topActions.Contains(x.Action.ToLowerInvariant())))
+            {
+                switch (button.Action.ToLowerInvariant())
+                {
+                    case "new":
+                        <a href="@Url.Action("Form","OfferOnboarding")"
+                           class="btn btn-@button.Style btn-sm shadow-sm">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </a>
+                        break;
+
+                    case "edit":
+                        <button type="button" id="oaEdit"
+                                class="btn btn-@button.Style btn-sm shadow-sm"
+                                disabled="@(isNew)">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </button>
+                        break;
+
+                    case "save":
+                        <button type="submit" form="oaForm" id="oaSave"
+                                class="btn btn-@button.Style btn-sm shadow-sm"
+                                disabled="@(isReadOnly)">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </button>
+                        break;
+
+                    case "clone":
+                        <a href="@(isNew ? "#" : Url.Action("Form","OfferOnboarding",new { id=Model.Id, clone=true }))"
+                           class="btn btn-@button.Style btn-sm shadow-sm @(isNew ? "disabled" : "")">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </a>
+                        break;
+
+                    case "unpost":
+                    case "delete":
+                    case "approve":
+                    case "reject":
+                        <form method="post"
+                              action="@Url.Action(char.ToUpperInvariant(button.Action[0]) + button.Action.Substring(1), "OfferOnboarding", new { id=Model.Id })"
+                              class="oa-no-print"
+                              onsubmit="return confirm('Continue with @button.Label?')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit"
+                                    class="btn btn-@button.Style btn-sm shadow-sm"
+                                    disabled="@(isNew)">
+                                <i class="fas @button.Icon mr-1"></i>@button.Label
+                            </button>
+                        </form>
+                        break;
+
+                    case "print":
+                        <button type="button" onclick="window.print()"
+                                class="btn btn-@button.Style btn-sm shadow-sm">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </button>
+                        break;
+
+                    case "authtracker":
+                        <button type="button" id="oaAuthTracker"
+                                class="btn btn-@button.Style btn-sm shadow-sm"
+                                disabled="@(isNew)">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </button>
+                        break;
+
+                    case "close":
+                        <a href="@Url.Action("Index","Home")"
+                           class="btn btn-@button.Style btn-sm shadow-sm">
+                            <i class="fas @button.Icon mr-1"></i>@button.Label
+                        </a>
+                        break;
+                }
+            }
+        </div>
+    </div>
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="oa-message error">@TempData["Error"]</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="oa-message success">@TempData["Success"]</div>
+    }
+
+    <form id="oaForm" method="post" action="@Url.Action("Save","OfferOnboarding")">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="DocNo" />
+        <input type="hidden" asp-for="Status" />
+
+        <!-- DOCUMENT FIELDS -->
+        @foreach (var section in config.Sections)
+        {
+            <div class="oa-card">
+                <div class="oa-card-header">
+                    <span><i class="fas fa-folder-open"></i>@(section.Title)</span>
+                    <span class="oa-status">@Model.Status</span>
+                </div>
+
+                <div class="oa-card-body">
+                    <div class="oa-grid">
+                        @foreach (var field in section.Fields)
+                        {
+                            var value = FieldValue(field.Field, field.Type);
+                            var locked = isReadOnly || field.Readonly;
+
+                            <div class="oa-field">
+                                <label for="@field.Field">
+                                    @field.Label
+                                    @if (field.Required)
+                                    {
+                                        <span class="oa-required">*</span>
+                                    }
+                                </label>
+
+                                @if (field.Type == "select")
+                                {
+                                    <select id="@field.Field"
+                                            name="@field.Field"
+                                            class="custom-select oa-field-select"
+                                            data-field="@field.Field"
+                                            data-source="@field.Source"
+                                            data-autofill="@(field.AutoFill?["endpoint"]?.ToString())"
+                                            data-trigger="@(field.AutoFill?["trigger"]?.ToString())"
+                                            data-filter="@field.FilterBy"
+                                            required="@field.Required"
+                                            disabled="@locked">
+                                        <option value="">Select @field.Label</option>
+                                        @foreach (var option in Options(field.Source))
+                                        {
+                                            <option value="@option.Value"
+                                                    selected="@(value == option.Value)">
+                                                @option.Text
+                                            </option>
+                                        }
+                                    </select>
+
+                                    @if (locked)
+                                    {
+                                        <input type="hidden" name="@field.Field" value="@value" />
+                                    }
+                                }
+                                else
+                                {
+                                    <input id="@field.Field"
+                                           name="@field.Field"
+                                           type="@field.Type"
+                                           value="@value"
+                                           maxlength="@field.Maxlength"
+                                           class="form-control"
+                                           required="@field.Required"
+                                           readonly="@(locked || field.Type == "text" && field.Field == "DocNo")" />
+                                }
+                            </div>
+                        }
+                                        </div>
+
+                    @* BUSINESS ACTION BUTTONS WITH DESCRIPTIONS *@
+@if (section == config.Sections.Last())
+{
+    <div class="oa-business-actions">
+
+        @foreach (var button in config.Buttons.Form
+            .Where(x => x.Visible &&
+                !topActions.Contains(x.Action.ToLowerInvariant())))
+        {
+            var action = button.Action.ToLowerInvariant();
+
+            var endpoint = action switch
+            {
+                "offeracceptance" => "OfferAcceptance",
+                "onboarding" => "OnBoarding",
+                "raiseagreement" => "RaiseAgreement",
+                _ => ""
+            };
+
+            var description = action switch
+            {
+                "offeracceptance" =>
+                    "The selected Offer status will be changed to Accepted. Other offers associated with this Call Off will be disabled.",
+
+                "onboarding" =>
+                    "For new recruitment, onboard the Candidate as an Employee, update the Employee Master and print the Employment Contract.",
+
+                "raiseagreement" =>
+                    "The selected Offer status will be changed to Active and the link will be closed for raising new offers. The Call Off Agreement can then be printed.",
+
+                _ => ""
+            };
+
+            if (!string.IsNullOrEmpty(endpoint))
+            {
+                <div class="oa-business-action-row">
+
+                    <div class="oa-business-action-button">
+                        <button type="submit"
+                                formaction="@Url.Action(endpoint, "OfferOnboarding", new { id = Model.Id })"
+                                formmethod="post"
+                                class="btn btn-@button.Style btn-sm shadow-sm"
+                                disabled="@(isNew)">
+                            <i class="fas @button.Icon mr-1"></i>
+                            @button.Label
+                        </button>
+                    </div>
+
+                    <div class="oa-business-action-description">
+                        @description
+                    </div>
+
+                </div>
+            }
+        }
+
+    </div>
+}
+
+                </div>
+            </div>
+        }
+
+        <!-- CANDIDATE / EMPLOYEE COMPARISON GRID -->
+        @if (grid != null)
+        {
+            <div class="oa-card">
+                <div class="oa-card-header">
+                    <span><i class="fas fa-table"></i>@grid.Title</span>
+                </div>
+
+                <div class="oa-card-body">
+                    <div class="oa-table-wrap">
+                        <table class="oa-table">
+                            <thead>
+                                <tr>
+                                    @foreach (var column in grid.Columns)
+                                    {
+                                        <th>@column.Label</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < rows.Count; i++)
+                                {
+                                    var row = rows[i];
+
+                                    <tr>
+                                        <td>
+                                            <input name="Comparison[@i].CandidateField"
+                                                   value="@row.CandidateField" readonly />
+                                        </td>
+                                        <td>
+                                            <input name="Comparison[@i].CandidateValue"
+                                                   value="@row.CandidateValue" readonly />
+                                        </td>
+                                        <td>
+                                            <input name="Comparison[@i].EmployeeField"
+                                                   value="@row.EmployeeField" readonly />
+                                        </td>
+                                        <td>
+                                            <input name="Comparison[@i].EmployeeValue"
+                                                   value="@row.EmployeeValue" readonly />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </form>
+</div>
+
+<!-- AUTH TRACKER -->
+<div class="modal fade" id="oaTrackerModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Offer Acceptance / On Boarding Tracker</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Document:</strong> @Model.DocNo</p>
+                <p><strong>Offer:</strong> @Model.OfferNo</p>
+                <p><strong>Status:</strong> @Model.Status</p>
+                <p><strong>Created:</strong> @(Model.CreatedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not saved")</p>
+                <p><strong>Modified:</strong> @(Model.ModifiedDateTime?.ToString("dd-MM-yyyy HH:mm") ?? "Not modified")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const form = document.getElementById("oaForm");
+
+    // Edit existing record
+    document.getElementById("oaEdit")?.addEventListener("click", function () {
+        form.querySelectorAll("input:not([type=hidden]), select")
+            .forEach(x => {
+                x.disabled = false;
+                x.readOnly = false;
+            });
+
+        const save = document.getElementById("oaSave");
+        if (save) save.disabled = false;
+
+        this.disabled = true;
+    });
+
+    // Update auto-filled fields from JSON-configured endpoints
+    const fields = [...document.querySelectorAll(".oa-field-select")];
+
+    async function autoFill(target) {
+        const endpoint = target.dataset.autofill;
+        const triggerId = target.dataset.trigger;
+        const trigger = document.getElementById(triggerId);
+
+        if (!endpoint || !trigger || !trigger.value)
+            return;
+
+        const response = await fetch(
+            `/Master/OfferOnboarding/${endpoint}?value=${encodeURIComponent(trigger.value)}`
+        );
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const key = target.id.charAt(0).toLowerCase() + target.id.slice(1);
+        const value = data[key] || "";
+
+        target.value = value;
+
+        const hidden = target.parentElement.querySelector(
+            `input[type=hidden][name="${target.name}"]`
+        );
+
+        if (hidden) hidden.value = value;
+    }
+
+    fields.forEach(field => {
+        field.addEventListener("change", async function () {
+            // Clear dependent values when their source changes.
+            fields.filter(x => x.dataset.trigger === field.id)
+                .forEach(x => {
+                    x.value = "";
+                    const hidden = x.parentElement.querySelector(
+                        `input[type=hidden][name="${x.name}"]`
+                    );
+                    if (hidden) hidden.value = "";
+                });
+
+            for (const target of fields.filter(x => x.dataset.trigger === field.id)) {
+                await autoFill(target);
+            }
+        });
+    });
+
+    // Populate existing record auto-filled values on page load.
+    for (const target of fields.filter(x => x.dataset.trigger)) {
+        awaitExisting(target);
+    }
+
+    async function awaitExisting(target) {
+        if (target.value) return;
+        await autoFill(target);
+    }
+
+    document.getElementById("oaAuthTracker")?.addEventListener("click", function () {
+        if (window.jQuery && jQuery.fn.modal)
+            jQuery("#oaTrackerModal").modal("show");
+        else
+            alert("Document: @Model.DocNo | Status: @Model.Status");
+    });
+})();
+</script>

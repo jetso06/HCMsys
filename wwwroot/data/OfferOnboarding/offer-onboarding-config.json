@@ -1,0 +1,268 @@
+{
+  "page": {
+    "title": "Offer Acceptance / Call Off (Agreement) / On Boarding",
+    "pageId": 402,
+    "icon": "fa-user-check"
+  },
+  "buttons":
+  {
+    "form": [
+      {
+        "id": "new",
+        "label": "New",
+        "icon": "fa-plus",
+        "style": "primary",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "edit",
+        "label": "Edit",
+        "icon": "fa-edit",
+        "style": "warning",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "save",
+        "label": "Save",
+        "icon": "fa-save",
+        "style": "success",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "clone",
+        "label": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "unpost",
+        "label": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "print",
+        "label": "Print",
+        "icon": "fa-print",
+        "style": "dark",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "delete",
+        "label": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "approve",
+        "label": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "reject",
+        "label": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "authTracker",
+        "label": "Auth Tracker",
+        "icon": "fa-route",
+        "style": "info",
+        "action": "authTracker",
+        "visible": true
+      },
+      {
+        "id": "close",
+        "label": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      },
+      {
+        "id": "offerAcceptance",
+        "label": "Offer Acceptance",
+        "icon": "fa-user-check",
+        "style": "primary",
+        "action": "offeracceptance",
+        "visible": true
+      },
+      {
+        "id": "onboarding",
+        "label": "On Boarding / Employee Update",
+        "icon": "fa-user-plus",
+        "style": "success",
+        "action": "onboarding",
+        "visible": true
+      },
+      {
+        "id": "raiseAgreement",
+        "label": "Raise Call Off Agreement",
+        "icon": "fa-file-contract",
+        "style": "info",
+        "action": "raiseagreement",
+        "visible": true
+      }
+    ]
+  }
+,
+  "sections": [
+    {
+      "id": "documentInformation",
+      "title": "Document Information",
+      "fields": [
+        {
+          "field": "DocNo",
+          "label": "Doc No",
+          "type": "text",
+          "maxlength": 60,
+          "readonly": true,
+          "required": false
+        },
+        {
+          "field": "Date",
+          "label": "Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "field": "PostDate",
+          "label": "PostDate",
+          "type": "datetime-local",
+          "required": false
+        },
+        {
+          "field": "MainFrameAgreement",
+          "label": "Main Frame Agreement",
+          "type": "select",
+          "source": "main-frame-agreements.json",
+          "required": true
+        },
+        {
+          "field": "Client",
+          "label": "Client",
+          "type": "select",
+          "source": "clients.json",
+          "readonly": true,
+          "autoFill": {
+            "trigger": "MainFrameAgreement",
+            "endpoint": "ClientByAgreement"
+          }
+        },
+        {
+          "field": "CallOff",
+          "label": "Call Off",
+          "type": "select",
+          "source": "call-offs.json",
+          "required": true,
+          "filterBy": "MainFrameAgreement"
+        },
+        {
+          "field": "OfferNo",
+          "label": "Offer No",
+          "type": "select",
+          "source": "offers.json",
+          "required": true,
+          "filterBy": "CallOff"
+        },
+        {
+          "field": "CallOffType",
+          "label": "Call Off Type",
+          "type": "select",
+          "source": "call-off-types.json",
+          "readonly": true,
+          "autoFill": {
+            "trigger": "OfferNo",
+            "endpoint": "OfferDetails"
+          }
+        },
+        {
+          "field": "Candidate",
+          "label": "Candidate",
+          "type": "select",
+          "source": "candidates.json",
+          "readonly": true,
+          "autoFill": {
+            "trigger": "OfferNo",
+            "endpoint": "OfferDetails"
+          }
+        },
+        {
+          "field": "Employee",
+          "label": "Employee",
+          "type": "select",
+          "source": "employees.json",
+          "readonly": true,
+          "autoFill": {
+            "trigger": "OfferNo",
+            "endpoint": "OfferDetails"
+          }
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "candidateEmployeeComparison",
+      "title": "Candidate / Employee Details",
+      "subtitle": "Candidate and Employee Information",
+      "property": "Comparison",
+      "columns": [
+        {
+          "field": "CandidateField",
+          "label": "Candidate Field",
+          "type": "text",
+          "readonly": true
+        },
+        {
+          "field": "CandidateValue",
+          "label": "Value",
+          "type": "text",
+          "readonly": true
+        },
+        {
+          "field": "EmployeeField",
+          "label": "Employee Field",
+          "type": "text",
+          "readonly": true
+        },
+        {
+          "field": "EmployeeValue",
+          "label": "Value",
+          "type": "text",
+          "readonly": true
+        }
+      ],
+      "defaultRows": [
+        {
+          "candidateField": "Name",
+          "candidateValue": "",
+          "employeeField": "Name",
+          "employeeValue": ""
+        },
+        {
+          "candidateField": "DOB",
+          "candidateValue": "",
+          "employeeField": "DOB",
+          "employeeValue": ""
+        }
+      ]
+    }
+  ]
+}

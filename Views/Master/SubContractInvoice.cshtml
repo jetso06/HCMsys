@@ -1,0 +1,658 @@
+
+@model HCMSys.Controllers.SCInvoiceRecord
+@using System.Text.Json
+@using System.Text.Json.Nodes
+@using System.Globalization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var config = ViewBag.Config as JsonObject ?? new JsonObject();
+    var sections = config["sections"] as JsonArray ?? new JsonArray();
+    var grids = config["grids"] as JsonArray ?? new JsonArray();
+    var buttons = config["buttons"]?["form"] as JsonArray ?? new JsonArray();
+
+    var lookups = ViewBag.Lookups as Dictionary<string, List<JsonObject>>
+                  ?? new Dictionary<string, List<JsonObject>>();
+
+    var grid = grids.FirstOrDefault() as JsonObject ?? new JsonObject();
+    var gridColumns = grid["columns"] as JsonArray ?? new JsonArray();
+    var isNew = Model.Id == 0;
+    var baseUrl = "/Master/SubContractInvoice";
+}
+
+<style>
+    html {
+    font-size: 14px;
+    }
+.sci-page{padding:15px;color:#5a5c69;font-size:13px}
+.sci-page{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    overflow-x:hidden;
+    box-sizing:border-box;
+}
+.sci-card{background:#fff;border:1px solid #e3e6f0;border-radius:6px;box-shadow:0 3px 12px rgba(58,59,69,.12);margin-bottom:16px;overflow:hidden}
+.sci-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+    padding:13px 18px;
+    background:#f1f3f7;
+    border-bottom:1px solid #e3e6f0;
+}
+
+.sci-title{
+    margin:0;
+    font-size:14px;
+    font-weight:800;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+}
+
+.sci-title i{
+    color:#4e73df;
+    margin-right:8px;
+}
+
+.sci-toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:6px;
+    flex-wrap:wrap;
+    max-width:100%;
+    flex:1 1 600px;
+}
+
+.sci-toolbar .btn{
+    font-size:12px;
+    font-weight:700;
+    padding:6px 10px;
+    white-space:nowrap;
+}
+.sci-body{padding:18px}
+.sci-section-title{font-size:13px;font-weight:800;color:#4e73df;margin-bottom:15px}
+.sci-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:14px}
+.sci-field label{display:block;font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:5px}
+.sci-field .form-control{height:34px;font-size:12px;border:1px solid #d1d3e2;border-radius:5px}
+.sci-field textarea.form-control{height:70px}
+.sci-required{color:#e74a3b}
+.sci-table-wrap{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+}
+
+#sciAttendance{
+    min-width:1900px;
+    width:100%;
+    border-collapse:collapse;
+}
+
+#sciAttendance th{
+    background:#4e73df;
+    color:#fff;
+    padding:9px 8px;
+    border:1px solid #3d5cbe;
+    font-size:11px;
+    text-transform:uppercase;
+    white-space:nowrap;
+    text-align:left;
+}
+
+#sciAttendance td{
+    padding:6px;
+    border:1px solid #e3e6f0;
+    vertical-align:middle;
+}
+
+#sciAttendance input:not([type="checkbox"]),
+#sciAttendance select{
+    min-width:90px;
+    width:100%;
+    height:31px;
+    border:1px solid #d1d3e2;
+    border-radius:4px;
+    padding:4px;
+    font-size:12px;
+}
+
+#sciAttendance input[type="checkbox"]{
+    appearance:auto;
+    -webkit-appearance:checkbox;
+    width:17px !important;
+    height:17px !important;
+    min-width:17px !important;
+    margin:0 auto;
+    padding:0;
+    display:block;
+    cursor:pointer;
+    accent-color:#4e73df;
+}
+
+#sciAttendance th:first-child,
+#sciAttendance td:first-child{
+    width:48px;
+    min-width:48px;
+    max-width:48px;
+    text-align:center;
+}
+
+#sciAttendance input[readonly]{
+    background:#f3f4f8;
+}
+.sci-grid-actions{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:7px;
+    width:100%;
+    margin-bottom:12px;
+}
+
+.sci-grid-actions .btn{
+    font-size:12px;
+    font-weight:700;
+    white-space:nowrap;
+}
+.sci-total{text-align:right;font-weight:800;color:#4e73df}
+.sci-message{padding:10px 14px;margin-bottom:12px;border-radius:5px}
+@@media(max-width:850px){.sci-grid{grid-template-columns:repeat(2,minmax(150px,1fr))}}
+@@media(max-width:550px){.sci-grid{grid-template-columns:1fr}}
+@@media print{.sci-toolbar,.sci-grid-actions,.sci-remove-column{display:none!important}.sci-card{box-shadow:none}}
+</style>
+
+<div class="sci-page">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <div class="sci-card">
+        <div class="sci-header">
+            <h6 class="sci-title">
+                <i class="fas fa-file-invoice-dollar"></i>
+                @(config["page"]?["title"]?.ToString() ?? "Sub Contract Invoice")
+            </h6>
+
+            <div class="sci-toolbar">
+                @foreach (var button in buttons.OfType<JsonObject>())
+                {
+                    if (button["visible"]?.GetValue<bool>() != true)
+                        continue;
+
+                    var action = button["action"]?.ToString() ?? "";
+                    var label = button["label"]?.ToString() ?? "";
+                    var icon = button["icon"]?.ToString() ?? "";
+                    var style = button["style"]?.ToString() ?? "secondary";
+
+                    if (action == "new")
+                    {
+                        <a href="@baseUrl" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </a>
+                    }
+                    else if (action == "close")
+                    {
+                        <a href="@Url.Action("Index","Home")" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </a>
+                    }
+                    else if (action == "print")
+                    {
+                        <button type="button" onclick="window.print()" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "edit")
+                    {
+                        <button type="button" id="sciEdit" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "save")
+                    {
+                        <button type="submit" form="sciForm" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "clone")
+                    {
+                        <a href="@(Model.Id > 0 ? $"{baseUrl}?id={Model.Id}&clone=true" : "#")"
+                           class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </a>
+                    }
+                    else if (action == "delete" && Model.Id > 0)
+                    {
+                        <button type="submit" form="sciDeleteForm" class="btn btn-@style btn-sm shadow-sm"
+                                onclick="return confirm('Delete this invoice?')">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "approve" || action == "reject" || action == "unpost")
+                    {
+                        <button type="submit"
+                                form="sciStatusForm"
+                                name="statusAction"
+                                value="@action"
+                                class="btn btn-@style btn-sm shadow-sm"
+                                @(Model.Id == 0 ? "disabled" : "")>
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "saveAs" && Model.Id > 0)
+                    {
+                        <button type="submit" form="sciSaveAsForm" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "revisions" && Model.Id > 0)
+                    {
+                        <button type="button" id="sciRevisions" class="btn btn-@style btn-sm shadow-sm">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                    else if (action == "authTracker")
+                    {
+                        <button type="button" class="btn btn-@style btn-sm shadow-sm"
+                                onclick="alert('Authorization tracking will be connected when the workflow is defined.')">
+                            <i class="fas @icon mr-1"></i>@label
+                        </button>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <form id="sciForm" method="post" action="@($"{baseUrl}/Save")">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        @foreach (var section in sections.OfType<JsonObject>())
+        {
+            <div class="sci-card">
+                <div class="sci-header">
+                    <h6 class="sci-section-title mb-0">
+                        <i class="fas fa-folder-open mr-2"></i>@(section["title"]?.ToString())
+                    </h6>
+                    <span class="badge badge-secondary">@Model.Status</span>
+                </div>
+
+                <div class="sci-body">
+                    <div class="sci-grid">
+                        @foreach (var field in (section["fields"] as JsonArray ?? new JsonArray()).OfType<JsonObject>())
+                        {
+                            var name = field["field"]?.ToString() ?? "";
+                            var label = field["label"]?.ToString() ?? name;
+                            var type = field["type"]?.ToString() ?? "text";
+                            var source = field["source"]?.ToString() ?? "";
+                            var required = field["required"]?.GetValue<bool>() == true;
+                            var readonlyField = field["readonly"]?.GetValue<bool>() == true;
+                            var property = typeof(HCMSys.Controllers.SCInvoiceRecord).GetProperty(name);
+                            var rawValue = property?.GetValue(Model);
+                            var value = rawValue is DateTime date
+                                ? date.ToString(type == "datetime-local" ? "yyyy-MM-ddTHH:mm" : "yyyy-MM-dd")
+                                : Convert.ToString(rawValue, CultureInfo.InvariantCulture) ?? "";
+
+                            <div class="sci-field">
+                                <label>@label @if (required) { <span class="sci-required">*</span> }</label>
+
+                                @if (type == "select")
+                                {
+                                    <select name="@name" class="form-control" @(required ? "required" : "") @(readonlyField ? "disabled" : "")>
+                                        <option value="">-- Select @label --</option>
+                                        @if (lookups.TryGetValue(source, out var options))
+                                        {
+                                            foreach (var option in options)
+                                            {
+                                                var optionValue = option["value"]?.ToString() ?? "";
+                                                <option value="@optionValue" selected="@(optionValue == value)">
+                                                    @option["text"]
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                    @if (readonlyField)
+                                    {
+                                        <input type="hidden" name="@name" value="@value" />
+                                    }
+                                }
+                                else if (type == "textarea")
+                                {
+                                    <textarea name="@name" class="form-control"
+                                              maxlength="@field["maxlength"]"
+                                              @(required ? "required" : "")>@value</textarea>
+                                }
+                                else
+                                {
+                                    <input name="@name"
+                                           type="@type"
+                                           value="@value"
+                                           class="form-control"
+                                           maxlength="@field["maxlength"]"
+                                           step="@field["step"]"
+                                           min="@field["min"]"
+                                           @(required ? "required" : "")
+                                           @(readonlyField ? "readonly" : "") />
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- ATTENDANCE GRID -->
+        <div class="sci-card">
+            <div class="sci-header">
+                <h6 class="sci-section-title mb-0">
+                    <i class="fas fa-table mr-2"></i>@(grid["title"]?.ToString() ?? "Attendance")
+                </h6>
+            </div>
+
+            <div class="sci-body">
+                <div class="sci-grid-actions">
+    <button type="button" id="sciAddRow" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus mr-1"></i>Add Row
+    </button>
+
+    <button type="button" id="sciInsertRow" class="btn btn-info btn-sm">
+        <i class="fas fa-level-down-alt mr-1"></i>Insert Row
+    </button>
+
+    <button type="button" id="sciDeleteRows" class="btn btn-danger btn-sm">
+        <i class="fas fa-trash mr-1"></i>Delete Selected Rows
+    </button>
+</div>
+
+                <div class="sci-table-wrap">
+                    <table id="sciAttendance">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="sciSelectAll" /></th>
+                                @foreach (var column in gridColumns.OfType<JsonObject>())
+                                {
+                                    <th>@column["label"]</th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody id="sciAttendanceBody">
+                            @for (var i = 0; i < Model.Attendance.Count; i++)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" class="sci-row-select" /></td>
+                                    @foreach (var column in gridColumns.OfType<JsonObject>())
+                                    {
+                                        var name = column["field"]?.ToString() ?? "";
+                                        var type = column["type"]?.ToString() ?? "text";
+                                        var source = column["source"]?.ToString() ?? "";
+                                        var prop = typeof(HCMSys.Controllers.SCInvoiceAttendance).GetProperty(name);
+                                        var raw = prop?.GetValue(Model.Attendance[i]);
+                                        var value = raw is DateTime dt
+                                            ? dt.ToString("yyyy-MM-dd")
+                                            : Convert.ToString(raw, CultureInfo.InvariantCulture) ?? "";
+                                        var readonlyField = column["readonly"]?.GetValue<bool>() == true;
+
+                                        <td>
+                                            @if (type == "select")
+                                            {
+                                                <select name="Attendance[@i].@name" class="sci-cell" data-field="@name">
+                                                    <option value="">-- Select --</option>
+                                                    @if (lookups.TryGetValue(source, out var options))
+                                                    {
+                                                        foreach (var option in options)
+                                                        {
+                                                            var ov = option["value"]?.ToString() ?? "";
+                                                            <option value="@ov" selected="@(ov == value)">@option["text"]</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <input name="Attendance[@i].@name"
+                                                       type="@type"
+                                                       value="@value"
+                                                       class="sci-cell"
+                                                       data-field="@name"
+                                                       step="@column["step"]"
+                                                       readonly="@(readonlyField ? "readonly" : null)" />
+                                            }
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="sci-total mt-3">
+                    Total Net Amount: <span id="sciGrandTotal">0.000</span>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.Id > 0)
+    {
+        <form id="sciDeleteForm" method="post" action="@($"{baseUrl}/Delete/{Model.Id}")">
+            @Html.AntiForgeryToken()
+        </form>
+
+        <form id="sciSaveAsForm" method="post" action="@($"{baseUrl}/SaveAs/{Model.Id}")">
+            @Html.AntiForgeryToken()
+        </form>
+
+        <form id="sciStatusForm" method="post" action="">
+            @Html.AntiForgeryToken()
+        </form>
+    }
+
+</div>
+
+<script>
+(() => {
+    const body = document.getElementById("sciAttendanceBody");
+    const columns = @Html.Raw(JsonSerializer.Serialize(
+        gridColumns.Select(c => new {
+            field = c?["field"]?.ToString(),
+            type = c?["type"]?.ToString(),
+            source = c?["source"]?.ToString(),
+            step = c?["step"]?.ToString(),
+            readOnly = c?["readonly"]?.GetValue<bool>() == true
+        })
+    ));
+
+    const lookupData = @Html.Raw(JsonSerializer.Serialize(lookups));
+
+    function reindexRows() {
+    body.querySelectorAll("tr").forEach((row, index) => {
+        row.querySelectorAll("[name]").forEach(input => {
+            input.name = input.name.replace(
+                /Attendance\[\d+\]/,
+                `Attendance[${index}]`
+            );
+        });
+    });
+}
+
+function createRow(index) {
+    const tr = document.createElement("tr");
+
+    let html = '<td><input type="checkbox" class="sci-row-select"></td>';
+
+    columns.forEach(col => {
+        const name = col.field;
+
+        if (col.type === "select") {
+            html += `<td>
+                <select name="Attendance[${index}].${name}"
+                        class="sci-cell" data-field="${name}">
+                    <option value="">-- Select --</option>`;
+
+            (lookupData[col.source] || []).forEach(option => {
+                html += `<option value="${escapeHtml(option.value || "")}">
+                    ${escapeHtml(option.text || "")}
+                </option>`;
+            });
+
+            html += `</select></td>`;
+        } else {
+            html += `<td>
+                <input name="Attendance[${index}].${name}"
+                       type="${col.type || "text"}"
+                       class="sci-cell"
+                       data-field="${name}"
+                       step="${col.step || ""}"
+                       ${col.readOnly ? "readonly" : ""}>
+            </td>`;
+        }
+    });
+
+    tr.innerHTML = html;
+    return tr;
+}
+
+function addRow() {
+    const index = body.querySelectorAll("tr").length;
+
+    body.appendChild(createRow(index));
+
+    reindexRows();
+    updateTotals();
+}
+
+function insertRow() {
+    const selected = body.querySelectorAll(".sci-row-select:checked");
+
+    if (selected.length !== 1) {
+        alert("Select exactly one row where you want to insert the new row.");
+        return;
+    }
+
+    const selectedRow = selected[0].closest("tr");
+    const rows = Array.from(body.querySelectorAll("tr"));
+    const index = rows.indexOf(selectedRow);
+
+    const newRow = createRow(index);
+
+    selectedRow.before(newRow);
+
+    reindexRows();
+    updateTotals();
+}
+
+    function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, ch => ({
+            "&": "&amp;", "<": "&lt;", ">": "&gt;",
+            '"': "&quot;", "'": "&#39;"
+        })[ch]);
+    }
+
+    function recalculate(row) {
+        const get = name => Number(row.querySelector(`[data-field="${name}"]`)?.value || 0);
+        const set = (name, value) => {
+            const input = row.querySelector(`[data-field="${name}"]`);
+            if (input) input.value = value.toFixed(3);
+        };
+
+        const amount = get("Qty") * get("Rate");
+        const tax = amount * get("TaxPercent") / 100;
+
+        set("Amount", amount);
+        set("TaxAmount", tax);
+        set("NetAmount", amount + tax);
+    }
+
+    function updateTotals() {
+        let total = 0;
+
+        body.querySelectorAll("tr").forEach(row => {
+            recalculate(row);
+            total += Number(row.querySelector('[data-field="NetAmount"]')?.value || 0);
+        });
+
+        document.getElementById("sciGrandTotal").textContent = total.toFixed(3);
+    }
+
+    document.getElementById("sciInsertRow").addEventListener("click", insertRow);
+
+    document.getElementById("sciDeleteRows").addEventListener("click", () => {
+        const selected = body.querySelectorAll(".sci-row-select:checked");
+        if (!selected.length) {
+            alert("Select at least one row to delete.");
+            return;
+        }
+
+        if (!confirm(`Delete ${selected.length} selected row(s)?`)) return;
+
+        selected.forEach(x => x.closest("tr").remove());
+
+        // Re-index all form names after deletion.
+        reindexRows();
+
+document.getElementById("sciSelectAll").checked = false;
+
+        updateTotals();
+    });
+
+    document.getElementById("sciSelectAll").addEventListener("change", function () {
+    body.querySelectorAll(".sci-row-select").forEach(x => {
+        x.checked = this.checked;
+    });
+});
+
+    body.addEventListener("input", event => {
+        if (event.target.classList.contains("sci-cell")) updateTotals();
+    });
+
+    body.addEventListener("change", event => {
+        if (event.target.classList.contains("sci-cell")) updateTotals();
+    });
+
+    document.getElementById("sciEdit")?.addEventListener("click", () => {
+        document.querySelectorAll("#sciForm input, #sciForm select, #sciForm textarea")
+            .forEach(x => x.disabled = false);
+    });
+
+    document.getElementById("sciRevisions")?.addEventListener("click", async () => {
+        const response = await fetch("@baseUrl/Revisions/@Model.Id");
+        if (!response.ok) {
+            alert("Could not load revision history.");
+            return;
+        }
+
+        const revisions = await response.json();
+
+        if (!revisions.length) {
+            alert("No revisions have been recorded.");
+            return;
+        }
+
+        alert(revisions.map(x =>
+            `${x.docNo} — ${new Date(x.revisionDate).toLocaleString()} — ${x.modifiedBy}`
+        ).join("\n"));
+    });
+
+    document.querySelectorAll('#sciStatusForm button[name="statusAction"]').forEach(button => {
+        button.addEventListener("click", () => {
+            const action = button.value;
+            document.getElementById("sciStatusForm").action =
+                "@baseUrl/" + action.charAt(0).toUpperCase() + action.slice(1) + "/@Model.Id";
+        });
+    });
+
+    if (!body.querySelector("tr")) addRow();
+    updateTotals();
+})();
+</script>
