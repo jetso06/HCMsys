@@ -1,58 +1,1001 @@
+
 @model HCMSys.Controllers.SectorMasterIndexViewModel
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    var cfg=Model.Config;
-    var cols=cfg.Index.Columns.Where(c=>c.Visible).ToList();
-    string Val(HCMSys.Controllers.SectorMasterRecord r,string f)=>r.GetType().GetProperty(char.ToUpperInvariant(f[0])+f.Substring(1))?.GetValue(r)?.ToString()??"";
-}
-<style>
-.si-page{padding:0 15px 24px;color:#5a5c69;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.si-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10);overflow:hidden}
-.si-head{padding:13px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;font-weight:800;color:#4e73df}
-.si-toolbar{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end;padding:12px 0}
-.si-table{width:100%;border-collapse:collapse}.si-table th{background:#4e73df;color:#fff;padding:11px 9px;text-align:left;font-size:11px;text-transform:uppercase;white-space:nowrap}.si-table td{padding:10px 9px;border:1px solid #e3e6f0}.si-table tr:nth-child(even){background:#f8f9fc}
-.si-tools{display:flex;gap:5px}.si-tools a{display:inline-block;padding:5px 8px;border-radius:4px;background:#4e73df;color:white}
-.si-controls{display:flex;justify-content:space-between;gap:12px;padding:12px 16px}.si-controls input{max-width:300px;border:1px solid #d1d3e2;border-radius:4px;padding:7px 10px}
-</style>
-<div class="si-page">
- <div class="si-toolbar">
- @foreach(var b in cfg.Buttons.Index.Where(x=>x.Visible)){
-   if(b.Action=="new"){<a class="btn btn-@b.Style" href="/Master/SectorMaster"><i class="fas @b.Icon"></i> @b.Text</a>}
-   else if(b.Action=="home"){<a class="btn btn-@b.Style" href="/Home/Index"><i class="fas @b.Icon"></i> @b.Text</a>}
-   else if(b.Action=="close"){<a class="btn btn-@b.Style" href="/Home/Index"><i class="fas @b.Icon"></i> @b.Text</a>}
-   else {<button type="button" class="btn btn-@b.Style" data-action="@b.Action"><i class="fas @b.Icon"></i> @b.Text</button>}
- }
- </div>
- <div class="si-card">
-  <div class="si-head"><i class="fas fa-table"></i> @cfg.Index.Heading <span style="float:right">@Model.Records.Count Records</span></div>
-  <div class="si-controls"><span>Sector Master records</span><input id="tableSearch" type="search" placeholder="Search sector master records..."/></div>
-  <div style="overflow-x:auto">
-   <table class="si-table" id="sectorTable">
-    <thead><tr><th style="width:55px;text-align:center"><input type="checkbox" id="selectAll"/></th><th>Action</th>@foreach(var c in cols){<th>@c.Label</th>}</tr></thead>
-    <tbody>
-    @foreach(var r in Model.Records){
-      <tr data-id="@r.Id"><td style="text-align:center"><input type="checkbox" class="record-select"/></td><td><div class="si-tools"><a title="Edit" href="/Master/SectorMaster?id=@r.Id"><i class="fas fa-edit"></i></a><a title="Clone" href="/Master/SectorMaster?id=@r.Id&clone=true"><i class="fas fa-copy"></i></a></div></td>
-      @foreach(var c in cols){<td>@Val(r,c.Field)</td>}</tr>
+
+    var cfg = Model.Config;
+    var columns = cfg.Index.Columns.Where(c => c.Visible).ToList();
+    var pageTitle = cfg.Page.Title;
+
+    ViewData["Title"] = pageTitle;
+
+    string Val(HCMSys.Controllers.SectorMasterRecord record, string field)
+    {
+        if (string.IsNullOrWhiteSpace(field))
+            return "";
+
+        var property = record.GetType().GetProperty(
+            char.ToUpperInvariant(field[0]) + field.Substring(1)
+        );
+
+        return property?.GetValue(record)?.ToString() ?? "";
     }
-    @if(!Model.Records.Any()){<tr><td colspan="@(cols.Count+2)" style="text-align:center;padding:25px">No Sector Master records found.</td></tr>}
-    </tbody>
-   </table>
-  </div>
- </div>
+}
+
+<div class="container-fluid candidate-index">
+
+    <!-- TOOLBAR CARD -->
+    <div class="card ci-card ci-toolbar-card">
+        <div class="card-header ci-toolbar">
+
+            <h6 class="ci-title">
+                <i class="fas @cfg.Page.Icon"></i>
+                @pageTitle
+                <span class="ci-module-badge">SECTOR MASTER</span>
+            </h6>
+
+            <div class="ci-buttons">
+                @foreach (var button in cfg.Buttons.Index.Where(b => b.Visible))
+                {
+                    var action = button.Action.ToLowerInvariant();
+                    var disabled = action != "new" &&
+                                   action != "print" &&
+                                   action != "close";
+
+                    <button type="button"
+                            class="btn btn-@button.Style btn-sm shadow-sm"
+                            data-action="@action"
+                            disabled="@(disabled ? "disabled" : null)">
+                        <i class="fas @button.Icon"></i>
+                        @button.Text
+                    </button>
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SUCCESS / ERROR MESSAGES -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- SUMMARY CARDS -->
+    <div class="row ci-summary">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-primary">
+                <div class="card-body">
+                    <div class="ci-summary-label">Total Records</div>
+                    <div class="ci-summary-value">@Model.Records.Count</div>
+                    <i class="fas fa-file-alt ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-info">
+                <div class="card-body">
+                    <div class="ci-summary-label">Displayed Records</div>
+                    <div class="ci-summary-value" id="ciDisplayed">
+                        @Model.Records.Count
+                    </div>
+                    <i class="fas fa-list ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-success">
+                <div class="card-body">
+                    <div class="ci-summary-label">Selected Record</div>
+                    <div class="ci-summary-value" id="ciSelected">None</div>
+                    <i class="fas fa-check-square ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card ci-card ci-summary-card ci-border-warning">
+                <div class="card-body">
+                    <div class="ci-summary-label">Module</div>
+                    <div class="ci-summary-module">@pageTitle</div>
+                    <i class="fas fa-sitemap ci-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECORDS CARD -->
+    <div class="card ci-card ci-records-card">
+
+        <div class="card-header ci-records-header">
+            <h6>
+                <i class="fas fa-table"></i>
+                @cfg.Index.Heading
+            </h6>
+
+            <span class="badge badge-primary" id="ciRecordCount">
+                @Model.Records.Count Records
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <!-- TABLE TOOLS -->
+            <div class="ci-table-tools">
+
+                <div class="ci-page-size">
+                    <span>Show</span>
+
+                    <select id="ciPageSize"
+                            class="form-control form-control-sm">
+                        <option value="20">20</option>
+                        <option value="35">35</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                    <span>entries</span>
+                </div>
+
+                <input type="text"
+                       id="ciSearch"
+                       class="form-control form-control-sm ci-search"
+                       placeholder="Search Sector Master records..." />
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-striped table-hover"
+                       id="ciTable">
+
+                    <thead>
+                        <tr>
+                            @foreach (var column in columns)
+                            {
+                                var compactClass =
+                                    column.Type == "checkbox" ? "ci-control-column" :
+                                    column.Type == "action" ? "ci-action-column" : "";
+
+                                <th class="@compactClass"
+    style="text-align:@(column.Align == "center" ? "center" : "left");@(column.Width > 0 ? $"width:{column.Width}px;min-width:{column.Width}px;" : "")">
+
+                                    @if (column.Type == "checkbox")
+                                    {
+                                        <div class="ci-select-header">
+                                            <span>Select</span>
+                                            <input type="checkbox"
+                                                   id="ciSelectAll"
+                                                   title="Select All" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @column.Label
+
+                                        @if (!string.IsNullOrWhiteSpace(column.Tooltip))
+                                        {
+                                            <i class="fas fa-info-circle ml-1 text-white"
+                                               title="@column.Tooltip"
+                                               data-toggle="tooltip"
+                                               data-placement="top"
+                                               style="cursor:help"></i>
+                                        }
+                                    }
+
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody id="ciTableBody">
+
+                        @if (Model.Records.Count > 0)
+                        {
+                            foreach (var record in Model.Records)
+                            {
+                                <tr data-id="@record.Id">
+
+                                    @foreach (var column in columns)
+                                    {
+                                        if (column.Type == "checkbox")
+                                        {
+                                            <td class="text-center ci-control-column">
+                                                <input type="checkbox"
+                                                       class="ci-checkbox"
+                                                       value="@record.Id" />
+                                            </td>
+                                        }
+                                        else if (column.Type == "action")
+                                        {
+                                            <td class="text-center ci-action-column">
+                                                <button type="button"
+                                                        class="ci-row-edit"
+                                                        title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+
+                                                <button type="button"
+                                                        class="ci-row-delete"
+                                                        title="Delete">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            var value = Val(record, column.Field);
+
+                                            <td title="@value"
+                                                class="@(column.Align == "center" ? "text-center" : "")">
+                                                @value
+                                            </td>
+                                        }
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="ci-no-data">
+                                <td colspan="@columns.Count" class="ci-empty">
+                                    No Sector Master records found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="ci-table-footer">
+
+                <span id="ciShowing">Showing 0 records</span>
+
+                <div class="ci-pagination">
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciPrevious"
+                            type="button">
+                        Previous
+                    </button>
+
+                    <span id="ciPageInfo">0 / 0</span>
+
+                    <button class="btn btn-light btn-sm"
+                            id="ciNext"
+                            type="button">
+                        Next
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </div>
+
+<!-- ANTIFORGERY TOKEN -->
+<form id="ciAntiForgery" hidden>
+    @Html.AntiForgeryToken()
+</form>
+
+
+<style>
+    html {
+        font-size: 14px;
+    }
+
+    .candidate-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 13px;
+    }
+
+    .candidate-index .ci-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .ci-toolbar-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-toolbar,
+    .ci-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .ci-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+    }
+
+    .ci-title i,
+    .ci-records-header i {
+        color: #4e73df;
+    }
+
+    .ci-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .ci-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .ci-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .ci-buttons .btn i {
+        margin-right: 4px;
+    }
+
+    .ci-summary {
+        margin-bottom: 8px;
+    }
+
+    .ci-summary > div {
+        margin-bottom: 16px;
+    }
+
+    .ci-summary-card {
+        min-height: 78px;
+    }
+
+    .ci-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .ci-summary-label {
+        margin-bottom: 4px;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .ci-border-primary .ci-summary-label { color: #4e73df; }
+    .ci-border-info .ci-summary-label { color: #36b9cc; }
+    .ci-border-success .ci-summary-label { color: #1cc88a; }
+    .ci-border-warning .ci-summary-label { color: #f6c23e; }
+
+    .ci-summary-value,
+    .ci-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    #ciSelected {
+        font-size: .9rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ci-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    .ci-border-primary { border-left: 4px solid #4e73df !important; }
+    .ci-border-warning { border-left: 4px solid #f6c23e !important; }
+    .ci-border-success { border-left: 4px solid #1cc88a !important; }
+    .ci-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .ci-records-card {
+        margin-bottom: 20px;
+    }
+
+    .ci-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .ci-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+        background: #4e73df;
+    }
+
+    .ci-records-card .card-body {
+        padding: 16px;
+    }
+
+    .ci-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .ci-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-page-size select {
+        width: 60px;
+    }
+
+    .ci-search {
+        width: 320px;
+        max-width: 100%;
+    }
+
+    .candidate-index .form-control {
+        min-height: 32px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-family: inherit;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .candidate-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+    #ciTable {
+        width: 100%;
+        min-width: 100%;
+        table-layout: fixed;
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
+
+    #ciTable th,
+    #ciTable td {
+        box-sizing: border-box;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 8px 6px;
+    }
+
+    #ciTable thead th {
+        padding: 10px 6px;
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .02em;
+        vertical-align: middle;
+    }
+
+    #ciTable tbody td {
+        padding: 8px 6px;
+        color: #5a5c69;
+        font-size: .8rem;
+        vertical-align: middle;
+    }
+
+    /* Compact checkbox and action columns */
+    #ciTable th.ci-control-column,
+#ciTable td.ci-control-column {
+    width: 65px;
+    min-width: 65px;
+    max-width: 65px;
+    text-align: center !important;
+}
+
+.ci-select-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+.ci-select-header span {
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.ci-select-header input {
+    flex-shrink: 0;
+}
+
+    #ciTable th.ci-action-column,
+    #ciTable td.ci-action-column {
+        width: 65px;
+        min-width: 65px;
+        max-width: 65px;
+        text-align: center !important;
+    }
+
+    #ciTable tbody tr:hover {
+        background-color: #f3f6ff;
+    }
+
+    #ciTable tbody tr.selected {
+        background-color: #eaecf4;
+    }
+
+    .ci-control-column {
+        text-align: center !important;
+    }
+
+    .ci-select-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .ci-action-column {
+        text-align: center !important;
+    }
+
+    .ci-row-edit,
+    .ci-row-delete {
+        border: none;
+        background: transparent;
+        padding: 4px 5px;
+        cursor: pointer;
+        font-size: .9rem;
+    }
+
+    .ci-row-edit { color: #4e73df; }
+    .ci-row-delete { color: #e74a3b; }
+
+    .ci-checkbox,
+    #ciSelectAll {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .ci-empty {
+        padding: 24px !important;
+        color: #858796;
+        text-align: center !important;
+    }
+
+    .ci-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .ci-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .ci-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .ci-pagination .btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    @@media (max-width: 768px) {
+        .ci-toolbar {
+            align-items: flex-start;
+        }
+
+        .ci-buttons,
+        .ci-search {
+            width: 100%;
+        }
+
+        .ci-search {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .ci-buttons,
+        .ci-table-tools,
+        .ci-table-footer,
+        .ci-control-column,
+        .ci-action-column {
+            display: none !important;
+        }
+
+        .candidate-index .ci-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+
 <script>
-(()=>{
- const search=document.getElementById('tableSearch');
- search?.addEventListener('input',()=>{const q=search.value.toLowerCase();document.querySelectorAll('#sectorTable tbody tr[data-id]').forEach(r=>r.hidden=!r.innerText.toLowerCase().includes(q));});
- const all=document.getElementById('selectAll');
- all?.addEventListener('change',()=>document.querySelectorAll('.record-select').forEach(x=>x.checked=all.checked));
- document.querySelectorAll('.si-toolbar [data-action]').forEach(b=>b.addEventListener('click',()=>{
-   const selected=[...document.querySelectorAll('.record-select:checked')].map(x=>x.closest('tr').dataset.id);
-   const a=b.dataset.action;
-   if(a==='edit'||a==='clone'){if(selected.length!==1){alert('Select one record.');return;}location.href='/Master/SectorMaster?id='+selected[0]+(a==='clone'?'&clone=true':'');}
-   else if(a==='delete'){if(selected.length!==1){alert('Select one record.');return;}if(confirm('Delete selected record?')){const f=document.createElement('form');f.method='post';f.action='/Master/SectorMaster/Delete/'+selected[0];const token=document.querySelector('input[name="__RequestVerificationToken"]');if(token){const h=document.createElement('input');h.type='hidden';h.name=token.name;h.value=token.value;f.appendChild(h);}document.body.appendChild(f);f.submit();}}
-   else if(a==='print')window.print();
-   else if(['approve','reject','authtracker'].includes(a))alert(a+' is not connected to a workflow yet.');
- }));
-})();
+    (() => {
+
+        const body = document.getElementById("ciTableBody");
+        const searchInput = document.getElementById("ciSearch");
+        const pageSizeInput = document.getElementById("ciPageSize");
+        const selectAllCheckbox = document.getElementById("ciSelectAll");
+
+        if (!body || !searchInput || !pageSizeInput || !selectAllCheckbox)
+            return;
+
+        const rows = Array.from(body.querySelectorAll("tr[data-id]"));
+
+        let filteredRows = rows.slice();
+        let currentPage = 1;
+
+        const selectedDisplay = document.getElementById("ciSelected");
+        const displayedDisplay = document.getElementById("ciDisplayed");
+        const recordCount = document.getElementById("ciRecordCount");
+        const showing = document.getElementById("ciShowing");
+        const pageInfo = document.getElementById("ciPageInfo");
+        const previous = document.getElementById("ciPrevious");
+        const next = document.getElementById("ciNext");
+
+        function getSelected() {
+            return rows.filter(row =>
+                row.querySelector(".ci-checkbox")?.checked
+            );
+        }
+
+        function updateSelection() {
+
+            const selected = getSelected();
+
+            rows.forEach(row => {
+                row.classList.toggle(
+                    "selected",
+                    row.querySelector(".ci-checkbox")?.checked === true
+                );
+            });
+
+            const visibleSelected = filteredRows.filter(row =>
+                row.querySelector(".ci-checkbox")?.checked
+            ).length;
+
+            selectAllCheckbox.checked =
+                filteredRows.length > 0 &&
+                visibleSelected === filteredRows.length;
+
+            selectAllCheckbox.indeterminate =
+                visibleSelected > 0 &&
+                visibleSelected < filteredRows.length;
+
+            const names = selected.map(row => {
+                const nameCell = row.querySelector("td:nth-child(3)");
+                return nameCell?.textContent.trim() || row.dataset.id;
+            });
+
+            selectedDisplay.textContent =
+                names.length ? names.join(", ") : "None";
+
+            document.querySelector('[data-action="edit"]')
+                ?.toggleAttribute("disabled", selected.length !== 1);
+
+            document.querySelector('[data-action="clone"]')
+                ?.toggleAttribute("disabled", selected.length !== 1);
+
+            document.querySelector('[data-action="delete"]')
+                ?.toggleAttribute("disabled", selected.length === 0);
+        }
+
+        function renderRows() {
+
+            const pageSize = Number(pageSizeInput.value);
+
+            const totalPages = Math.max(
+                1,
+                Math.ceil(filteredRows.length / pageSize)
+            );
+
+            currentPage = Math.min(
+                Math.max(currentPage, 1),
+                totalPages
+            );
+
+            rows.forEach(row => row.hidden = true);
+
+            const start = (currentPage - 1) * pageSize;
+
+            const visibleRows = filteredRows.slice(
+                start,
+                start + pageSize
+            );
+
+            visibleRows.forEach(row => row.hidden = false);
+
+            displayedDisplay.textContent = filteredRows.length;
+            recordCount.textContent = `${filteredRows.length} Records`;
+
+            showing.textContent = filteredRows.length
+                ? `Showing ${start + 1} to ${start + visibleRows.length} of ${filteredRows.length} records`
+                : "Showing 0 records";
+
+            pageInfo.textContent = filteredRows.length
+                ? `${currentPage} / ${totalPages}`
+                : "0 / 0";
+
+            previous.disabled = currentPage <= 1;
+            next.disabled = currentPage >= totalPages;
+
+            updateSelection();
+        }
+
+        function filterRows() {
+
+            const query = searchInput.value.trim().toLowerCase();
+
+            filteredRows = rows.filter(row =>
+                row.innerText.toLowerCase().includes(query)
+            );
+
+            currentPage = 1;
+            renderRows();
+        }
+
+        function editRecord(id) {
+
+            if (!id) return;
+
+            window.location.href =
+                "/Master/SectorMaster?id=" +
+                encodeURIComponent(id);
+        }
+
+        function deleteRecord(id) {
+
+            if (!id) return;
+
+            if (!confirm(
+                "Are you sure you want to delete this Sector Master record?"
+            )) {
+                return;
+            }
+
+            const form = document.createElement("form");
+
+            form.method = "post";
+            form.action =
+                "/Master/SectorMaster/Delete/" +
+                encodeURIComponent(id);
+
+            const token = document.querySelector(
+                '#ciAntiForgery input[name="__RequestVerificationToken"]'
+            )?.value;
+
+            if (token) {
+
+                const input = document.createElement("input");
+
+                input.type = "hidden";
+                input.name = "__RequestVerificationToken";
+                input.value = token;
+
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        selectAllCheckbox.addEventListener("change", function () {
+
+            filteredRows.forEach(row => {
+
+                const checkbox = row.querySelector(".ci-checkbox");
+
+                if (checkbox)
+                    checkbox.checked = this.checked;
+            });
+
+            updateSelection();
+        });
+
+        rows.forEach(row => {
+
+            row.querySelector(".ci-checkbox")
+                ?.addEventListener("change", updateSelection);
+
+            row.addEventListener("click", event => {
+
+                if (event.target.closest(
+                    ".ci-row-edit, .ci-row-delete, .ci-checkbox"
+                ))
+                    return;
+
+                const checkbox = row.querySelector(".ci-checkbox");
+
+                checkbox.checked = !checkbox.checked;
+
+                updateSelection();
+            });
+        });
+
+        body.addEventListener("click", event => {
+
+            const edit = event.target.closest(".ci-row-edit");
+            const del = event.target.closest(".ci-row-delete");
+
+            if (!edit && !del)
+                return;
+
+            const row = event.target.closest("tr[data-id]");
+
+            if (!row)
+                return;
+
+            if (edit)
+                editRecord(row.dataset.id);
+
+            if (del)
+                deleteRecord(row.dataset.id);
+        });
+
+        document.querySelector(".ci-buttons")
+            ?.addEventListener("click", event => {
+
+                const button = event.target.closest("[data-action]");
+
+                if (!button || button.disabled)
+                    return;
+
+                const action = button.dataset.action;
+                const selected = getSelected();
+
+                switch (action) {
+
+                    case "new":
+                        window.location.href = "/Master/SectorMaster";
+                        break;
+
+                    case "edit":
+                        if (selected.length === 1)
+                            editRecord(selected[0].dataset.id);
+                        break;
+
+                    case "clone":
+                        if (selected.length === 1) {
+
+                            window.location.href =
+                                "/Master/SectorMaster?id=" +
+                                encodeURIComponent(selected[0].dataset.id) +
+                                "&clone=true";
+                        }
+                        break;
+
+                    case "delete":
+                        if (selected.length === 1) {
+                            deleteRecord(selected[0].dataset.id);
+                        }
+                        else if (selected.length > 1) {
+                            alert("Please select one record at a time.");
+                        }
+                        break;
+
+                    case "print":
+                        window.print();
+                        break;
+
+                    case "close":
+                    case "home":
+                        window.location.href = "/Home/Index";
+                        break;
+
+                    default:
+                        alert(
+                            "This action is not connected to the backend yet."
+                        );
+                        break;
+                }
+            });
+
+        searchInput.addEventListener("input", filterRows);
+
+        pageSizeInput.addEventListener("change", () => {
+            currentPage = 1;
+            renderRows();
+        });
+
+        previous.addEventListener("click", () => {
+
+            if (currentPage > 1) {
+                currentPage--;
+                renderRows();
+            }
+        });
+
+        next.addEventListener("click", () => {
+
+            const totalPages = Math.max(
+                1,
+                Math.ceil(
+                    filteredRows.length /
+                    Number(pageSizeInput.value)
+                )
+            );
+
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderRows();
+            }
+        });
+
+        // Bootstrap tooltips
+        if (window.jQuery && window.jQuery.fn.tooltip) {
+            window.jQuery('[data-toggle="tooltip"]').tooltip();
+        }
+
+        renderRows();
+
+    })();
 </script>

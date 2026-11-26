@@ -134,7 +134,16 @@ namespace HCMSys.Controllers
     public class SectorMasterGrid { public string Id { get; set; } = ""; public string Property { get; set; } = ""; public string Title { get; set; } = ""; public List<SectorMasterColumn> Columns { get; set; } = new(); }
     public class SectorMasterColumn { public string Field { get; set; } = ""; public string Label { get; set; } = ""; public string Type { get; set; } = "text"; public string? Source { get; set; } public string? Step { get; set; } public int MaxLength { get; set; } }
     public class SectorMasterIndex { public string Heading { get; set; } = "Sector Master List"; public List<SectorMasterIndexColumn> Columns { get; set; } = new(); }
-    public class SectorMasterIndexColumn { public string Field { get; set; } = ""; public string Label { get; set; } = ""; public bool Visible { get; set; } = true; }
+    public class SectorMasterIndexColumn
+    {
+        public string Field { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string Type { get; set; } = "text";
+        public int Width { get; set; } = 0;
+        public string Tooltip { get; set; } = "";
+        public string Align { get; set; } = "left";
+        public bool Visible { get; set; } = true;
+    }
     public class SectorLookupOption { public string Value { get; set; } = ""; public string Text { get; set; } = ""; }
     public class SectorMasterData { public int LastId { get; set; } public List<SectorMasterRecord> Records { get; set; } = new(); }
     public class SectorMasterRecord
@@ -144,6 +153,11 @@ namespace HCMSys.Controllers
         public string Code { get; set; } = "";
         public string NameInNativeLanguage { get; set; } = "";
         public string Comments { get; set; } = "";
+        public string GroupName { get; set; } = "";
+        public string MType { get; set; } = "";
+        public string Grp { get; set; } = "";
+        public string Ave { get; set; } = "";
+        public string AppSt { get; set; } = "";
         public List<SectorDefinitionRow> SectorDefinitions { get; set; } = Enumerable.Range(0, 5).Select(_ => new SectorDefinitionRow()).ToList();
         public string CreatedBy { get; set; } = "";
         public string CreatedDateTime { get; set; } = "";

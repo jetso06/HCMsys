@@ -269,48 +269,110 @@
     "heading": "Sector Master List",
     "columns": [
       {
-        "field": "id",
-        "label": "ID",
+        "field": "",
+        "label": "Checkbox",
+        "type": "checkbox",
+        "width": 65,
+        "align": "center",
+        "visible": true
+      },
+      {
+        "field": "",
+        "label": "Action",
+        "type": "action",
+        "width": 65,
+        "align": "center",
         "visible": true
       },
       {
         "field": "name",
         "label": "Name",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
         "field": "code",
         "label": "Code",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
-        "field": "nameInNativeLanguage",
-        "label": "Name in Native Language",
+        "field": "groupName",
+        "label": "Group Name",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
-        "field": "comments",
-        "label": "Comments",
+        "field": "mType",
+        "label": "MType",
+        "type": "text",
+        "width": 0,
+        "visible": true
+      },
+      {
+        "field": "grp",
+        "label": "Grp",
+        "type": "text",
+        "width": 55,
+        "tooltip": "Group/Child",
+        "align": "center",
+        "visible": true
+      },
+      {
+        "field": "ave",
+        "label": "Ave",
+        "type": "text",
+        "width": 55,
+        "tooltip": "Active Yes/No",
+        "align": "center",
+        "visible": true
+      },
+      {
+        "field": "appSt",
+        "label": "AppSt",
+        "type": "text",
+        "width": 75,
+        "tooltip": "Approval Status Approved/Pending/Rejected",
+        "align": "center",
+        "visible": true
+      },
+      {
+        "field": "id",
+        "label": "ID",
+        "type": "text",
+        "width": 55,
+        "align": "center",
         "visible": true
       },
       {
         "field": "createdBy",
         "label": "Created By",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
         "field": "createdDateTime",
         "label": "Created DateTime",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
         "field": "modifiedBy",
         "label": "Modified By",
+        "type": "text",
+        "width": 0,
         "visible": true
       },
       {
         "field": "modifiedDateTime",
         "label": "Modified DateTime",
+        "type": "text",
+        "width": 0,
         "visible": true
       }
     ]
