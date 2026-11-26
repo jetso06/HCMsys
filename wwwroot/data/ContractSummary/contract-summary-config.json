@@ -1,0 +1,228 @@
+{
+  "page": {
+    "title": "Contract Summary",
+    "icon": "fa-file-contract",
+    "pageId": 403
+  },
+  "sections": [
+    {
+      "id": "general",
+      "title": "General",
+      "fields": [
+        {
+          "field": "employeeId",
+          "label": "Employee",
+          "type": "select",
+          "source": "employees",
+          "required": true
+        },
+        {
+          "field": "mainFrameAgreement",
+          "label": "Main Frame Agreement",
+          "type": "text",
+          "maxLength": 100,
+          "readonly": true
+        }
+      ]
+    }
+  ],
+  "grids": [
+    {
+      "id": "contracts",
+      "property": "contracts",
+      "title": "Contracts",
+      "subtitle": "Contract Details",
+      "columns": [
+        {
+          "field": "showContracts",
+          "label": "Show",
+          "type": "button"
+        },
+        {
+          "field": "callOffNo",
+          "label": "Call off No",
+          "type": "text"
+        },
+        {
+          "field": "revisionId",
+          "label": "RevisionId",
+          "type": "text"
+        },
+        {
+          "field": "callOffAgreementNo",
+          "label": "Call Off Agreement No",
+          "type": "text"
+        },
+        {
+          "field": "contractStatus",
+          "label": "Contract Status",
+          "type": "select",
+          "source": "contractStatuses"
+        },
+        {
+          "field": "commencementDate",
+          "label": "Commencement Date",
+          "type": "date"
+        },
+        {
+          "field": "endDate",
+          "label": "End Date",
+          "type": "date"
+        },
+        {
+          "field": "durationMonths",
+          "label": "Duration Months",
+          "type": "number",
+          "readonly": true
+        }
+      ]
+    },
+    {
+      "id": "billingHeads",
+      "property": "billingHeads",
+      "title": "Billing Heads",
+      "subtitle": "Billing Heads",
+      "columns": [
+        {
+          "field": "billingHead",
+          "label": "Billing Heads",
+          "type": "select",
+          "source": "billingHeads"
+        },
+        {
+          "field": "denominationType",
+          "label": "Denomination Type",
+          "type": "select",
+          "source": "denominationTypes"
+        },
+        {
+          "field": "amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "serviceFeeType",
+          "label": "Service Fee Type",
+          "type": "select",
+          "source": "serviceFeeTypes"
+        },
+        {
+          "field": "serviceFeeValue",
+          "label": "Service Fee Value",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "taxPercent",
+          "label": "Tax %",
+          "type": "number",
+          "step": "0.01"
+        },
+        {
+          "field": "qty",
+          "label": "Qty",
+          "type": "number",
+          "step": "1"
+        },
+        {
+          "field": "remarks",
+          "label": "Remarks",
+          "type": "text"
+        }
+      ]
+    },
+    {
+      "id": "additionalInfo",
+      "property": "additionalInfo",
+      "title": "Other Details",
+      "subtitle": "Additional Info",
+      "columns": [
+        {
+          "field": "additionalInfo",
+          "label": "Additional Info",
+          "type": "select",
+          "source": "additionalInfo"
+        },
+        {
+          "field": "required",
+          "label": "Required",
+          "type": "checkbox"
+        }
+      ]
+    },
+    {
+      "id": "salaryBreakdown",
+      "property": "salaryBreakdown",
+      "title": "Salary Breakdown",
+      "subtitle": "Component",
+      "columns": [
+        {
+          "field": "component",
+          "label": "Component",
+          "type": "select",
+          "source": "salaryComponents"
+        },
+        {
+          "field": "amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        }
+      ]
+    },
+    {
+      "id": "benefits",
+      "property": "benefits",
+      "title": "Other Benefits & Reimbursements",
+      "subtitle": "Benefit Type",
+      "columns": [
+        {
+          "field": "benefitType",
+          "label": "Benefit Type",
+          "type": "select",
+          "source": "benefitTypes"
+        },
+        {
+          "field": "amount",
+          "label": "Amount",
+          "type": "number",
+          "step": "0.001"
+        },
+        {
+          "field": "frequency",
+          "label": "Frequency",
+          "type": "select",
+          "source": "frequencies"
+        }
+      ]
+    }
+  ],
+  "comments": [
+    {
+      "field": "contractDetailsComments",
+      "label": "Contract Details Comments",
+      "after": "contracts"
+    },
+    {
+      "field": "otherDetailsComments",
+      "label": "Other Details Comments",
+      "after": "additionalInfo"
+    },
+    {
+      "field": "salaryBreakdownComments",
+      "label": "Salary Breakdown Comments",
+      "after": "salaryBreakdown"
+    },
+    {
+      "field": "benefitsComments",
+      "label": "Other Benefits & Reimbursements Comments",
+      "after": "benefits"
+    },
+    {
+      "field": "additionalTerms",
+      "label": "Additional Terms",
+      "after": "end"
+    }
+  ]
+}

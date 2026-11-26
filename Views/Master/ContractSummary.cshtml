@@ -1,0 +1,401 @@
+@model HCMSys.Controllers.ContractSummaryViewModel
+@using System.Text.Json
+@using System.Collections
+@using System.Linq
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var cfg = Model.Config; var rec = Model.Record; var lookups = Model.Lookups;
+    string PropName(string s) => char.ToUpperInvariant(s[0]) + s.Substring(1);
+    string GetValue(object obj, string name) => obj.GetType().GetProperty(PropName(name))?.GetValue(obj)?.ToString() ?? "";
+}
+<style>
+.cs-page{padding:0 15px 24px;color:#5a5c69;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.cs-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10);margin-bottom:16px;overflow:hidden}
+.cs-head{padding:12px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;font-weight:800}.cs-head i{color:#4e73df;margin-right:7px}.cs-body{padding:18px}
+.cs-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 20px}.cs-field{min-width:0}.cs-field label,.cs-grid-title{display:block;margin-bottom:6px;color:#5a5c69;font-size:12px;font-weight:700}
+.cs-field .form-control,.cs-field select{width:100%;min-height:36px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px}
+.cs-wrap{width:100%;overflow-x:auto}.cs-table{width:100%;border-collapse:collapse}.cs-table th{padding:10px 11px;background:#4e73df;border:1px solid #e3e6f0;color:#fff;text-align:left;font-size:11px;text-transform:uppercase;white-space:nowrap}.cs-table td{padding:7px 8px;border:1px solid #e3e6f0}.cs-table tr:nth-child(even){background:#f8f9fc}
+.cs-table input:not([type=checkbox]),.cs-table select{width:100%;min-width:90px;height:36px;padding:6px 10px;border:1px solid #d1d3e2;border-radius:4px;color:#6e707e;font-size:13px;background:#fff}
+.cs-select{width:55px!important;min-width:55px!important;text-align:center}.cs-comment{width:100%;min-height:90px;resize:vertical;border:1px solid #d1d3e2;border-radius:4px;padding:10px}
+.cs-row-checkbox {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #4e73df;
+    vertical-align: middle;
+}
+.cs-comments {
+    margin-top: 18px;
+}
+
+.cs-comments .cs-grid-title {
+    margin-bottom: 8px;
+}
+
+.cs-end-label {
+    display: block;
+    margin-bottom: 14px;
+    color: #5a5c69;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.cs-end-rich {
+    margin-top: 10px;
+}
+.cs-rich {
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.cs-tools {
+    display: flex;
+    gap: 5px;
+    padding: 7px;
+    background: #f8f9fc;
+    border-bottom: 1px solid #d1d3e2;
+}
+
+.cs-tools button {
+    height: 36px;
+    min-width: 40px;
+    padding: 5px 12px;
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    background: #fff;
+    color: #5a5c69;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.cs-tools button:hover {
+    background: #eaecf4;
+}
+
+.cs-editor {
+    min-height: 120px;
+    padding: 12px;
+    outline: none;
+    color: #6e707e;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.cs-editor:focus {
+    box-shadow: inset 0 0 0 1px #4e73df;
+}
+
+.cs-editor ul,
+.cs-editor ol {
+    padding-left: 28px;
+}
+
+.cs-hidden {
+    display: none !important;
+}
+.cs-select {
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
+    text-align: center;
+}
+
+.cs-required-col {
+    width: 75px !important;
+    min-width: 75px !important;
+    max-width: 75px !important;
+    text-align: center !important;
+}
+
+.cs-required-col input[type="checkbox"],
+.cs-select input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #4e73df;
+    vertical-align: middle;
+}
+.cs-table th.cs-select,
+.cs-table td.cs-select {
+    width: 55px !important;
+    min-width: 55px !important;
+    max-width: 55px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+.cs-table th.cs-select .cs-select-all {
+    display: block;
+    margin: 0 auto;
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+}
+.cs-msg{padding:10px 14px;margin-bottom:14px;background:#e8f5e9;color:#247a45;border-radius:4px}.cs-toolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px}
+@@media(max-width:900px){.cs-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}@@media(max-width:600px){.cs-fields{grid-template-columns:1fr}}@@media print{.cs-card{box-shadow:none;break-inside:avoid}}
+</style>
+<div class="cs-page">
+@if(TempData["Success"]!=null){<div class="cs-msg">@TempData["Success"]</div>}
+<form method="post" action="/Master/ContractSummary/Save">
+@Html.AntiForgeryToken()
+<input type="hidden" name="Id" value="@rec.Id"/>
+
+@foreach (var sec in cfg.Sections)
+{
+    <div class="cs-card">
+        <div class="cs-head">
+            <i class="fas fa-folder-open"></i>@sec.Title
+        </div>
+        <div class="cs-body">
+            <div class="cs-fields">
+                @foreach (var f in sec.Fields)
+                {
+                    var value = GetValue(rec, f.Field);
+<div class="cs-field"><label for="@f.Field">@f.Label</label>
+@if(f.Type=="button"){<button type="button" class="btn btn-primary btn-sm" id="showContracts">Show</button>}
+else if(f.Type=="select"){<select class="form-control" id="@f.Field" name="@PropName(f.Field)" required="@f.Required"><option value="">Select @f.Label</option>@if(lookups.TryGetValue(f.Source??"",out var opts)){foreach(var o in opts){<option value="@o.Value" selected="@(value==o.Value)">@o.Text</option>}}</select>}
+else{<input class="form-control" id="@f.Field" name="@PropName(f.Field)" type="@f.Type" value="@value" maxlength="@(f.MaxLength>0?f.MaxLength:null)" readonly="@f.Readonly"/>}
+</div>}
+</div></div></div>}
+@foreach (var g in cfg.Grids)
+{
+    var prop = rec.GetType().GetProperty(PropName(g.Property));
+    var rows = (prop?.GetValue(rec) as IEnumerable)?.Cast<object>().ToList()
+               ?? new List<object>();
+
+    <div class="cs-card">
+        <div class="cs-head">
+            <i class="fas fa-table"></i>@g.Title
+        </div>
+
+        <div class="cs-body">
+            <div class="cs-grid-title">@g.Subtitle</div>
+
+            <div class="cs-wrap">
+                <table class="cs-table" id="grid-@g.Id">
+                    <thead>
+                        <tr>
+                            <th class="cs-select">
+    <input type="checkbox" class="cs-select-all" title="Select All" />
+</th>
+                            @foreach (var c in g.Columns)
+                            {
+                                <th class="@(c.Field == "required" ? "cs-required-col" : "")">
+    @c.Label
+</th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for (int i = 0; i < Math.Max(5, rows.Count); i++)
+                        {
+                            var rowType =
+    g.Property == "contracts" ? typeof(HCMSys.Controllers.ContractSummaryContractRow) :
+    g.Property == "billingHeads" ? typeof(HCMSys.Controllers.ContractSummaryBillingHeadRow) :
+    g.Property == "additionalInfo" ? typeof(HCMSys.Controllers.ContractSummaryAdditionalInfoRow) :
+    g.Property == "salaryBreakdown" ? typeof(HCMSys.Controllers.ContractSummarySalaryBreakdownRow) :
+    typeof(HCMSys.Controllers.ContractSummaryBenefitRow);
+
+                            var row = i < rows.Count
+                                ? rows[i]
+                                : Activator.CreateInstance(rowType)!;
+
+                            <tr>
+                                <td class="cs-select">
+                                    <input type="checkbox" class="cs-row-checkbox" />
+                                </td>
+
+                                @foreach (var c in g.Columns)
+                                {
+                                    var value = GetValue(row, c.Field);
+                                    var fieldName = $"{PropName(g.Property)}[{i}].{PropName(c.Field)}";
+
+                                    <td class="@(c.Field == "required" ? "cs-required-col" : "")">
+                                        @if (c.Type == "button")
+{
+    <button type="button"
+            class="btn btn-primary btn-sm show-contract-row"
+            title="View Contract"
+            aria-label="View Contract">
+        <i class="fas fa-eye"></i>
+    </button>
+}
+else if (c.Type == "select")
+                                        {
+                                            <select name="@fieldName">
+                                                <option value="">Select @c.Label</option>
+
+                                                @if (lookups.TryGetValue(c.Source ?? "", out var opts))
+                                                {
+                                                    foreach (var o in opts)
+                                                    {
+                                                        <option value="@o.Value" selected="@(value == o.Value)">
+                                                            @o.Text
+                                                        </option>
+                                                    }
+                                                }
+                                            </select>
+                                        }
+                                        else if (c.Type == "checkbox")
+                                        {
+                                            <input type="hidden" name="@fieldName" value="false" />
+                                            <input type="checkbox" name="@fieldName" value="true"
+                                                   checked="@(value == "True" || value == "true")" />
+                                        }
+                                        else
+                                        {
+                                            <input type="@c.Type" name="@fieldName"
+                                                   value="@value" step="@c.Step" />
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+                @foreach (var comment in cfg.Comments.Where(c =>
+            string.Equals(c.After, g.Id, StringComparison.OrdinalIgnoreCase)))
+        {
+            <div class="cs-comments">
+    <label class="cs-grid-title">@comment.Label</label>
+
+    <div class="cs-rich">
+        <div class="cs-tools">
+            <button type="button" data-cmd="bold"><b>B</b></button>
+            <button type="button" data-cmd="italic"><i>I</i></button>
+            <button type="button" data-cmd="underline"><u>U</u></button>
+            <button type="button" data-cmd="insertUnorderedList">• List</button>
+            <button type="button" data-cmd="insertOrderedList">1. List</button>
+        </div>
+
+        <div class="cs-editor" contenteditable="true">@Html.Raw(GetValue(rec, comment.Field))</div>
+
+        <textarea class="cs-hidden" name="@PropName(comment.Field)"></textarea>
+    </div>
+</div>
+        }
+        </div>
+    </div>
+}
+@foreach (var comment in cfg.Comments.Where(c => c.After == "end"))
+{
+    <div class="cs-card">
+        <div class="cs-head">
+            <i class="fas fa-folder-open"></i>@comment.Label
+        </div>
+
+        <div class="cs-body">
+            <label class="cs-end-label">@comment.Label</label>
+
+            <div class="cs-rich cs-end-rich">
+                <div class="cs-tools">
+                    <button type="button" data-cmd="bold"><b>B</b></button>
+                    <button type="button" data-cmd="italic"><i>I</i></button>
+                    <button type="button" data-cmd="underline"><u>U</u></button>
+                    <button type="button" data-cmd="insertUnorderedList">• List</button>
+                    <button type="button" data-cmd="insertOrderedList">1. List</button>
+                </div>
+
+                <div class="cs-editor" contenteditable="true">@Html.Raw(GetValue(rec, comment.Field))</div>
+
+                <textarea class="cs-hidden" name="@PropName(comment.Field)"></textarea>
+            </div>
+        </div>
+    </div>
+}
+</form></div>
+
+<script>
+(() => {
+    document.getElementById('showContracts')?.addEventListener('click', () =>
+        document.querySelector('#grid-billingHeads')?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        })
+    );
+
+    const emp = document.getElementById('employeeId');
+    const mfa = document.getElementById('mainFrameAgreement');
+    
+    emp?.addEventListener('change', async () => {
+        if (!emp.value) {
+            mfa.value = '';
+            return;
+        }
+
+        try {
+            const r = await fetch('/Master/ContractSummary/EmployeeAgreement/' + emp.value);
+            const d = await r.json();
+            mfa.value = d.mainFrameAgreement || '';
+        } catch {
+            mfa.value = '';
+        }
+    });
+
+
+    // Rich text editor toolbar
+    document.querySelectorAll('.cs-rich').forEach(editor => {
+        const content = editor.querySelector('.cs-editor');
+        const hidden = editor.querySelector('.cs-hidden');
+
+        if (!content || !hidden) return;
+
+        const sync = () => {
+            hidden.value = content.innerHTML;
+        };
+
+        sync();
+
+        content.addEventListener('input', sync);
+
+        editor.querySelectorAll('[data-cmd]').forEach(button => {
+            button.addEventListener('mousedown', event => {
+                event.preventDefault();
+            });
+
+            button.addEventListener('click', () => {
+                content.focus();
+                document.execCommand(button.dataset.cmd, false, null);
+                sync();
+            });
+        });
+    });
+
+    // Sync all rich text fields before saving
+    document.querySelector('form')?.addEventListener('submit', () => {
+        document.querySelectorAll('.cs-rich').forEach(editor => {
+            const content = editor.querySelector('.cs-editor');
+            const hidden = editor.querySelector('.cs-hidden');
+
+            if (content && hidden) {
+                hidden.value = content.innerHTML;
+            }
+        });
+    });
+    // Select all rows independently in each grid
+document.querySelectorAll('.cs-table').forEach(table => {
+    const selectAll = table.querySelector('.cs-select-all');
+
+    selectAll?.addEventListener('change', () => {
+        table.querySelectorAll('tbody .cs-row-checkbox').forEach(cb => {
+            cb.checked = selectAll.checked;
+        });
+    });
+
+    table.querySelectorAll('tbody .cs-row-checkbox').forEach(cb => {
+        cb.addEventListener('change', () => {
+            const checkboxes = [...table.querySelectorAll('tbody .cs-row-checkbox')];
+
+            selectAll.checked = checkboxes.length > 0 &&
+                checkboxes.every(item => item.checked);
+
+            selectAll.indeterminate =
+                checkboxes.some(item => item.checked) && !selectAll.checked;
+        });
+    });
+});
+})();
+</script>

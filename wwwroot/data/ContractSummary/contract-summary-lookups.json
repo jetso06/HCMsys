@@ -1,0 +1,165 @@
+{
+  "employees": [
+    {
+      "value": "1",
+      "text": "EMP-001 | Ahmed Al Balushi",
+      "mainFrameAgreement": "MFA-001"
+    },
+    {
+      "value": "2",
+      "text": "EMP-002 | Fatima Al Harthy",
+      "mainFrameAgreement": "MFA-002"
+    },
+    {
+      "value": "3",
+      "text": "EMP-003 | John Mathew",
+      "mainFrameAgreement": "MFA-003"
+    },
+    {
+      "value": "4",
+      "text": "EMP-004 | Priya Nair",
+      "mainFrameAgreement": "MFA-004"
+    },
+    {
+      "value": "5",
+      "text": "EMP-005 | Salim Al Rashdi",
+      "mainFrameAgreement": "MFA-005"
+    }
+  ],
+  "contractStatuses": [
+    {
+      "value": "Pending For Agreement",
+      "text": "Pending For Agreement"
+    },
+    {
+      "value": "Active",
+      "text": "Active"
+    },
+    {
+      "value": "Cancelled",
+      "text": "Cancelled"
+    },
+    {
+      "value": "InActive",
+      "text": "InActive"
+    }
+  ],
+  "billingHeads": [
+    {
+      "value": "Basic Service",
+      "text": "Basic Service"
+    },
+    {
+      "value": "Professional Service",
+      "text": "Professional Service"
+    },
+    {
+      "value": "Accommodation",
+      "text": "Accommodation"
+    },
+    {
+      "value": "Transportation",
+      "text": "Transportation"
+    }
+  ],
+  "denominationTypes": [
+    {
+      "value": "Fixed",
+      "text": "Fixed"
+    },
+    {
+      "value": "Hourly",
+      "text": "Hourly"
+    },
+    {
+      "value": "Daily",
+      "text": "Daily"
+    },
+    {
+      "value": "Monthly",
+      "text": "Monthly"
+    }
+  ],
+  "serviceFeeTypes": [
+    {
+      "value": "Percentage",
+      "text": "Percentage"
+    },
+    {
+      "value": "Fixed Amount",
+      "text": "Fixed Amount"
+    }
+  ],
+  "additionalInfo": [
+    {
+      "value": "Passport Copy",
+      "text": "Passport Copy"
+    },
+    {
+      "value": "Civil ID",
+      "text": "Civil ID"
+    },
+    {
+      "value": "Medical Certificate",
+      "text": "Medical Certificate"
+    },
+    {
+      "value": "Education Certificate",
+      "text": "Education Certificate"
+    },
+    {
+      "value": "Visa Copy",
+      "text": "Visa Copy"
+    }
+  ],
+  "salaryComponents": [
+    {
+      "value": "Basic Salary",
+      "text": "Basic Salary"
+    },
+    {
+      "value": "Housing Allowance",
+      "text": "Housing Allowance"
+    },
+    {
+      "value": "Transport Allowance",
+      "text": "Transport Allowance"
+    },
+    {
+      "value": "Other Allowance",
+      "text": "Other Allowance"
+    }
+  ],
+  "benefitTypes": [
+    {
+      "value": "Medical Insurance",
+      "text": "Medical Insurance"
+    },
+    {
+      "value": "Annual Air Ticket",
+      "text": "Annual Air Ticket"
+    },
+    {
+      "value": "Accommodation",
+      "text": "Accommodation"
+    },
+    {
+      "value": "Transportation",
+      "text": "Transportation"
+    }
+  ],
+  "frequencies": [
+    {
+      "value": "Monthly",
+      "text": "Monthly"
+    },
+    {
+      "value": "Annually",
+      "text": "Annually"
+    },
+    {
+      "value": "One Time",
+      "text": "One Time"
+    }
+  ]
+}
