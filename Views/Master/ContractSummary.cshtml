@@ -9,6 +9,9 @@
     string GetValue(object obj, string name) => obj.GetType().GetProperty(PropName(name))?.GetValue(obj)?.ToString() ?? "";
 }
 <style>
+    html {
+        font-size: 14px;
+    }
 .cs-page{padding:0 15px 24px;color:#5a5c69;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
 .cs-card{background:#fff;border:1px solid #e3e6f0;border-radius:.35rem;box-shadow:0 .15rem 1rem rgba(58,59,69,.10);margin-bottom:16px;overflow:hidden}
 .cs-head{padding:12px 18px;background:#f8f9fc;border-bottom:1px solid #e3e6f0;font-weight:800}.cs-head i{color:#4e73df;margin-right:7px}.cs-body{padding:18px}

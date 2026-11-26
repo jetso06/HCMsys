@@ -1,0 +1,22 @@
+{
+  "travelClasses": [
+    {
+      "value": "First",
+      "text": "First"
+    },
+    {
+      "value": "Economy",
+      "text": "Economy"
+    }
+  ],
+  "travelTypes": [
+    {
+      "value": "OneWay",
+      "text": "One Way"
+    },
+    {
+      "value": "TwoWay",
+      "text": "Two Way"
+    }
+  ]
+}

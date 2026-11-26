@@ -1,0 +1,318 @@
+{
+  "page": {
+    "title": "Sector Master",
+    "icon": "fa-layer-group",
+    "pageId": 404,
+    "formRoute": "/Master/SectorMaster",
+    "indexRoute": "/Master/SectorMasterIndex"
+  },
+  "buttons": {
+    "form": [
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "secondary",
+        "action": "home",
+        "visible": true
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "primary",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "btnSave",
+        "text": "Save",
+        "icon": "fa-save",
+        "style": "success",
+        "action": "save",
+        "visible": true
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "btnUnPost",
+        "text": "UnPost",
+        "icon": "fa-undo",
+        "style": "secondary",
+        "action": "unpost",
+        "visible": true
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info",
+        "action": "authtracker",
+        "visible": true
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ],
+    "index": [
+      {
+        "id": "btnHome",
+        "text": "Home",
+        "icon": "fa-home",
+        "style": "secondary",
+        "action": "home",
+        "visible": true
+      },
+      {
+        "id": "btnNew",
+        "text": "New",
+        "icon": "fa-plus",
+        "style": "primary",
+        "action": "new",
+        "visible": true
+      },
+      {
+        "id": "btnEdit",
+        "text": "Edit",
+        "icon": "fa-edit",
+        "style": "warning",
+        "action": "edit",
+        "visible": true
+      },
+      {
+        "id": "btnClone",
+        "text": "Clone",
+        "icon": "fa-copy",
+        "style": "info",
+        "action": "clone",
+        "visible": true
+      },
+      {
+        "id": "btnPrint",
+        "text": "Print",
+        "icon": "fa-print",
+        "style": "secondary",
+        "action": "print",
+        "visible": true
+      },
+      {
+        "id": "btnDelete",
+        "text": "Delete",
+        "icon": "fa-trash",
+        "style": "danger",
+        "action": "delete",
+        "visible": true
+      },
+      {
+        "id": "btnApprove",
+        "text": "Approve",
+        "icon": "fa-check",
+        "style": "success",
+        "action": "approve",
+        "visible": true
+      },
+      {
+        "id": "btnReject",
+        "text": "Reject",
+        "icon": "fa-times",
+        "style": "danger",
+        "action": "reject",
+        "visible": true
+      },
+      {
+        "id": "btnAuthTracker",
+        "text": "Auth Tracker",
+        "icon": "fa-history",
+        "style": "info",
+        "action": "authtracker",
+        "visible": true
+      },
+      {
+        "id": "btnClose",
+        "text": "Close",
+        "icon": "fa-times-circle",
+        "style": "secondary",
+        "action": "close",
+        "visible": true
+      }
+    ]
+  },
+  "sections": [
+    {
+      "id": "general",
+      "title": "General",
+      "fields": [
+        {
+          "field": "name",
+          "label": "Name",
+          "type": "text",
+          "maxLength": 100,
+          "required": true
+        },
+        {
+          "field": "code",
+          "label": "Code",
+          "type": "text",
+          "maxLength": 30,
+          "required": true
+        },
+        {
+          "field": "nameInNativeLanguage",
+          "label": "Name in Native Language",
+          "type": "text",
+          "maxLength": 100
+        },
+        {
+          "field": "comments",
+          "label": "Comments",
+          "type": "text",
+          "maxLength": 150
+        }
+      ]
+    }
+  ],
+  "grid": {
+    "id": "sectorDefinition",
+    "property": "sectorDefinitions",
+    "title": "Sector Definition",
+    "columns": [
+      {
+        "field": "fromAge",
+        "label": "From Age",
+        "type": "number",
+        "step": "0.01"
+      },
+      {
+        "field": "toAge",
+        "label": "To Age",
+        "type": "number",
+        "step": "0.01"
+      },
+      {
+        "field": "travelClass",
+        "label": "Travel Class",
+        "type": "select",
+        "source": "travelClasses"
+      },
+      {
+        "field": "travelType",
+        "label": "Travel Type",
+        "type": "select",
+        "source": "travelTypes"
+      },
+      {
+        "field": "amountInBaseCurrency",
+        "label": "Amount in Base Currency",
+        "type": "number",
+        "step": "0.001"
+      },
+      {
+        "field": "remarks",
+        "label": "Remarks",
+        "type": "text",
+        "maxLength": 250
+      }
+    ]
+  },
+  "index": {
+    "heading": "Sector Master List",
+    "columns": [
+      {
+        "field": "id",
+        "label": "ID",
+        "visible": true
+      },
+      {
+        "field": "name",
+        "label": "Name",
+        "visible": true
+      },
+      {
+        "field": "code",
+        "label": "Code",
+        "visible": true
+      },
+      {
+        "field": "nameInNativeLanguage",
+        "label": "Name in Native Language",
+        "visible": true
+      },
+      {
+        "field": "comments",
+        "label": "Comments",
+        "visible": true
+      },
+      {
+        "field": "createdBy",
+        "label": "Created By",
+        "visible": true
+      },
+      {
+        "field": "createdDateTime",
+        "label": "Created DateTime",
+        "visible": true
+      },
+      {
+        "field": "modifiedBy",
+        "label": "Modified By",
+        "visible": true
+      },
+      {
+        "field": "modifiedDateTime",
+        "label": "Modified DateTime",
+        "visible": true
+      }
+    ]
+  }
+}
