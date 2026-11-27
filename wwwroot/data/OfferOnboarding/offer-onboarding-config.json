@@ -213,6 +213,18 @@
             "trigger": "OfferNo",
             "endpoint": "OfferDetails"
           }
+        },
+        {
+          "field": "RevisedOn",
+          "label": "Revised On",
+          "type": "date",
+          "required": false
+        },
+        {
+          "field": "ApplicableFrom",
+          "label": "Applicable From",
+          "type": "date",
+          "required": false
         }
       ]
     }
