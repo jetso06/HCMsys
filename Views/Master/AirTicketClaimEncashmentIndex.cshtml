@@ -1,0 +1,989 @@
+
+@model HCMSys.Controllers.AirTicketIndexVM
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Config.Page.Title + " List";
+
+    var cfg = Model.Config;
+    var records = Model.Records;
+    var columns = cfg.Index.Columns;
+    var totalRecords = records.Count;
+
+    string GetValue(HCMSys.Controllers.AirTicketRecord record, string field)
+    {
+        var property = record.GetType().GetProperty(
+            char.ToUpperInvariant(field[0]) + field.Substring(1));
+
+        return property?.GetValue(record)?.ToString() ?? "";
+    }
+
+    string FormatValue(string field, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return "";
+
+        if (field.Contains("DateTime", StringComparison.OrdinalIgnoreCase)
+            && DateTime.TryParse(value, out var dateTime))
+            return dateTime.ToString("dd-MM-yyyy HH:mm");
+
+        if (field.Contains("Date", StringComparison.OrdinalIgnoreCase)
+            && DateTime.TryParse(value, out var date))
+            return date.ToString("dd-MM-yyyy");
+
+        return value;
+    }
+
+    // Compact widths for the control and short-code columns.
+    int ColumnWidth(string field)
+    {
+        return field.ToLowerInvariant() switch
+        {
+            "ave" => 48,
+            "appst" => 55,
+            "id" => 50,
+            "code" => 85,
+            "refno" => 85,
+            "documentno" => 105,
+            "date" => 100,
+            "createdby" => 100,
+            "modifiedby" => 100,
+            "createddatetime" => 145,
+            "modifieddatetime" => 145,
+            "employee" => 160,
+            "designation" => 130,
+            "department" => 130,
+            _ => 120
+        };
+    }
+}
+
+<div class="container-fluid at-index">
+
+    <!-- MAIN TOOLBAR -->
+    <div class="card at-card at-toolbar-card">
+        <div class="card-header at-toolbar">
+
+            <h6 class="at-title">
+                <i class="fas @cfg.Page.Icon"></i>
+                @cfg.Page.Title
+                <span class="at-module-badge">
+                    AIR TICKET CLAIM / ENCASHMENT
+                </span>
+            </h6>
+
+            <div class="at-buttons">
+                @foreach (var b in cfg.Buttons.Index.Where(x => x.Visible))
+                {
+                    var action = b.Action.ToLowerInvariant();
+
+                    if (action == "new")
+                    {
+                        <a class="btn btn-@b.Style btn-sm"
+                           href="/Master/AirTicketClaimEncashment">
+                            <i class="fas @b.Icon"></i> @b.Text
+                        </a>
+                    }
+                    else if (action == "home")
+                    {
+                        <a class="btn btn-@b.Style btn-sm"
+                           href="/Home/Index">
+                            <i class="fas @b.Icon"></i> @b.Text
+                        </a>
+                    }
+                    else if (action == "close")
+                    {
+                        <a class="btn btn-@b.Style btn-sm"
+                           href="/Home/Index">
+                            <i class="fas @b.Icon"></i> @b.Text
+                        </a>
+                    }
+                    else
+                    {
+                        <button type="button"
+                                class="btn btn-@b.Style btn-sm"
+                                data-action="@action">
+                            <i class="fas @b.Icon"></i> @b.Text
+                        </button>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success mt-3">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger mt-3">
+            @TempData["Error"]
+        </div>
+    }
+
+    <!-- SUMMARY CARDS -->
+    <div class="row at-summary">
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card at-card at-summary-card at-border-primary">
+                <div class="card-body">
+                    <div class="at-summary-label">Total Records</div>
+                    <div class="at-summary-value">@totalRecords</div>
+                    <i class="fas fa-layer-group at-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card at-card at-summary-card at-border-info">
+                <div class="card-body">
+                    <div class="at-summary-label">Displayed Records</div>
+                    <div class="at-summary-value" id="atDisplayed">@totalRecords</div>
+                    <i class="fas fa-list at-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card at-card at-summary-card at-border-success">
+                <div class="card-body">
+                    <div class="at-summary-label">Selected Record</div>
+                    <div class="at-summary-value" id="atSelected">None</div>
+                    <i class="fas fa-file-alt at-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card at-card at-summary-card at-border-warning">
+                <div class="card-body">
+                    <div class="at-summary-label">Module</div>
+                    <div class="at-summary-module">Air Ticket Claim</div>
+                    <i class="fas fa-plane at-summary-icon"></i>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- INDEX TABLE CARD -->
+    <div class="card at-card at-records-card">
+
+        <div class="card-header at-records-header">
+            <h6>
+                <i class="fas fa-table"></i>
+                @cfg.Index.Heading
+            </h6>
+
+            <span class="badge badge-primary" id="atRecordCount">
+                @totalRecords Records
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            <!-- SEARCH AND PAGE SIZE -->
+            <div class="at-table-tools">
+
+                <div class="at-page-size">
+                    <span>Show</span>
+
+                    <select id="atPageSize"
+                            class="form-control form-control-sm">
+                        <option value="20">20</option>
+                        <option value="35">35</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+
+                    <span>entries</span>
+                </div>
+
+                <input type="search"
+                       id="atSearch"
+                       class="form-control form-control-sm at-search"
+                       placeholder="Search Air Ticket Claim records..." />
+
+            </div>
+
+            <!-- TABLE -->
+            <div class="at-wrap">
+
+                <table class="table table-bordered table-striped table-hover"
+                       id="atTable">
+
+                    <colgroup>
+                        <col style="width:55px" />
+                        <col style="width:65px" />
+
+                        @foreach (var c in columns)
+                        {
+                            var width = ColumnWidth(c.Field);
+                            <col style="width:@(width)px" />
+                        }
+                    </colgroup>
+
+                    <thead>
+                        <tr>
+                            <th class="at-control-column">
+                                <div class="at-select-header">
+                                    <span>Select</span>
+                                    <input type="checkbox" id="atSelectAll" />
+                                </div>
+                            </th>
+
+                            <th class="at-action-column">Action</th>
+
+                            @foreach (var c in columns)
+                            {
+                                <th title="@c.Tooltip"
+                                    class="@(new[] { "Ave", "AppSt", "Id" }.Contains(c.Field, StringComparer.OrdinalIgnoreCase) ? "at-small-column" : "")">
+
+                                    @c.Label
+
+                                    @if (!string.IsNullOrWhiteSpace(c.Tooltip))
+                                    {
+                                        <i class="fas fa-info-circle at-tooltip"
+                                           title="@c.Tooltip"></i>
+                                    }
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+
+                    <tbody id="atTableBody">
+
+                        @if (records.Any())
+                        {
+                            foreach (var r in records)
+                            {
+                                <tr data-id="@r.Id">
+
+                                    <td class="text-center at-control-column">
+                                        <input type="checkbox"
+                                               class="at-checkbox"
+                                               value="@r.Id" />
+                                    </td>
+
+                                    <td class="text-center at-action-column">
+
+                                        <button type="button"
+                                                class="at-row-edit"
+                                                title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <button type="button"
+                                                class="at-row-delete"
+                                                title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+
+                                    </td>
+
+                                    @foreach (var c in columns)
+                                    {
+                                        var rawValue = GetValue(r, c.Field);
+                                        var value = FormatValue(c.Field, rawValue);
+
+                                        if (c.Field.Equals("Ave", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            value = value switch
+                                            {
+                                                "Approved" => "Y",
+                                                "Rejected" => "N",
+                                                "Pending" => "P",
+                                                _ => value
+                                            };
+                                        }
+
+                                        if (c.Field.Equals("AppSt", StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            value = value switch
+                                            {
+                                                "Pending" => "P",
+                                                "Approved" => "A",
+                                                "Rejected" => "R",
+                                                _ => value
+                                            };
+                                        }
+
+                                        <td title="@rawValue"
+                                            class="@(new[] { "Ave", "AppSt", "Id" }.Contains(c.Field, StringComparer.OrdinalIgnoreCase) ? "at-small-column" : "")">
+                                            @value
+                                        </td>
+                                    }
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="at-no-data">
+                                <td colspan="@(columns.Count + 2)" class="at-empty">
+                                    No Air Ticket Claim / Encashment records found.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- PAGINATION -->
+            <div class="at-table-footer">
+
+                <span id="atShowing">Showing 0 records</span>
+
+                <div class="at-pagination">
+                    <button type="button"
+                            class="btn btn-light btn-sm"
+                            id="atPrevious">
+                        Previous
+                    </button>
+
+                    <span id="atPageInfo">0 / 0</span>
+
+                    <button type="button"
+                            class="btn btn-light btn-sm"
+                            id="atNext">
+                        Next
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ANTI-FORGERY TOKEN -->
+<form id="atAntiForgery" hidden>
+    @Html.AntiForgeryToken()
+</form>
+
+<style>
+    .at-index {
+        width: 100%;
+        padding: 18px 0 25px;
+        color: #5a5c69;
+        font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    .at-card {
+        border: 1px solid #e1e6ed;
+        border-radius: 6px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(58,59,69,.14) !important;
+        overflow: hidden;
+    }
+
+    .at-toolbar-card {
+        margin-bottom: 20px;
+    }
+
+    .at-toolbar,
+    .at-records-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 14px 18px;
+        background: #eef0f3;
+        border: 0;
+        border-bottom: 1px solid #e1e6ed;
+    }
+
+    .at-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #5a5c69;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+    }
+
+    .at-title i,
+    .at-records-header i {
+        color: #4e73df;
+    }
+
+    .at-module-badge {
+        padding: 3px 7px;
+        border: 1px solid #ccd3db;
+        border-radius: 4px;
+        background: #e5e9ee;
+        color: #4b5563;
+        font-size: .68rem;
+        letter-spacing: normal;
+    }
+
+    .at-buttons {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .at-buttons .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0,0,0,.08);
+    }
+
+    .at-buttons .btn i {
+        margin-right: 4px;
+    }
+
+    .at-summary {
+        margin-bottom: 8px;
+    }
+
+    .at-summary > div {
+        margin-bottom: 16px;
+    }
+
+    .at-summary-card {
+        min-height: 78px;
+    }
+
+    .at-summary-card .card-body {
+        position: relative;
+        padding: 15px 16px;
+    }
+
+    .at-summary-label {
+        margin-bottom: 4px;
+        font-size: .7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .at-border-primary .at-summary-label { color: #4e73df; }
+    .at-border-info .at-summary-label { color: #36b9cc; }
+    .at-border-success .at-summary-label { color: #1cc88a; }
+    .at-border-warning .at-summary-label { color: #f6c23e; }
+
+    .at-summary-value,
+    .at-summary-module {
+        color: #5a5c69;
+        font-size: 1.05rem;
+        font-weight: 800;
+    }
+
+    #atSelected {
+        font-size: .9rem;
+    }
+
+    .at-summary-icon {
+        position: absolute;
+        top: 22px;
+        right: 16px;
+        color: #dddfeb;
+        font-size: 1.5rem;
+    }
+
+    .at-border-primary { border-left: 4px solid #4e73df !important; }
+    .at-border-warning { border-left: 4px solid #f6c23e !important; }
+    .at-border-success { border-left: 4px solid #1cc88a !important; }
+    .at-border-info { border-left: 4px solid #36b9cc !important; }
+
+    .at-records-card {
+        margin-bottom: 20px;
+    }
+
+    .at-records-header h6 {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #4e73df;
+        font-size: .9rem;
+        font-weight: 800;
+    }
+
+    .at-records-header .badge {
+        padding: 5px 8px;
+        font-size: .7rem;
+        background: #4e73df;
+        color: #fff;
+    }
+
+    .at-records-card .card-body {
+        padding: 16px;
+    }
+
+    .at-table-tools {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .at-page-size {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .at-page-size select {
+        width: 60px;
+    }
+
+    .at-search {
+        width: 320px;
+        max-width: 100%;
+    }
+
+    .at-index .form-control {
+        min-height: 32px;
+        border: 1px solid #d2d0cb;
+        border-radius: 5px;
+        color: #5a5c69;
+        font-size: .83rem;
+        box-shadow: none;
+    }
+
+    .at-index .form-control:focus {
+        border-color: #7d9fe5;
+        box-shadow: 0 0 0 .18rem rgba(78,115,223,.14);
+    }
+
+    .at-wrap {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    #atTable {
+        width: 100%;
+        min-width: 1180px;
+        table-layout: fixed;
+        margin-bottom: 0;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+    #atTable th,
+    #atTable td {
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    #atTable thead th {
+        padding: 10px 7px;
+        background: #4e73df;
+        color: #fff;
+        border-color: #3d5cbe;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .03em;
+    }
+
+    #atTable tbody td {
+        padding: 8px 7px;
+        color: #5a5c69;
+        font-size: .8rem;
+    }
+
+    #atTable tbody tr:hover {
+        background-color: #f3f6ff;
+    }
+
+    #atTable .at-control-column {
+        width: 55px;
+        min-width: 55px;
+        max-width: 55px;
+        text-align: center;
+    }
+
+    #atTable .at-action-column {
+        width: 65px;
+        min-width: 65px;
+        max-width: 65px;
+        text-align: center;
+    }
+
+    #atTable .at-small-column {
+        text-align: center;
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+    .at-select-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .at-checkbox,
+    #atSelectAll {
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        vertical-align: middle;
+    }
+
+    .at-row-edit,
+    .at-row-delete {
+        border: 0;
+        background: transparent;
+        padding: 3px;
+        cursor: pointer;
+        font-size: .85rem;
+    }
+
+    .at-row-edit { color: #4e73df; }
+    .at-row-delete { color: #e74a3b; }
+
+    #atTable tbody tr.selected {
+        background-color: #eaecf4;
+    }
+
+    .at-tooltip {
+        margin-left: 3px;
+        font-size: .7rem;
+        cursor: help;
+    }
+
+    .at-empty {
+        padding: 24px !important;
+        color: #858796;
+        text-align: center !important;
+    }
+
+    .at-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 14px;
+        color: #858796;
+        font-size: .8rem;
+    }
+
+    .at-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .at-pagination .btn {
+        border: 1px solid #e3e6f0;
+        background: #fff;
+        color: #5a5c69;
+    }
+
+    .at-pagination .btn:disabled {
+        opacity: .45;
+        cursor: not-allowed;
+    }
+
+    @@media(max-width:768px) {
+        .at-toolbar {
+            align-items: flex-start;
+        }
+
+        .at-buttons {
+            width: 100%;
+        }
+
+        .at-search {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .at-buttons,
+        .at-table-tools,
+        .at-table-footer,
+        .at-control-column,
+        .at-action-column {
+            display: none !important;
+        }
+
+        .at-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<script>
+(() => {
+    const body = document.getElementById("atTableBody");
+    const searchInput = document.getElementById("atSearch");
+    const pageSizeInput = document.getElementById("atPageSize");
+    const selectAll = document.getElementById("atSelectAll");
+
+    if (!body || !searchInput || !pageSizeInput || !selectAll)
+        return;
+
+    const rows = Array.from(body.querySelectorAll("tr[data-id]"));
+
+    let filteredRows = rows.slice();
+    let currentPage = 1;
+
+    function getSelected() {
+        return Array.from(body.querySelectorAll(".at-checkbox:checked"));
+    }
+
+    function updateSelection() {
+        const selected = getSelected();
+
+        const selectedVisible = filteredRows.filter(row =>
+            row.querySelector(".at-checkbox")?.checked
+        ).length;
+
+        selectAll.checked =
+            filteredRows.length > 0 &&
+            selectedVisible === filteredRows.length;
+
+        selectAll.indeterminate =
+            selectedVisible > 0 &&
+            selectedVisible < filteredRows.length;
+
+        rows.forEach(row => {
+            row.classList.toggle(
+                "selected",
+                row.querySelector(".at-checkbox")?.checked === true
+            );
+        });
+
+        const selectedNames = selected.map(checkbox => {
+            const row = checkbox.closest("tr");
+            return row.cells[2]?.textContent.trim() || checkbox.value;
+        });
+
+        document.getElementById("atSelected").textContent =
+            selectedNames.length ? selectedNames.join(", ") : "None";
+
+        const edit = document.querySelector('[data-action="edit"]');
+        const clone = document.querySelector('[data-action="clone"]');
+        const del = document.querySelector('[data-action="delete"]');
+
+        if (edit) edit.disabled = selected.length !== 1;
+        if (clone) clone.disabled = selected.length !== 1;
+        if (del) del.disabled = selected.length !== 1;
+    }
+
+    function renderRows() {
+        const pageSize = Number(pageSizeInput.value);
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / pageSize)
+        );
+
+        currentPage = Math.min(currentPage, totalPages);
+
+        rows.forEach(row => row.hidden = true);
+
+        const start = (currentPage - 1) * pageSize;
+        const visibleRows = filteredRows.slice(start, start + pageSize);
+
+        visibleRows.forEach(row => row.hidden = false);
+
+        document.getElementById("atDisplayed").textContent =
+            filteredRows.length;
+
+        document.getElementById("atRecordCount").textContent =
+            `${filteredRows.length} Records`;
+
+        document.getElementById("atShowing").textContent =
+            filteredRows.length
+                ? `Showing ${start + 1} to ${start + visibleRows.length} of ${filteredRows.length} records`
+                : "Showing 0 records";
+
+        document.getElementById("atPageInfo").textContent =
+            filteredRows.length
+                ? `${currentPage} / ${totalPages}`
+                : "0 / 0";
+
+        document.getElementById("atPrevious").disabled =
+            currentPage <= 1;
+
+        document.getElementById("atNext").disabled =
+            currentPage >= totalPages;
+
+        updateSelection();
+    }
+
+    function filterRows() {
+        const query = searchInput.value.trim().toLowerCase();
+
+        filteredRows = rows.filter(row =>
+            row.innerText.toLowerCase().includes(query)
+        );
+
+        currentPage = 1;
+        renderRows();
+    }
+
+    function editRecord(id) {
+        if (!id) return;
+
+        window.location.href =
+            "/Master/AirTicketClaimEncashment?id=" +
+            encodeURIComponent(id);
+    }
+
+    function cloneRecord(id) {
+        if (!id) return;
+
+        window.location.href =
+            "/Master/AirTicketClaimEncashment?id=" +
+            encodeURIComponent(id) + "&clone=true";
+    }
+
+    function deleteRecord(id) {
+        if (!id) return;
+
+        if (!confirm("Are you sure you want to delete this record?"))
+            return;
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action =
+            "/Master/AirTicketClaimEncashment/Delete/" +
+            encodeURIComponent(id);
+
+        const token = document.querySelector(
+            '#atAntiForgery input[name="__RequestVerificationToken"]'
+        );
+
+        if (token) {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "__RequestVerificationToken";
+            input.value = token.value;
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+    selectAll.addEventListener("change", function () {
+        filteredRows.forEach(row => {
+            const checkbox = row.querySelector(".at-checkbox");
+            if (checkbox) checkbox.checked = this.checked;
+        });
+
+        updateSelection();
+    });
+
+    rows.forEach(row => {
+        row.querySelector(".at-checkbox")
+            ?.addEventListener("change", updateSelection);
+
+        row.addEventListener("click", event => {
+            if (event.target.closest(
+                ".at-row-edit, .at-row-delete, .at-checkbox"
+            )) return;
+
+            const checkbox = row.querySelector(".at-checkbox");
+            checkbox.checked = !checkbox.checked;
+            updateSelection();
+        });
+    });
+
+    body.addEventListener("click", event => {
+        const edit = event.target.closest(".at-row-edit");
+        const del = event.target.closest(".at-row-delete");
+
+        if (!edit && !del) return;
+
+        const row = event.target.closest("tr[data-id]");
+        if (!row) return;
+
+        if (edit) editRecord(row.dataset.id);
+        if (del) deleteRecord(row.dataset.id);
+    });
+
+    document.querySelector(".at-buttons")
+        ?.addEventListener("click", event => {
+
+            const button = event.target.closest("[data-action]");
+            if (!button || button.disabled) return;
+
+            const action = button.dataset.action;
+            const selectedIds = getSelected().map(x => x.value);
+
+            switch (action) {
+                case "edit":
+                    if (selectedIds.length === 1)
+                        editRecord(selectedIds[0]);
+                    break;
+
+                case "clone":
+                    if (selectedIds.length === 1)
+                        cloneRecord(selectedIds[0]);
+                    break;
+
+                case "delete":
+                    if (selectedIds.length === 1)
+                        deleteRecord(selectedIds[0]);
+                    break;
+
+                case "print":
+                    window.print();
+                    break;
+
+                case "new":
+                    window.location.href =
+                        "/Master/AirTicketClaimEncashment";
+                    break;
+
+                default:
+                    alert("The " + action + " action needs a backend workflow implementation.");
+                    break;
+            }
+        });
+
+    searchInput.addEventListener("input", filterRows);
+
+    pageSizeInput.addEventListener("change", () => {
+        currentPage = 1;
+        renderRows();
+    });
+
+    document.getElementById("atPrevious").addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderRows();
+        }
+    });
+
+    document.getElementById("atNext").addEventListener("click", () => {
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredRows.length / Number(pageSizeInput.value))
+        );
+
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderRows();
+        }
+    });
+
+    renderRows();
+})();
+</script>

@@ -1,0 +1,64 @@
+{
+  "employees": [
+    {
+      "value": "OM-001",
+      "text": "OM-001 - Ahmed Al Balushi",
+      "designation": "HR Officer",
+      "department": "Human Resources",
+      "reportingManager": "Salim Al Rashdi",
+      "noticePeriod": "30 Days"
+    },
+    {
+      "value": "OM-002",
+      "text": "OM-002 - Fatima Al Harthy",
+      "designation": "Accountant",
+      "department": "Finance",
+      "reportingManager": "Ahmed Al Balushi",
+      "noticePeriod": "30 Days"
+    },
+    {
+      "value": "OM-003",
+      "text": "OM-003 - John Mathew",
+      "designation": "Software Developer",
+      "department": "IT",
+      "reportingManager": "Jerin Davis",
+      "noticePeriod": "60 Days"
+    },
+    {
+      "value": "OM-004",
+      "text": "OM-004 - Priya Nair",
+      "designation": "Administrator",
+      "department": "Administration",
+      "reportingManager": "Salim Al Rashdi",
+      "noticePeriod": "30 Days"
+    },
+    {
+      "value": "OM-005",
+      "text": "OM-005 - Salim Al Rashdi",
+      "designation": "Operations Manager",
+      "department": "Operations",
+      "reportingManager": "General Manager",
+      "noticePeriod": "60 Days"
+    }
+  ],
+  "dependentTypes": [
+    "Self",
+    "Spouse",
+    "Dependent",
+    "Adult",
+    "Child",
+    "Infant"
+  ],
+  "travelClasses": [
+    "First",
+    "Economy"
+  ],
+  "travelTypes": [
+    "OneWay",
+    "Two Way"
+  ],
+  "claimTypes": [
+    "Claim",
+    "Encash"
+  ]
+}

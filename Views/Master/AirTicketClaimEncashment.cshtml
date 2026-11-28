@@ -1,0 +1,557 @@
+
+@model HCMSys.Controllers.AirTicketFormVM
+@using System.Text.Json
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Config.Page.Title;
+
+    var r = Model.Record;
+    var cfg = Model.Config;
+
+    string V(object o, string f) =>
+        o.GetType().GetProperty(char.ToUpperInvariant(f[0]) + f.Substring(1))
+            ?.GetValue(o)?.ToString() ?? "";
+}
+
+<style>
+    .at-page {
+        padding: 16px 0;
+        color: #5a5c69;
+        font: 13px Segoe UI, Arial, sans-serif;
+    }
+
+    .at-card {
+        background: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: 6px;
+        box-shadow: 0 4px 14px #3a3b691c;
+        margin-bottom: 16px;
+        overflow: hidden;
+    }
+
+    .at-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding: 13px 18px;
+        background: #eef0f3;
+        border-bottom: 1px solid #e3e6f0;
+    }
+
+    .at-head h6 {
+        margin: 0;
+        color: #4e73df;
+        font-weight: 800;
+    }
+
+    .at-body {
+        padding: 16px;
+    }
+
+    .at-fields {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(170px, 1fr));
+        gap: 13px;
+    }
+
+    .at-field label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #596579;
+        font-size: .76rem;
+        letter-spacing: .055em;
+    }
+
+    .at-field input,
+    .at-field select {
+        width: 100%;
+        height: 36px;
+        border: 1px solid #d1d3e2;
+        border-radius: 4px;
+        padding: 6px 10px;
+        box-sizing: border-box;
+        font-size: .83rem;
+    }
+
+    .at-field input[readonly] {
+        background: #f8f9fc;
+    }
+
+    .at-required {
+        color: #e74a3b;
+    }
+
+    .at-wrap {
+        overflow-x: auto;
+    }
+
+    .at-table {
+        width: 100%;
+        min-width: 1100px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .at-table th,
+    .at-table td {
+        box-sizing: border-box;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .at-table th {
+        background: #4e73df;
+        color: #fff;
+        border: 1px solid #3d5cbe;
+        padding: 9px 7px;
+        font-size: .72rem;
+        font-weight: 800;
+        letter-spacing: .035em;
+        text-transform: uppercase;
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .at-table td {
+        border: 1px solid #e3e6f0;
+        padding: 6px;
+        vertical-align: middle;
+        font-size: .8rem;
+    }
+
+    .at-table td input,
+    .at-table td select {
+        width: 100%;
+        min-width: 0;
+        height: 36px;
+        box-sizing: border-box;
+        padding: 6px;
+        border: 1px solid #d1d3e2;
+        border-radius: .35rem;
+        font-size: .8rem;
+    }
+
+    /* Main header - matching Sector Master */
+
+    .at-main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 14px 18px !important;
+        background: #eef0f3 !important;
+        border: none !important;
+        border-bottom: 1px solid #e3e6f0 !important;
+    }
+
+    .at-main-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #000000 !important;
+        font-family: inherit;
+        font-size: .85rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+    }
+
+    .at-main-title i {
+        color: #4e73df;
+    }
+
+    .at-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .at-toolbar .btn {
+        padding: 5px 9px;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: .8rem;
+        font-weight: 700;
+        box-shadow: 0 .1rem .3rem rgba(0, 0, 0, .08);
+        transition: filter .15s ease, box-shadow .15s ease;
+    }
+
+    .at-toolbar .btn:hover {
+        filter: brightness(.94);
+    }
+
+    .at-section-title {
+        font-family: inherit;
+        font-size: .9rem;
+        font-weight: 800;
+        color: #4e73df;
+        letter-spacing: .035em;
+        margin: 0;
+    }
+
+    @@media(max-width:900px) {
+        .at-fields {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media(max-width:600px) {
+        .at-page {
+            padding: 10px 5px;
+        }
+
+        .at-fields {
+            grid-template-columns: 1fr;
+        }
+
+        .at-toolbar {
+            width: 100%;
+        }
+    }
+
+    @@media print {
+        .at-toolbar {
+            display: none !important;
+        }
+
+        .at-card {
+            box-shadow: none !important;
+        }
+    }
+</style>
+
+<div class="container-fluid at-page">
+
+    <!-- MAIN FORM -->
+    <form method="post"
+          action="/Master/AirTicketClaimEncashment/Save"
+          id="atForm">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="Id" value="@r.Id" />
+
+        <!-- PAGE HEADER AND ALL BUTTONS -->
+        <div class="at-card">
+
+            <div class="at-head at-main-header">
+
+                <h6 class="at-main-title">
+                    <i class="fas fa-plane"></i>
+                    AIR TICKET CLAIM / ENCASHMENT
+                </h6>
+
+                <div class="at-toolbar">
+
+                    @foreach (var b in cfg.Buttons.Form.Where(x => x.Visible))
+                    {
+                        if (b.Action == "save")
+                        {
+                            <button type="submit"
+                                    class="btn btn-@b.Style btn-sm">
+                                <i class="fas @b.Icon mr-1"></i>@b.Text
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-@b.Style btn-sm"
+                                    data-action="@b.Action">
+                                <i class="fas @b.Icon mr-1"></i>@b.Text
+                            </button>
+                        }
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- HEADER FIELDS -->
+        <div class="at-card">
+
+            <div class="at-body">
+
+                <div class="at-fields">
+
+                    @foreach (var f in cfg.HeaderFields)
+                    {
+                        var val = V(r, f.Field);
+
+                        <div class="at-field">
+
+                            <label for="@f.Field">
+                                @f.Label
+
+                                @if (f.Required)
+                                {
+                                    <span class="at-required">*</span>
+                                }
+                            </label>
+
+                            @if (f.Type == "select")
+                            {
+                                <select name="@f.Field"
+                                        id="@f.Field"
+                                        required="@f.Required">
+
+                                    <option value="">Select @f.Label</option>
+
+                                    @foreach (var e in Model.Lookups.Employees)
+                                    {
+                                        <option value="@e.Value"
+                                                selected="@(val == e.Value)">
+                                            @e.Text
+                                        </option>
+                                    }
+
+                                </select>
+                            }
+                            else
+                            {
+                                <input name="@f.Field"
+                                       id="@f.Field"
+                                       type="@f.Type"
+                                       value="@val"
+                                       maxlength="@(f.MaxLength > 0 ? f.MaxLength : null)"
+                                       required="@f.Required"
+                                       readonly="@f.Readonly" />
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- EMPLOYEE / DEPENDENT GRID AND CLAIM GRID -->
+        @foreach (var g in new[]
+        {
+            (key: "Dependents", grid: cfg.DependentGrid, rows: r.Dependents.Cast<object>().ToList()),
+            (key: "Claims", grid: cfg.ClaimGrid, rows: r.Claims.Cast<object>().ToList())
+        })
+        {
+            <div class="at-card">
+
+                <div class="at-head">
+                    <h6 class="at-section-title">@g.grid.Title</h6>
+                </div>
+
+                <div class="at-body">
+
+                    <div class="at-wrap">
+
+                        <table class="at-table">
+
+                            <thead>
+                                <tr>
+                                    @foreach (var c in g.grid.Columns)
+                                    {
+                                        <th title="@c.Label">@c.Label</th>
+                                    }
+                                </tr>
+                            </thead>
+
+                            <tbody id="@(g.key)Body">
+
+                                @for (int i = 0; i < Math.Max(g.rows.Count, 1); i++)
+                                {
+                                    var obj = i < g.rows.Count
+                                        ? g.rows[i]
+                                        : (g.key == "Dependents"
+                                            ? (object)new HCMSys.Controllers.AirTicketDependent()
+                                            : new HCMSys.Controllers.AirTicketClaim());
+
+                                    <tr>
+
+                                        @foreach (var c in g.grid.Columns)
+                                        {
+                                            var value = V(obj, c.Field);
+                                            var prop = char.ToUpperInvariant(c.Field[0]) + c.Field.Substring(1);
+
+                                            <td>
+
+                                                @if (c.Type == "select")
+                                                {
+                                                    var opts = c.Lookup == "dependentTypes"
+                                                        ? Model.Lookups.DependentTypes
+                                                        : c.Lookup == "travelClasses"
+                                                            ? Model.Lookups.TravelClasses
+                                                            : c.Lookup == "travelTypes"
+                                                                ? Model.Lookups.TravelTypes
+                                                                : Model.Lookups.ClaimTypes;
+
+                                                    <select name="@(g.key)[@i].@prop">
+
+                                                        <option value="">Select</option>
+
+                                                        @foreach (var op in opts)
+                                                        {
+                                                            <option value="@op"
+                                                                    selected="@(value == op)">
+                                                                @op
+                                                            </option>
+                                                        }
+
+                                                    </select>
+                                                }
+                                                else
+                                                {
+                                                    <input type="@c.Type"
+                                                           name="@(g.key)[@i].@prop"
+                                                           value="@value"
+                                                           step="@(c.Type == "number" ? "0.001" : null)" />
+                                                }
+
+                                            </td>
+                                        }
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </form>
+
+</div>
+
+<script>
+
+    const lookups = @Html.Raw(JsonSerializer.Serialize(Model.Lookups));
+
+    // EMPLOYEE DETAILS AUTO-FILL
+    document.getElementById('employee')?.addEventListener('change', e => {
+
+        const employee = lookups.employees.find(
+            x => x.value === e.target.value
+        );
+
+        if (employee) {
+            ['designation', 'department', 'reportingManager', 'noticePeriod']
+                .forEach(field => {
+                    const input = document.getElementById(field);
+
+                    if (input) {
+                        input.value = employee[field] || '';
+                    }
+                });
+        }
+
+    });
+
+    // HEADER BUTTON ACTIONS
+    document.querySelectorAll('.at-toolbar [data-action]')
+        .forEach(btn => {
+
+            btn.addEventListener('click', () => {
+
+                const action = btn.dataset.action;
+
+                if (action === 'home') {
+                    window.location.href = '/Home/Index';
+                }
+
+                else if (action === 'new') {
+                    window.location.href =
+                        '/Master/AirTicketClaimEncashment';
+                }
+
+                else if (action === 'edit') {
+                    alert('You are already editing this record.');
+                }
+
+                else if (action === 'clone') {
+                    const id = document.querySelector('[name="Id"]').value;
+
+                    window.location.href = id && id !== '0'
+                        ? '/Master/AirTicketClaimEncashment?id=' + id + '&clone=true'
+                        : '/Master/AirTicketClaimEncashment';
+                }
+
+                else if (action === 'unpost') {
+                    alert('UnPost is not connected to a workflow yet.');
+                }
+
+                else if (action === 'print') {
+                    window.print();
+                }
+
+                else if (action === 'delete') {
+                    if (@r.Id > 0) {
+                        deleteCurrent();
+                    }
+                    else {
+                        alert('Save the record before deleting.');
+                    }
+                }
+
+                else if (action === 'approve' ||
+                         action === 'reject' ||
+                         action === 'authtracker') {
+
+                    alert(action + ' is not connected to a workflow yet.');
+                }
+
+                else if (action === 'close') {
+                    window.location.href =
+                        '/Master/AirTicketClaimEncashmentIndex';
+                }
+
+            });
+
+        });
+
+    // DELETE CURRENT RECORD
+    function deleteCurrent() {
+
+        if (!confirm('Delete this AirTicket Claim / Encashment record?')) {
+            return;
+        }
+
+        const form = document.createElement('form');
+
+        form.method = 'POST';
+        form.action =
+            '/Master/AirTicketClaimEncashment/Delete/@r.Id';
+
+        const token = document.querySelector(
+            '#atForm input[name="__RequestVerificationToken"]'
+        );
+
+        if (token) {
+
+            const input = document.createElement('input');
+
+            input.type = 'hidden';
+            input.name = '__RequestVerificationToken';
+            input.value = token.value;
+
+            form.appendChild(input);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+    }
+
+</script>

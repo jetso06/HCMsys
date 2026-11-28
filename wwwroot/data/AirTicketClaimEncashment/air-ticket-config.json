@@ -1,0 +1,393 @@
+{
+  "page": {
+    "title": "AirTicket Claim / Encashment",
+    "icon": "fa-plane",
+    "formRoute": "/Master/AirTicketClaimEncashment",
+    "indexRoute": "/Master/AirTicketClaimEncashmentIndex"
+  },
+  "buttons": {
+    "form": [
+      {
+        "text": "Home",
+        "action": "home",
+        "style": "secondary",
+        "icon": "fa-home",
+        "visible": true
+      },
+      {
+        "text": "New",
+        "action": "new",
+        "style": "primary",
+        "icon": "fa-plus",
+        "visible": true
+      },
+      {
+        "text": "Edit",
+        "action": "edit",
+        "style": "warning",
+        "icon": "fa-edit",
+        "visible": true
+      },
+      {
+        "text": "Save",
+        "action": "save",
+        "style": "success",
+        "icon": "fa-save",
+        "visible": true
+      },
+      {
+        "text": "Clone",
+        "action": "clone",
+        "style": "info",
+        "icon": "fa-copy",
+        "visible": true
+      },
+      {
+        "text": "UnPost",
+        "action": "unpost",
+        "style": "secondary",
+        "icon": "fa-undo",
+        "visible": true
+      },
+      {
+        "text": "Print",
+        "action": "print",
+        "style": "secondary",
+        "icon": "fa-print",
+        "visible": true
+      },
+      {
+        "text": "Delete",
+        "action": "delete",
+        "style": "danger",
+        "icon": "fa-trash",
+        "visible": true
+      },
+      {
+        "text": "Approve",
+        "action": "approve",
+        "style": "success",
+        "icon": "fa-check",
+        "visible": true
+      },
+      {
+        "text": "Reject",
+        "action": "reject",
+        "style": "danger",
+        "icon": "fa-times",
+        "visible": true
+      },
+      {
+        "text": "Auth Tracker",
+        "action": "authtracker",
+        "style": "info",
+        "icon": "fa-history",
+        "visible": true
+      },
+      {
+        "text": "Close",
+        "action": "close",
+        "style": "secondary",
+        "icon": "fa-times-circle",
+        "visible": true
+      }
+    ],
+    "index": [
+      {
+        "text": "Home",
+        "action": "home",
+        "style": "secondary",
+        "icon": "fa-home",
+        "visible": true
+      },
+      {
+        "text": "New",
+        "action": "new",
+        "style": "primary",
+        "icon": "fa-plus",
+        "visible": true
+      },
+      {
+        "text": "Edit",
+        "action": "edit",
+        "style": "warning",
+        "icon": "fa-edit",
+        "visible": true
+      },
+      {
+        "text": "Clone",
+        "action": "clone",
+        "style": "info",
+        "icon": "fa-copy",
+        "visible": true
+      },
+      {
+        "text": "Delete",
+        "action": "delete",
+        "style": "danger",
+        "icon": "fa-trash",
+        "visible": true
+      },
+      {
+        "text": "Print",
+        "action": "print",
+        "style": "secondary",
+        "icon": "fa-print",
+        "visible": true
+      },
+      {
+        "text": "Close",
+        "action": "close",
+        "style": "secondary",
+        "icon": "fa-times",
+        "visible": true
+      }
+    ]
+  },
+  "headerFields": [
+    {
+      "field": "documentNo",
+      "label": "Document No",
+      "type": "text",
+      "maxLength": 60,
+      "required": true,
+      "readonly": true
+    },
+    {
+      "field": "date",
+      "label": "Date",
+      "type": "date",
+      "required": true
+    },
+    {
+      "field": "postDate",
+      "label": "PostDate",
+      "type": "datetime-local",
+      "required": true
+    },
+    {
+      "field": "employee",
+      "label": "Employee",
+      "type": "select",
+      "lookup": "employees",
+      "required": true
+    },
+    {
+      "field": "designation",
+      "label": "Designation",
+      "type": "text",
+      "maxLength": 60,
+      "info": true
+    },
+    {
+      "field": "department",
+      "label": "Department",
+      "type": "text",
+      "maxLength": 60,
+      "info": true
+    },
+    {
+      "field": "reportingManager",
+      "label": "Reporting Manager",
+      "type": "text",
+      "maxLength": 60,
+      "info": true
+    },
+    {
+      "field": "noticePeriod",
+      "label": "Notice Period",
+      "type": "text",
+      "maxLength": 60,
+      "info": true
+    },
+    {
+      "field": "comments",
+      "label": "Comments",
+      "type": "text",
+      "maxLength": 200,
+      "reason": true
+    }
+  ],
+  "dependentGrid": {
+    "title": "Employee / Dependent Grid",
+    "columns": [
+      {
+        "field": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "field": "type",
+        "label": "Type",
+        "type": "select",
+        "lookup": "dependentTypes"
+      },
+      {
+        "field": "dateOfBirth",
+        "label": "Date of Birth",
+        "type": "date"
+      },
+      {
+        "field": "travelClass",
+        "label": "Travel Class",
+        "type": "select",
+        "lookup": "travelClasses"
+      },
+      {
+        "field": "travelType",
+        "label": "Travel Type",
+        "type": "select",
+        "lookup": "travelTypes"
+      },
+      {
+        "field": "noOfTickets",
+        "label": "No of Tickets",
+        "type": "number"
+      },
+      {
+        "field": "serviceDays",
+        "label": "Service Days",
+        "type": "number"
+      }
+    ]
+  },
+  "claimGrid": {
+    "title": "Claim / Encashment",
+    "columns": [
+      {
+        "field": "type",
+        "label": "Type",
+        "type": "select",
+        "lookup": "dependentTypes"
+      },
+      {
+        "field": "travelClass",
+        "label": "Travel Class",
+        "type": "select",
+        "lookup": "travelClasses"
+      },
+      {
+        "field": "travelType",
+        "label": "Travel Type",
+        "type": "select",
+        "lookup": "travelTypes"
+      },
+      {
+        "field": "ticketClaim",
+        "label": "Ticket Claim",
+        "type": "select",
+        "lookup": "claimTypes"
+      },
+      {
+        "field": "eligibleTickets",
+        "label": "Eligible Tickets",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "approved",
+        "label": "Approved",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "pending",
+        "label": "Pending",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "available",
+        "label": "Available",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "usedNow",
+        "label": "Used Now",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "balance",
+        "label": "Balance",
+        "type": "number",
+        "precision": 3
+      },
+      {
+        "field": "amountInBaseCurrency",
+        "label": "Amount in Base Currency",
+        "type": "number",
+        "precision": 3
+      }
+    ]
+  },
+  "index": {
+    "heading": "AirTicket Claim / Encashment List",
+    "columns": [
+      {
+        "field": "DocNo",
+        "label": "Doc No",
+        "visible": true
+      },
+      {
+        "field": "DocDate",
+        "label": "Date",
+        "visible": true
+      },
+      {
+        "field": "Name",
+        "label": "Name",
+        "visible": true
+      },
+      {
+        "field": "Code",
+        "label": "Code",
+        "visible": true
+      },
+      {
+        "field": "RefNo",
+        "label": "Ref No",
+        "visible": true
+      },
+      {
+        "field": "Ave",
+        "label": "Ave",
+        "tooltip": "Approval Value",
+        "visible": true
+      },
+      {
+        "field": "AppSt",
+        "label": "AppSt",
+        "tooltip": "Approval Status",
+        "visible": true
+      },
+      {
+        "field": "Id",
+        "label": "ID",
+        "visible": true
+      },
+      {
+        "field": "CreatedBy",
+        "label": "Created By",
+        "visible": true
+      },
+      {
+        "field": "CreatedDateTime",
+        "label": "Created DateTime",
+        "visible": true
+      },
+      {
+        "field": "ModifiedBy",
+        "label": "Modified By",
+        "visible": true
+      },
+      {
+        "field": "ModifiedDateTime",
+        "label": "Modified DateTime",
+        "visible": true
+      }
+    ]
+  }
+}
