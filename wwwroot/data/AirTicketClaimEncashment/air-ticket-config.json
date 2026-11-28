@@ -115,10 +115,31 @@
         "visible": true
       },
       {
+        "text": "Save",
+        "action": "save",
+        "style": "success",
+        "icon": "fa-save",
+        "visible": true
+      },
+      {
         "text": "Clone",
         "action": "clone",
         "style": "info",
         "icon": "fa-copy",
+        "visible": true
+      },
+      {
+        "text": "UnPost",
+        "action": "unpost",
+        "style": "secondary",
+        "icon": "fa-undo",
+        "visible": true
+      },
+      {
+        "text": "Print",
+        "action": "print",
+        "style": "info",
+        "icon": "fa-print",
         "visible": true
       },
       {
@@ -129,17 +150,31 @@
         "visible": true
       },
       {
-        "text": "Print",
-        "action": "print",
-        "style": "secondary",
-        "icon": "fa-print",
+        "text": "Approve",
+        "action": "approve",
+        "style": "success",
+        "icon": "fa-check",
+        "visible": true
+      },
+      {
+        "text": "Reject",
+        "action": "reject",
+        "style": "danger",
+        "icon": "fa-times",
+        "visible": true
+      },
+      {
+        "text": "Auth Tracker",
+        "action": "authtracker",
+        "style": "info",
+        "icon": "fa-history",
         "visible": true
       },
       {
         "text": "Close",
         "action": "close",
         "style": "secondary",
-        "icon": "fa-times",
+        "icon": "fa-times-circle",
         "visible": true
       }
     ]
